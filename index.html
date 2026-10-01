@@ -4,218 +4,465 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>KeyAuth Panel</title>
-<link rel="stylesheet" href="style.css" />
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+body { background:#0b0d12; color:#e5e9f0; font-size:14px; min-height:100vh; }
+
+/* LOGIN */
+#loginScreen {
+  position:fixed; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(circle at 50% 0%, #131826, #0b0d12 60%);
+  padding:20px; z-index:50;
+}
+.login-box {
+  background:#12151c; border:1px solid #232a36; border-radius:12px;
+  padding:36px 32px; width:100%; max-width:380px; text-align:center;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);
+}
+.login-box h1 { font-size:20px; font-weight:600; margin-bottom:4px; }
+.login-box p { color:#5c6577; font-size:12.5px; margin-bottom:24px; }
+.login-box input {
+  width:100%; padding:11px 14px; background:#0b0d12; border:1px solid #232a36;
+  border-radius:6px; color:#e5e9f0; font-size:14px; text-align:center;
+  outline:none; margin-bottom:12px;
+}
+.login-box input:focus { border-color:#4f7cff; }
+.login-box button {
+  width:100%; padding:11px; background:#4f7cff; color:#fff; border:none;
+  border-radius:6px; font-size:14px; font-weight:500; cursor:pointer;
+  transition:background .15s;
+}
+.login-box button:hover { background:#3d6bf0; }
+.login-error { color:#e5484d; font-size:12.5px; margin-top:12px; }
+
+/* APP */
+#app { display:none; min-height:100vh; grid-template-columns:240px 1fr; }
+#app.visible { display:grid; }
+
+.sidebar {
+  background:#12151c; border-right:1px solid #232a36;
+  display:flex; flex-direction:column; padding:20px;
+}
+.brand { font-size:16px; font-weight:700; margin-bottom:30px; letter-spacing:-.3px; }
+.brand small { display:block; font-size:10px; color:#5c6577; font-weight:400; text-transform:uppercase; letter-spacing:1px; margin-top:3px; }
+.nav-item {
+  display:block; padding:9px 12px; color:#8b94a5; text-decoration:none;
+  border-radius:6px; font-size:13px; margin-bottom:2px; cursor:pointer;
+  transition:background .15s, color .15s;
+}
+.nav-item:hover { background:#171b24; color:#e5e9f0; }
+.nav-item.active { background:#171b24; color:#e5e9f0; box-shadow:inset 2px 0 0 #4f7cff; }
+
+.main { padding:24px 28px; overflow-y:auto; }
+.topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
+.topbar h1 { font-size:18px; font-weight:600; }
+
+.btn {
+  padding:8px 14px; font-size:13px; font-weight:500; border-radius:6px;
+  border:1px solid transparent; cursor:pointer; transition:background .15s;
+}
+.btn-primary { background:#4f7cff; color:#fff; }
+.btn-primary:hover { background:#3d6bf0; }
+.btn-ghost { background:#12151c; color:#8b94a5; border-color:#232a36; }
+.btn-ghost:hover { color:#e5e9f0; }
+.btn-danger { background:#e5484d; color:#fff; }
+.btn-small { padding:5px 10px; font-size:12px; }
+
+.stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; }
+.stat { background:#12151c; border:1px solid #232a36; border-radius:8px; padding:16px 18px; }
+.stat-label { font-size:11px; color:#5c6577; text-transform:uppercase; letter-spacing:.8px; font-weight:600; margin-bottom:6px; }
+.stat-val { font-size:24px; font-weight:600; }
+.stat-val.ok { color:#35c47a; } .stat-val.warn { color:#e0a939; } .stat-val.bad { color:#e5484d; }
+
+.card { background:#12151c; border:1px solid #232a36; border-radius:8px; overflow:hidden; }
+.toolbar { display:flex; gap:10px; padding:14px 16px; border-bottom:1px solid #1c222d; flex-wrap:wrap; }
+.toolbar input, .toolbar select {
+  padding:8px 12px; background:#0b0d12; border:1px solid #232a36;
+  border-radius:6px; color:#e5e9f0; font-size:13px; outline:none;
+}
+.toolbar input:focus, .toolbar select:focus { border-color:#4f7cff; }
+.toolbar input { flex:1; min-width:200px; }
+
+table { width:100%; border-collapse:collapse; font-size:13px; }
+thead th {
+  text-align:left; padding:11px 16px; font-size:11px; color:#5c6577;
+  text-transform:uppercase; letter-spacing:.6px; font-weight:600;
+  background:#171b24; border-bottom:1px solid #1c222d; white-space:nowrap;
+}
+tbody td { padding:12px 16px; border-bottom:1px solid #1c222d; vertical-align:middle; }
+tbody tr:last-child td { border-bottom:none; }
+tbody tr:hover { background:rgba(255,255,255,.02); }
+
+.key-mono { font-family:"SF Mono", Consolas, monospace; font-size:12.5px; cursor:pointer; padding:3px 6px; border-radius:4px; }
+.key-mono:hover { background:rgba(79,124,255,.15); color:#8aa7ff; }
+.hwid-mono { font-family:"SF Mono", Consolas, monospace; font-size:11.5px; color:#5c6577; }
+
+.badge { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; font-size:11px; font-weight:600; border-radius:20px; text-transform:uppercase; }
+.badge::before { content:""; width:5px; height:5px; border-radius:50%; background:currentColor; }
+.badge.active { color:#35c47a; background:rgba(53,196,122,.1); }
+.badge.expired { color:#e0a939; background:rgba(224,169,57,.1); }
+.badge.banned { color:#e5484d; background:rgba(229,72,77,.1); }
+
+.row-actions { display:flex; gap:4px; }
+.view { display:none; }
+.view.active { display:block; }
+.empty { padding:50px; text-align:center; color:#5c6577; font-size:13px; }
+
+/* Toast */
+#toasts { position:fixed; bottom:20px; right:20px; display:flex; flex-direction:column; gap:8px; z-index:200; }
+.toast {
+  background:#12151c; border:1px solid #232a36; border-left:3px solid #4f7cff;
+  border-radius:6px; padding:11px 14px; font-size:13px;
+  box-shadow:0 8px 24px rgba(0,0,0,.4); animation:tin .25s;
+}
+.toast.success { border-left-color:#35c47a; }
+.toast.error { border-left-color:#e5484d; }
+@keyframes tin { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:none; } }
+</style>
 </head>
 <body>
 
-<!-- ========== LOGIN ========== -->
-<div class="login-screen" id="loginScreen">
+<div id="loginScreen">
   <form class="login-box" id="loginForm">
-    <img src="image/logo.png" alt="Logo" class="login-logo" onerror="this.style.display='none'" />
     <h1>KeyAuth Panel</h1>
-    <p class="login-sub">Accès administrateur</p>
-
-    <input type="password" id="loginPass" class="input" placeholder="Mot de passe admin" autocomplete="off" />
-    <button type="submit" class="btn btn-primary">Se connecter</button>
-
-    <div class="login-error" id="loginError" hidden>Mot de passe incorrect</div>
+    <p>Accès administrateur</p>
+    <input type="password" id="loginPass" placeholder="Mot de passe" autocomplete="off" />
+    <button type="submit">Se connecter</button>
+    <div class="login-error" id="loginError" style="display:none;">Mot de passe incorrect</div>
   </form>
 </div>
 
-<!-- ========== PANEL ========== -->
-<div class="app" id="app" hidden>
-
-  <!-- Sidebar -->
+<div id="app">
   <aside class="sidebar">
-    <div class="brand">
-      <img src="image/logo.png" alt="" class="brand-logo" onerror="this.style.display='none'" />
-      <div class="brand-text">
-        <strong>KeyAuth</strong>
-        <small>panel v1.0</small>
-      </div>
-    </div>
-
-    <nav class="nav">
-      <div class="nav-title">Gestion</div>
-      <a href="#" class="nav-item active" data-view="keys">
-        <span class="nav-dot"></span><span>Licences</span>
-      </a>
-      <a href="#" class="nav-item" data-view="hwid">
-        <span class="nav-dot"></span><span>HWID Blacklist</span>
-      </a>
-      <a href="#" class="nav-item" data-view="logs">
-        <span class="nav-dot"></span><span>Logs</span>
-      </a>
-    </nav>
-
-    <div class="sidebar-foot">
-      <button class="btn btn-ghost btn-block" id="btnLogout">Déconnexion</button>
+    <div class="brand">KeyAuth<small>panel v1.0</small></div>
+    <a class="nav-item active" data-view="keys">Licences</a>
+    <a class="nav-item" data-view="hwid">HWID Blacklist</a>
+    <a class="nav-item" data-view="logs">Logs</a>
+    <div style="margin-top:auto; padding-top:20px;">
+      <button class="btn btn-ghost" id="btnLogout" style="width:100%;">Déconnexion</button>
     </div>
   </aside>
 
-  <!-- Main -->
   <main class="main">
-    <header class="topbar">
+    <div class="topbar">
       <h1 id="pageTitle">Licences</h1>
-      <div class="topbar-actions">
+      <div>
         <button class="btn btn-ghost" id="btnExport">Exporter</button>
         <button class="btn btn-primary" id="btnNewKey">+ Nouvelle clé</button>
       </div>
-    </header>
+    </div>
 
-    <!-- Vue Licences -->
     <section class="view active" id="view-keys">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Total</div>
-          <div class="stat-value" id="statTotal">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Actives</div>
-          <div class="stat-value ok" id="statActive">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Expirées</div>
-          <div class="stat-value warn" id="statExpired">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Bannies</div>
-          <div class="stat-value bad" id="statBanned">0</div>
-        </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-label">Total</div><div class="stat-val" id="statTotal">0</div></div>
+        <div class="stat"><div class="stat-label">Actives</div><div class="stat-val ok" id="statActive">0</div></div>
+        <div class="stat"><div class="stat-label">Expirées</div><div class="stat-val warn" id="statExpired">0</div></div>
+        <div class="stat"><div class="stat-label">Bannies</div><div class="stat-val bad" id="statBanned">0</div></div>
       </div>
-
       <div class="card">
         <div class="toolbar">
-          <input type="text" id="filterKeys" class="input" placeholder="Rechercher une clé ou un HWID..." />
-          <select id="filterStatus" class="input select">
+          <input type="text" id="filterKeys" placeholder="Rechercher..." />
+          <select id="filterStatus">
             <option value="">Tous</option>
             <option value="active">Actives</option>
             <option value="expired">Expirées</option>
             <option value="banned">Bannies</option>
           </select>
         </div>
-
-        <div class="table-wrap">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Clé</th>
-                <th>Statut</th>
-                <th>Durée</th>
-                <th>HWID</th>
-                <th>Expire</th>
-                <th>Restant</th>
-                <th style="width:150px">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="keysBody"></tbody>
-          </table>
-          <div class="empty" id="keysEmpty" hidden>
-            <div class="empty-title">Aucune clé</div>
-            <div class="empty-sub">Clique sur « Nouvelle clé » pour en créer une.</div>
-          </div>
-        </div>
+        <table><thead><tr><th>Clé</th><th>Statut</th><th>Durée</th><th>HWID</th><th>Expire</th><th>Restant</th><th>Actions</th></tr></thead><tbody id="keysBody"></tbody></table>
+        <div class="empty" id="keysEmpty">Aucune clé. Clique sur "+ Nouvelle clé".</div>
       </div>
     </section>
 
-    <!-- Vue HWID -->
     <section class="view" id="view-hwid">
       <div class="card">
         <div class="toolbar">
-          <input type="text" id="newHwid" class="input" placeholder="HWID à bannir..." />
+          <input type="text" id="newHwid" placeholder="HWID à bannir..." />
           <button class="btn btn-danger" id="btnBanHwid">Bannir</button>
         </div>
-
-        <div class="table-wrap">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>HWID</th>
-                <th>Ajouté le</th>
-                <th style="width:120px">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="hwidBody"></tbody>
-          </table>
-          <div class="empty" id="hwidEmpty" hidden>
-            <div class="empty-title">Aucun HWID banni</div>
-            <div class="empty-sub">Les HWID bannis sont refusés par l'API.</div>
-          </div>
-        </div>
+        <table><thead><tr><th>HWID</th><th>Ajouté le</th><th>Actions</th></tr></thead><tbody id="hwidBody"></tbody></table>
+        <div class="empty" id="hwidEmpty">Aucun HWID banni.</div>
       </div>
     </section>
 
-    <!-- Vue Logs -->
     <section class="view" id="view-logs">
       <div class="card">
-        <div class="toolbar">
-          <div class="toolbar-title">Historique</div>
+        <div class="toolbar" style="justify-content:space-between;">
+          <span style="font-weight:600; color:#8b94a5;">Historique</span>
           <button class="btn btn-ghost" id="btnClearLogs">Effacer</button>
         </div>
-        <div class="table-wrap">
-          <table class="table">
-            <thead>
-              <tr>
-                <th style="width:170px">Date</th>
-                <th style="width:130px">Type</th>
-                <th>Détail</th>
-              </tr>
-            </thead>
-            <tbody id="logsBody"></tbody>
-          </table>
-          <div class="empty" id="logsEmpty" hidden>
-            <div class="empty-title">Aucun log</div>
-            <div class="empty-sub">Les actions apparaîtront ici.</div>
-          </div>
-        </div>
+        <table><thead><tr><th>Date</th><th>Type</th><th>Détail</th></tr></thead><tbody id="logsBody"></tbody></table>
+        <div class="empty" id="logsEmpty">Aucun log.</div>
       </div>
     </section>
-
   </main>
 </div>
 
-<!-- ========== MODAL NOUVELLE CLÉ ========== -->
-<div class="modal" id="modalKey" hidden>
-  <div class="modal-backdrop" data-close></div>
-  <div class="modal-box">
-    <div class="modal-head">
-      <h2>Générer une clé</h2>
-      <button class="icon-btn" data-close>&times;</button>
-    </div>
+<div id="toasts"></div>
 
-    <div class="modal-body">
-      <div class="field">
-        <label>Durée</label>
-        <div class="chips" id="durationChips">
-          <button type="button" class="chip" data-days="3">3 jours</button>
-          <button type="button" class="chip" data-days="7">7 jours</button>
-          <button type="button" class="chip active" data-days="30">30 jours</button>
-          <button type="button" class="chip" data-days="365">365 jours</button>
-        </div>
-      </div>
+<script>
+/* ============ CONFIG ============ */
+const ADMIN_PASSWORD = "zryi2424";
 
-      <div class="field">
-        <label>Quantité</label>
-        <input type="number" class="input" id="keyQty" value="1" min="1" max="100" />
-      </div>
+/* ============ STATE ============ */
+let keys = safeGet('ka_keys', []);
+let hwids = safeGet('ka_hwids', []);
+let logs = safeGet('ka_logs', []);
 
-      <div class="field">
-        <label>HWID (facultatif)</label>
-        <input type="text" class="input" id="keyHwid" placeholder="Ex: A1B2C3D4E5F6" />
-        <div class="hint">Laisse vide pour autoriser n'importe quel poste.</div>
-      </div>
-    </div>
+function safeGet(k, fb) {
+  try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : fb; }
+  catch(e) { return fb; }
+}
+function persist() {
+  try { localStorage.setItem('ka_keys', JSON.stringify(keys)); } catch(e){}
+  try { localStorage.setItem('ka_hwids', JSON.stringify(hwids)); } catch(e){}
+  try { localStorage.setItem('ka_logs', JSON.stringify(logs)); } catch(e){}
+}
 
-    <div class="modal-foot">
-      <button class="btn btn-ghost" data-close>Annuler</button>
-      <button class="btn btn-primary" id="btnConfirmKey">Générer</button>
-    </div>
-  </div>
-</div>
+const $ = id => document.getElementById(id);
 
-<!-- Toasts -->
-<div class="toasts" id="toasts"></div>
+/* ============ LOGIN ============ */
+$('loginForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const v = $('loginPass').value.trim();
+  if (v === ADMIN_PASSWORD) {
+    sessionStorage.setItem('ka_logged', '1');
+    showApp();
+  } else {
+    $('loginError').style.display = 'block';
+    $('loginPass').value = '';
+  }
+});
 
-<script src="script.js"></script>
+$('btnLogout').addEventListener('click', () => {
+  sessionStorage.removeItem('ka_logged');
+  location.reload();
+});
+
+function showApp() {
+  $('loginScreen').style.display = 'none';
+  $('app').classList.add('visible');
+  renderAll();
+}
+
+if (sessionStorage.getItem('ka_logged') === '1') {
+  showApp();
+}
+
+/* ============ NAV ============ */
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const v = item.dataset.view;
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n === item));
+    document.querySelectorAll('.view').forEach(s => s.classList.toggle('active', s.id === 'view-' + v));
+    $('pageTitle').textContent = { keys:'Licences', hwid:'HWID Blacklist', logs:'Logs' }[v] || '';
+  });
+});
+
+/* ============ UTILS ============ */
+function uid() {
+  const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const b = () => Array.from({length:4}, () => c[Math.floor(Math.random()*c.length)]).join('');
+  return b()+'-'+b()+'-'+b();
+}
+function fmtDate(ts) {
+  return new Date(ts).toLocaleString('fr-FR', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
+}
+function fmtLeft(ms) {
+  if (ms <= 0) return '—';
+  const d = Math.floor(ms/86400000), h = Math.floor((ms%86400000)/3600000), m = Math.floor((ms%3600000)/60000);
+  if (d>0) return d+'j '+h+'h';
+  if (h>0) return h+'h '+m+'m';
+  return m+'m';
+}
+function toast(msg, type) {
+  const el = document.createElement('div');
+  el.className = 'toast ' + (type || '');
+  el.textContent = msg;
+  $('toasts').appendChild(el);
+  setTimeout(() => el.remove(), 2800);
+}
+function log(type, detail) {
+  logs.unshift({ts:Date.now(), type, detail});
+  if (logs.length > 500) logs.pop();
+  persist(); renderLogs();
+}
+
+/* ============ STATUS ============ */
+function status(k) {
+  if (k.banned) return 'banned';
+  if (Date.now() > k.expiresAt) return 'expired';
+  return 'active';
+}
+
+/* ============ RENDER KEYS ============ */
+function renderKeys() {
+  const q = ($('filterKeys').value || '').trim().toUpperCase();
+  const fs = $('filterStatus').value;
+
+  const list = keys.filter(k => {
+    const s = status(k);
+    if (fs && s !== fs) return false;
+    if (q) {
+      if (!k.key.includes(q) && !(k.hwid && k.hwid.includes(q))) return false;
+    }
+    return true;
+  });
+
+  const tbody = $('keysBody');
+  tbody.innerHTML = '';
+
+  if (!list.length) {
+    $('keysEmpty').style.display = 'block';
+    renderStats();
+    return;
+  }
+  $('keysEmpty').style.display = 'none';
+
+  list.forEach(k => {
+    const s = status(k);
+    const left = s === 'active' ? fmtLeft(k.expiresAt - Date.now()) : '—';
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><span class="key-mono" data-copy="'+k.key+'">'+k.key+'</span></td>' +
+      '<td><span class="badge '+s+'">'+s+'</span></td>' +
+      '<td style="color:#8b94a5">'+k.days+'j</td>' +
+      '<td>'+(k.hwid ? '<span class="hwid-mono">'+k.hwid+'</span>' : '<span style="color:#5c6577;font-style:italic;">libre</span>')+'</td>' +
+      '<td style="color:#8b94a5">'+fmtDate(k.expiresAt)+'</td>' +
+      '<td style="color:#5c6577">'+left+'</td>' +
+      '<td><div class="row-actions">' +
+        (k.banned
+          ? '<button class="btn btn-ghost btn-small" data-act="unban" data-key="'+k.key+'">Déban</button>'
+          : '<button class="btn btn-ghost btn-small" data-act="ban" data-key="'+k.key+'">Ban</button>') +
+        '<button class="btn btn-ghost btn-small" data-act="del" data-key="'+k.key+'">Suppr.</button>' +
+      '</div></td>';
+    tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll('[data-copy]').forEach(el => {
+    el.addEventListener('click', () => {
+      navigator.clipboard.writeText(el.dataset.copy).then(() => toast('Copié', 'success'));
+    });
+  });
+  tbody.querySelectorAll('[data-act]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const k = btn.dataset.key, a = btn.dataset.act;
+      if (a === 'ban') banKey(k);
+      if (a === 'unban') unbanKey(k);
+      if (a === 'del') delKey(k);
+    });
+  });
+
+  renderStats();
+}
+
+function renderStats() {
+  let a=0, e=0, b=0;
+  keys.forEach(k => { const s = status(k); if (s==='active') a++; else if (s==='expired') e++; else b++; });
+  $('statTotal').textContent = keys.length;
+  $('statActive').textContent = a;
+  $('statExpired').textContent = e;
+  $('statBanned').textContent = b;
+}
+
+function banKey(k) { const x = keys.find(y => y.key === k); if (!x) return; x.banned = true; persist(); renderKeys(); log('ban', 'Bannie : '+k); toast('Clé bannie', 'error'); }
+function unbanKey(k) { const x = keys.find(y => y.key === k); if (!x) return; x.banned = false; persist(); renderKeys(); log('unban', 'Réactivée : '+k); toast('Réactivée', 'success'); }
+function delKey(k) { if (!confirm('Supprimer '+k+' ?')) return; keys = keys.filter(y => y.key !== k); persist(); renderKeys(); log('delete', 'Supprimée : '+k); toast('Supprimée', 'info'); }
+
+/* ============ HWID ============ */
+function renderHwids() {
+  const tbody = $('hwidBody');
+  tbody.innerHTML = '';
+  if (!hwids.length) { $('hwidEmpty').style.display = 'block'; return; }
+  $('hwidEmpty').style.display = 'none';
+  hwids.forEach(h => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td><span class="hwid-mono">'+h.hwid+'</span></td><td style="color:#8b94a5">'+fmtDate(h.ts)+'</td><td><button class="btn btn-ghost btn-small" data-h="'+h.hwid+'">Retirer</button></td>';
+    tr.querySelector('button').addEventListener('click', () => removeHwid(h.hwid));
+    tbody.appendChild(tr);
+  });
+}
+function banHwid() {
+  const v = $('newHwid').value.trim().toUpperCase();
+  if (!v) return toast('Entrez un HWID', 'error');
+  if (hwids.some(h => h.hwid === v)) return toast('Déjà banni', 'error');
+  hwids.unshift({hwid:v, ts:Date.now()});
+  $('newHwid').value = '';
+  persist(); renderHwids(); log('hwid-ban', v); toast('HWID banni', 'error');
+}
+function removeHwid(h) { hwids = hwids.filter(x => x.hwid !== h); persist(); renderHwids(); log('hwid-unban', h); toast('Retiré', 'success'); }
+
+/* ============ LOGS ============ */
+function renderLogs() {
+  const tbody = $('logsBody');
+  tbody.innerHTML = '';
+  if (!logs.length) { $('logsEmpty').style.display = 'block'; return; }
+  $('logsEmpty').style.display = 'none';
+  const L = { create:['Création','active'], ban:['Ban','banned'], unban:['Déban','active'], 'delete':['Suppression','expired'], 'hwid-ban':['HWID+','banned'], 'hwid-unban':['HWID-','active'], export:['Export','active'] };
+  logs.forEach(l => {
+    const [lab, cls] = L[l.type] || [l.type, 'active'];
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td style="color:#8b94a5">'+fmtDate(l.ts)+'</td><td><span class="badge '+cls+'">'+lab+'</span></td><td>'+l.detail+'</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+/* ============ MODAL (création rapide) ============ */
+function createKey(days, qty, hwid) {
+  const now = Date.now();
+  const created = [];
+  for (let i = 0; i < qty; i++) {
+    let k; do { k = uid(); } while (keys.some(x => x.key === k));
+    keys.unshift({ key:k, days, hwid: hwid||null, createdAt:now, expiresAt:now + days*86400000, banned:false });
+    created.push(k);
+  }
+  persist(); renderKeys();
+  log('create', qty+' clé(s) '+days+'j'+(hwid ? ' · HWID '+hwid : ''));
+  toast(qty+' clé(s) créée(s)', 'success');
+  return created;
+}
+
+$('btnNewKey').addEventListener('click', () => {
+  const d = prompt('Durée en jours ? (3 / 7 / 30 / 365)', '30');
+  if (d === null) return;
+  const days = parseInt(d, 10);
+  if (!days || days <= 0) return toast('Durée invalide', 'error');
+  const q = prompt('Combien de clés ?', '1');
+  if (q === null) return;
+  const qty = Math.max(1, Math.min(100, parseInt(q, 10) || 1));
+  const h = prompt('HWID (laisser vide pour libre)', '');
+  if (h === null) return;
+  const hwid = h.trim().toUpperCase() || null;
+  const created = createKey(days, qty, hwid);
+  if (created.length === 1) navigator.clipboard.writeText(created[0]).then(() => toast('Clé copiée : '+created[0], 'success'));
+});
+
+/* ============ EXPORT ============ */
+$('btnExport').addEventListener('click', () => {
+  if (!keys.length) return toast('Aucune clé', 'error');
+  const lines = keys.map(k => [k.key, status(k), k.days+'j', k.hwid||'-', new Date(k.expiresAt).toISOString()].join(' | '));
+  const blob = new Blob(['key|status|days|hwid|expires\n' + lines.join('\n')], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'keys_' + Date.now() + '.txt';
+  a.click();
+  log('export', keys.length+' clé(s)');
+  toast('Export OK', 'success');
+});
+
+/* ============ EVENTS ============ */
+$('filterKeys').addEventListener('input', renderKeys);
+$('filterStatus').addEventListener('change', renderKeys);
+$('btnBanHwid').addEventListener('click', banHwid);
+$('newHwid').addEventListener('keydown', e => { if (e.key === 'Enter') banHwid(); });
+$('btnClearLogs').addEventListener('click', () => {
+  if (!confirm('Effacer tous les logs ?')) return;
+  logs = []; persist(); renderLogs(); toast('Logs effacés', 'info');
+});
+
+/* ============ INIT ============ */
+function renderAll() { renderKeys(); renderHwids(); renderLogs(); }
+</script>
 </body>
 </html>
