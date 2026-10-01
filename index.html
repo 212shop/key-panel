@@ -8,7 +8,6 @@
 * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 body { background:#0b0d12; color:#e5e9f0; font-size:14px; min-height:100vh; }
 
-/* LOGIN */
 #loginScreen {
   position:fixed; inset:0;
   display:flex; align-items:center; justify-content:center;
@@ -31,37 +30,25 @@ body { background:#0b0d12; color:#e5e9f0; font-size:14px; min-height:100vh; }
 .login-box button {
   width:100%; padding:11px; background:#4f7cff; color:#fff; border:none;
   border-radius:6px; font-size:14px; font-weight:500; cursor:pointer;
-  transition:background .15s;
 }
 .login-box button:hover { background:#3d6bf0; }
 .login-error { color:#e5484d; font-size:12.5px; margin-top:12px; }
 
-/* APP */
 #app { display:none; min-height:100vh; grid-template-columns:240px 1fr; }
 #app.visible { display:grid; }
 
-.sidebar {
-  background:#12151c; border-right:1px solid #232a36;
-  display:flex; flex-direction:column; padding:20px;
-}
-.brand { font-size:16px; font-weight:700; margin-bottom:30px; letter-spacing:-.3px; }
+.sidebar { background:#12151c; border-right:1px solid #232a36; display:flex; flex-direction:column; padding:20px; }
+.brand { font-size:16px; font-weight:700; margin-bottom:30px; }
 .brand small { display:block; font-size:10px; color:#5c6577; font-weight:400; text-transform:uppercase; letter-spacing:1px; margin-top:3px; }
-.nav-item {
-  display:block; padding:9px 12px; color:#8b94a5; text-decoration:none;
-  border-radius:6px; font-size:13px; margin-bottom:2px; cursor:pointer;
-  transition:background .15s, color .15s;
-}
+.nav-item { display:block; padding:9px 12px; color:#8b94a5; text-decoration:none; border-radius:6px; font-size:13px; margin-bottom:2px; cursor:pointer; transition:background .15s, color .15s; }
 .nav-item:hover { background:#171b24; color:#e5e9f0; }
 .nav-item.active { background:#171b24; color:#e5e9f0; box-shadow:inset 2px 0 0 #4f7cff; }
 
 .main { padding:24px 28px; overflow-y:auto; }
-.topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
+.topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:10px; }
 .topbar h1 { font-size:18px; font-weight:600; }
 
-.btn {
-  padding:8px 14px; font-size:13px; font-weight:500; border-radius:6px;
-  border:1px solid transparent; cursor:pointer; transition:background .15s;
-}
+.btn { padding:8px 14px; font-size:13px; font-weight:500; border-radius:6px; border:1px solid transparent; cursor:pointer; transition:background .15s; }
 .btn-primary { background:#4f7cff; color:#fff; }
 .btn-primary:hover { background:#3d6bf0; }
 .btn-ghost { background:#12151c; color:#8b94a5; border-color:#232a36; }
@@ -77,19 +64,12 @@ body { background:#0b0d12; color:#e5e9f0; font-size:14px; min-height:100vh; }
 
 .card { background:#12151c; border:1px solid #232a36; border-radius:8px; overflow:hidden; }
 .toolbar { display:flex; gap:10px; padding:14px 16px; border-bottom:1px solid #1c222d; flex-wrap:wrap; }
-.toolbar input, .toolbar select {
-  padding:8px 12px; background:#0b0d12; border:1px solid #232a36;
-  border-radius:6px; color:#e5e9f0; font-size:13px; outline:none;
-}
+.toolbar input, .toolbar select { padding:8px 12px; background:#0b0d12; border:1px solid #232a36; border-radius:6px; color:#e5e9f0; font-size:13px; outline:none; }
 .toolbar input:focus, .toolbar select:focus { border-color:#4f7cff; }
 .toolbar input { flex:1; min-width:200px; }
 
 table { width:100%; border-collapse:collapse; font-size:13px; }
-thead th {
-  text-align:left; padding:11px 16px; font-size:11px; color:#5c6577;
-  text-transform:uppercase; letter-spacing:.6px; font-weight:600;
-  background:#171b24; border-bottom:1px solid #1c222d; white-space:nowrap;
-}
+thead th { text-align:left; padding:11px 16px; font-size:11px; color:#5c6577; text-transform:uppercase; letter-spacing:.6px; font-weight:600; background:#171b24; border-bottom:1px solid #1c222d; white-space:nowrap; }
 tbody td { padding:12px 16px; border-bottom:1px solid #1c222d; vertical-align:middle; }
 tbody tr:last-child td { border-bottom:none; }
 tbody tr:hover { background:rgba(255,255,255,.02); }
@@ -108,14 +88,10 @@ tbody tr:hover { background:rgba(255,255,255,.02); }
 .view { display:none; }
 .view.active { display:block; }
 .empty { padding:50px; text-align:center; color:#5c6577; font-size:13px; }
+.loading { padding:50px; text-align:center; color:#5c6577; font-size:13px; }
 
-/* Toast */
 #toasts { position:fixed; bottom:20px; right:20px; display:flex; flex-direction:column; gap:8px; z-index:200; }
-.toast {
-  background:#12151c; border:1px solid #232a36; border-left:3px solid #4f7cff;
-  border-radius:6px; padding:11px 14px; font-size:13px;
-  box-shadow:0 8px 24px rgba(0,0,0,.4); animation:tin .25s;
-}
+.toast { background:#12151c; border:1px solid #232a36; border-left:3px solid #4f7cff; border-radius:6px; padding:11px 14px; font-size:13px; box-shadow:0 8px 24px rgba(0,0,0,.4); animation:tin .25s; }
 .toast.success { border-left-color:#35c47a; }
 .toast.error { border-left-color:#e5484d; }
 @keyframes tin { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:none; } }
@@ -135,7 +111,7 @@ tbody tr:hover { background:rgba(255,255,255,.02); }
 
 <div id="app">
   <aside class="sidebar">
-    <div class="brand">KeyAuth<small>panel v1.0</small></div>
+    <div class="brand">KeyAuth<small>panel v2 · API</small></div>
     <a class="nav-item active" data-view="keys">Licences</a>
     <a class="nav-item" data-view="hwid">HWID Blacklist</a>
     <a class="nav-item" data-view="logs">Logs</a>
@@ -148,6 +124,7 @@ tbody tr:hover { background:rgba(255,255,255,.02); }
     <div class="topbar">
       <h1 id="pageTitle">Licences</h1>
       <div>
+        <button class="btn btn-ghost" id="btnRefresh">Rafraîchir</button>
         <button class="btn btn-ghost" id="btnExport">Exporter</button>
         <button class="btn btn-primary" id="btnNewKey">+ Nouvelle clé</button>
       </div>
@@ -170,8 +147,9 @@ tbody tr:hover { background:rgba(255,255,255,.02); }
             <option value="banned">Bannies</option>
           </select>
         </div>
-        <table><thead><tr><th>Clé</th><th>Statut</th><th>Durée</th><th>HWID</th><th>Expire</th><th>Restant</th><th>Actions</th></tr></thead><tbody id="keysBody"></tbody></table>
-        <div class="empty" id="keysEmpty">Aucune clé. Clique sur "+ Nouvelle clé".</div>
+        <div id="keysLoading" class="loading">Chargement...</div>
+        <table id="keysTable" style="display:none;"><thead><tr><th>Clé</th><th>Statut</th><th>Durée</th><th>HWID</th><th>Expire</th><th>Restant</th><th>Actions</th></tr></thead><tbody id="keysBody"></tbody></table>
+        <div class="empty" id="keysEmpty" style="display:none;">Aucune clé. Clique sur "+ Nouvelle clé".</div>
       </div>
     </section>
 
@@ -181,8 +159,9 @@ tbody tr:hover { background:rgba(255,255,255,.02); }
           <input type="text" id="newHwid" placeholder="HWID à bannir..." />
           <button class="btn btn-danger" id="btnBanHwid">Bannir</button>
         </div>
-        <table><thead><tr><th>HWID</th><th>Ajouté le</th><th>Actions</th></tr></thead><tbody id="hwidBody"></tbody></table>
-        <div class="empty" id="hwidEmpty">Aucun HWID banni.</div>
+        <div id="hwidLoading" class="loading">Chargement...</div>
+        <table id="hwidTable" style="display:none;"><thead><tr><th>HWID</th><th>Ajouté le</th><th>Actions</th></tr></thead><tbody id="hwidBody"></tbody></table>
+        <div class="empty" id="hwidEmpty" style="display:none;">Aucun HWID banni.</div>
       </div>
     </section>
 
@@ -190,10 +169,10 @@ tbody tr:hover { background:rgba(255,255,255,.02); }
       <div class="card">
         <div class="toolbar" style="justify-content:space-between;">
           <span style="font-weight:600; color:#8b94a5;">Historique</span>
-          <button class="btn btn-ghost" id="btnClearLogs">Effacer</button>
         </div>
-        <table><thead><tr><th>Date</th><th>Type</th><th>Détail</th></tr></thead><tbody id="logsBody"></tbody></table>
-        <div class="empty" id="logsEmpty">Aucun log.</div>
+        <div id="logsLoading" class="loading">Chargement...</div>
+        <table id="logsTable" style="display:none;"><thead><tr><th>Date</th><th>Type</th><th>Détail</th></tr></thead><tbody id="logsBody"></tbody></table>
+        <div class="empty" id="logsEmpty" style="display:none;">Aucun log.</div>
       </div>
     </section>
   </main>
@@ -202,31 +181,60 @@ tbody tr:hover { background:rgba(255,255,255,.02); }
 <div id="toasts"></div>
 
 <script>
-/* ============ CONFIG ============ */
-const ADMIN_PASSWORD = "zryi2424";
+/* ============================================================
+   CONFIG — À REMPLIR AVEC TES VALEURS
+   ============================================================ */
+const API_URL    = "https://keyauth-api.cacamoussa70.workers.dev";
+const ADMIN_KEY  = "Kx9mP2qL7wN4vB8sT5rY3jH6fD1cZ0aQ";
+const PANEL_PASS = "zryi2424"; // ← mot de passe pour entrer dans le panel
 
-/* ============ STATE ============ */
-let keys = safeGet('ka_keys', []);
-let hwids = safeGet('ka_hwids', []);
-let logs = safeGet('ka_logs', []);
-
-function safeGet(k, fb) {
-  try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : fb; }
-  catch(e) { return fb; }
+/* ============================================================
+   API CLIENT
+   ============================================================ */
+async function api(path, method = 'GET', body = null) {
+  const opts = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Admin-Key': ADMIN_KEY
+    }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(API_URL + path, opts);
+  return r.json();
 }
-function persist() {
-  try { localStorage.setItem('ka_keys', JSON.stringify(keys)); } catch(e){}
-  try { localStorage.setItem('ka_hwids', JSON.stringify(hwids)); } catch(e){}
-  try { localStorage.setItem('ka_logs', JSON.stringify(logs)); } catch(e){}
-}
 
+/* ============================================================
+   UTILS
+   ============================================================ */
 const $ = id => document.getElementById(id);
+const fmtDate = ts => new Date(ts).toLocaleString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+const fmtLeft = ms => {
+  if (ms <= 0) return '—';
+  const d = Math.floor(ms/86400000), h = Math.floor((ms%86400000)/3600000), m = Math.floor((ms%3600000)/60000);
+  if (d>0) return d+'j '+h+'h';
+  if (h>0) return h+'h '+m+'m';
+  return m+'m';
+};
+function toast(msg, type) {
+  const el = document.createElement('div');
+  el.className = 'toast ' + (type || '');
+  el.textContent = msg;
+  $('toasts').appendChild(el);
+  setTimeout(() => el.remove(), 2800);
+}
+function status(k) {
+  if (k.banned) return 'banned';
+  if (Date.now() > k.expiresAt) return 'expired';
+  return 'active';
+}
 
-/* ============ LOGIN ============ */
+/* ============================================================
+   LOGIN
+   ============================================================ */
 $('loginForm').addEventListener('submit', e => {
   e.preventDefault();
-  const v = $('loginPass').value.trim();
-  if (v === ADMIN_PASSWORD) {
+  if ($('loginPass').value.trim() === PANEL_PASS) {
     sessionStorage.setItem('ka_logged', '1');
     showApp();
   } else {
@@ -234,23 +242,18 @@ $('loginForm').addEventListener('submit', e => {
     $('loginPass').value = '';
   }
 });
-
-$('btnLogout').addEventListener('click', () => {
-  sessionStorage.removeItem('ka_logged');
-  location.reload();
-});
+$('btnLogout').addEventListener('click', () => { sessionStorage.removeItem('ka_logged'); location.reload(); });
 
 function showApp() {
   $('loginScreen').style.display = 'none';
   $('app').classList.add('visible');
-  renderAll();
+  loadAll();
 }
+if (sessionStorage.getItem('ka_logged') === '1') showApp();
 
-if (sessionStorage.getItem('ka_logged') === '1') {
-  showApp();
-}
-
-/* ============ NAV ============ */
+/* ============================================================
+   NAV
+   ============================================================ */
 document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', () => {
     const v = item.dataset.view;
@@ -260,74 +263,90 @@ document.querySelectorAll('.nav-item').forEach(item => {
   });
 });
 
-/* ============ UTILS ============ */
-function uid() {
-  const c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  const b = () => Array.from({length:4}, () => c[Math.floor(Math.random()*c.length)]).join('');
-  return b()+'-'+b()+'-'+b();
+/* ============================================================
+   LOAD ALL
+   ============================================================ */
+async function loadAll() {
+  await Promise.all([loadKeys(), loadHwids(), loadLogs()]);
 }
-function fmtDate(ts) {
-  return new Date(ts).toLocaleString('fr-FR', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
+async function loadKeys() {
+  $('keysLoading').style.display = 'block';
+  $('keysTable').style.display = 'none';
+  $('keysEmpty').style.display = 'none';
+  try {
+    const res = await api('/admin/keys');
+    if (!res.ok) throw new Error(res.error || 'Erreur');
+    renderKeys(res.keys || []);
+  } catch (e) {
+    toast('Erreur chargement clés : ' + e.message, 'error');
+    $('keysEmpty').style.display = 'block';
+  }
+  $('keysLoading').style.display = 'none';
 }
-function fmtLeft(ms) {
-  if (ms <= 0) return '—';
-  const d = Math.floor(ms/86400000), h = Math.floor((ms%86400000)/3600000), m = Math.floor((ms%3600000)/60000);
-  if (d>0) return d+'j '+h+'h';
-  if (h>0) return h+'h '+m+'m';
-  return m+'m';
+async function loadHwids() {
+  $('hwidLoading').style.display = 'block';
+  $('hwidTable').style.display = 'none';
+  $('hwidEmpty').style.display = 'none';
+  try {
+    const res = await api('/admin/hwids');
+    if (!res.ok) throw new Error(res.error || 'Erreur');
+    renderHwids(res.hwids || []);
+  } catch (e) { $('hwidEmpty').style.display = 'block'; }
+  $('hwidLoading').style.display = 'none';
 }
-function toast(msg, type) {
-  const el = document.createElement('div');
-  el.className = 'toast ' + (type || '');
-  el.textContent = msg;
-  $('toasts').appendChild(el);
-  setTimeout(() => el.remove(), 2800);
-}
-function log(type, detail) {
-  logs.unshift({ts:Date.now(), type, detail});
-  if (logs.length > 500) logs.pop();
-  persist(); renderLogs();
+async function loadLogs() {
+  $('logsLoading').style.display = 'block';
+  $('logsTable').style.display = 'none';
+  $('logsEmpty').style.display = 'none';
+  try {
+    const res = await api('/admin/logs');
+    if (!res.ok) throw new Error(res.error || 'Erreur');
+    renderLogs(res.logs || []);
+  } catch (e) { $('logsEmpty').style.display = 'block'; }
+  $('logsLoading').style.display = 'none';
 }
 
-/* ============ STATUS ============ */
-function status(k) {
-  if (k.banned) return 'banned';
-  if (Date.now() > k.expiresAt) return 'expired';
-  return 'active';
-}
-
-/* ============ RENDER KEYS ============ */
-function renderKeys() {
+/* ============================================================
+   RENDER
+   ============================================================ */
+let allKeys = [];
+function renderKeys(list) {
+  allKeys = list;
   const q = ($('filterKeys').value || '').trim().toUpperCase();
   const fs = $('filterStatus').value;
-
-  const list = keys.filter(k => {
+  const filtered = list.filter(k => {
     const s = status(k);
     if (fs && s !== fs) return false;
-    if (q) {
-      if (!k.key.includes(q) && !(k.hwid && k.hwid.includes(q))) return false;
-    }
+    if (q && !k.key.includes(q) && !(k.hwid && k.hwid.includes(q))) return false;
     return true;
   });
 
   const tbody = $('keysBody');
   tbody.innerHTML = '';
 
-  if (!list.length) {
+  let a=0, e=0, b=0;
+  list.forEach(k => { const s = status(k); if (s==='active') a++; else if (s==='expired') e++; else b++; });
+  $('statTotal').textContent = list.length;
+  $('statActive').textContent = a;
+  $('statExpired').textContent = e;
+  $('statBanned').textContent = b;
+
+  if (!filtered.length) {
+    $('keysTable').style.display = 'none';
     $('keysEmpty').style.display = 'block';
-    renderStats();
     return;
   }
+  $('keysTable').style.display = 'table';
   $('keysEmpty').style.display = 'none';
 
-  list.forEach(k => {
+  filtered.forEach(k => {
     const s = status(k);
     const left = s === 'active' ? fmtLeft(k.expiresAt - Date.now()) : '—';
     const tr = document.createElement('tr');
     tr.innerHTML =
       '<td><span class="key-mono" data-copy="'+k.key+'">'+k.key+'</span></td>' +
       '<td><span class="badge '+s+'">'+s+'</span></td>' +
-      '<td style="color:#8b94a5">'+k.days+'j</td>' +
+      '<td style="color:#8b94a5">'+(k.days||'?')+'j</td>' +
       '<td>'+(k.hwid ? '<span class="hwid-mono">'+k.hwid+'</span>' : '<span style="color:#5c6577;font-style:italic;">libre</span>')+'</td>' +
       '<td style="color:#8b94a5">'+fmtDate(k.expiresAt)+'</td>' +
       '<td style="color:#5c6577">'+left+'</td>' +
@@ -341,66 +360,40 @@ function renderKeys() {
   });
 
   tbody.querySelectorAll('[data-copy]').forEach(el => {
-    el.addEventListener('click', () => {
-      navigator.clipboard.writeText(el.dataset.copy).then(() => toast('Copié', 'success'));
-    });
+    el.addEventListener('click', () => navigator.clipboard.writeText(el.dataset.copy).then(() => toast('Copié', 'success')));
   });
   tbody.querySelectorAll('[data-act]').forEach(btn => {
     btn.addEventListener('click', () => {
       const k = btn.dataset.key, a = btn.dataset.act;
-      if (a === 'ban') banKey(k);
-      if (a === 'unban') unbanKey(k);
-      if (a === 'del') delKey(k);
+      if (a === 'ban') doBan(k);
+      if (a === 'unban') doUnban(k);
+      if (a === 'del') doDel(k);
     });
   });
-
-  renderStats();
 }
 
-function renderStats() {
-  let a=0, e=0, b=0;
-  keys.forEach(k => { const s = status(k); if (s==='active') a++; else if (s==='expired') e++; else b++; });
-  $('statTotal').textContent = keys.length;
-  $('statActive').textContent = a;
-  $('statExpired').textContent = e;
-  $('statBanned').textContent = b;
-}
-
-function banKey(k) { const x = keys.find(y => y.key === k); if (!x) return; x.banned = true; persist(); renderKeys(); log('ban', 'Bannie : '+k); toast('Clé bannie', 'error'); }
-function unbanKey(k) { const x = keys.find(y => y.key === k); if (!x) return; x.banned = false; persist(); renderKeys(); log('unban', 'Réactivée : '+k); toast('Réactivée', 'success'); }
-function delKey(k) { if (!confirm('Supprimer '+k+' ?')) return; keys = keys.filter(y => y.key !== k); persist(); renderKeys(); log('delete', 'Supprimée : '+k); toast('Supprimée', 'info'); }
-
-/* ============ HWID ============ */
-function renderHwids() {
+function renderHwids(list) {
   const tbody = $('hwidBody');
   tbody.innerHTML = '';
-  if (!hwids.length) { $('hwidEmpty').style.display = 'block'; return; }
+  if (!list.length) { $('hwidTable').style.display = 'none'; $('hwidEmpty').style.display = 'block'; return; }
+  $('hwidTable').style.display = 'table';
   $('hwidEmpty').style.display = 'none';
-  hwids.forEach(h => {
+  list.forEach(h => {
     const tr = document.createElement('tr');
     tr.innerHTML = '<td><span class="hwid-mono">'+h.hwid+'</span></td><td style="color:#8b94a5">'+fmtDate(h.ts)+'</td><td><button class="btn btn-ghost btn-small" data-h="'+h.hwid+'">Retirer</button></td>';
-    tr.querySelector('button').addEventListener('click', () => removeHwid(h.hwid));
+    tr.querySelector('button').addEventListener('click', () => doUnbanHwid(h.hwid));
     tbody.appendChild(tr);
   });
 }
-function banHwid() {
-  const v = $('newHwid').value.trim().toUpperCase();
-  if (!v) return toast('Entrez un HWID', 'error');
-  if (hwids.some(h => h.hwid === v)) return toast('Déjà banni', 'error');
-  hwids.unshift({hwid:v, ts:Date.now()});
-  $('newHwid').value = '';
-  persist(); renderHwids(); log('hwid-ban', v); toast('HWID banni', 'error');
-}
-function removeHwid(h) { hwids = hwids.filter(x => x.hwid !== h); persist(); renderHwids(); log('hwid-unban', h); toast('Retiré', 'success'); }
 
-/* ============ LOGS ============ */
-function renderLogs() {
+function renderLogs(list) {
   const tbody = $('logsBody');
   tbody.innerHTML = '';
-  if (!logs.length) { $('logsEmpty').style.display = 'block'; return; }
+  if (!list.length) { $('logsTable').style.display = 'none'; $('logsEmpty').style.display = 'block'; return; }
+  $('logsTable').style.display = 'table';
   $('logsEmpty').style.display = 'none';
-  const L = { create:['Création','active'], ban:['Ban','banned'], unban:['Déban','active'], 'delete':['Suppression','expired'], 'hwid-ban':['HWID+','banned'], 'hwid-unban':['HWID-','active'], export:['Export','active'] };
-  logs.forEach(l => {
+  const L = { create:['Création','active'], ban:['Ban','banned'], unban:['Déban','active'], 'delete':['Suppression','expired'], 'hwid-ban':['HWID+','banned'], 'hwid-unban':['HWID-','active'], export:['Export','active'], 'auth-ok':['Auth OK','active'], 'auth-banned':['Auth BAN','banned'], 'auth-expired':['Auth EXP','expired'], 'auth-hwid-banned':['Auth HWID BAN','banned'], 'auth-hwid-mismatch':['Auth HWID MISMATCH','expired'], redeem:['Redeem','active'] };
+  list.forEach(l => {
     const [lab, cls] = L[l.type] || [l.type, 'active'];
     const tr = document.createElement('tr');
     tr.innerHTML = '<td style="color:#8b94a5">'+fmtDate(l.ts)+'</td><td><span class="badge '+cls+'">'+lab+'</span></td><td>'+l.detail+'</td>';
@@ -408,61 +401,82 @@ function renderLogs() {
   });
 }
 
-/* ============ MODAL (création rapide) ============ */
-function createKey(days, qty, hwid) {
-  const now = Date.now();
-  const created = [];
-  for (let i = 0; i < qty; i++) {
-    let k; do { k = uid(); } while (keys.some(x => x.key === k));
-    keys.unshift({ key:k, days, hwid: hwid||null, createdAt:now, expiresAt:now + days*86400000, banned:false });
-    created.push(k);
-  }
-  persist(); renderKeys();
-  log('create', qty+' clé(s) '+days+'j'+(hwid ? ' · HWID '+hwid : ''));
-  toast(qty+' clé(s) créée(s)', 'success');
-  return created;
+/* ============================================================
+   ACTIONS
+   ============================================================ */
+async function doBan(k) {
+  if (!confirm('Bannir '+k+' ?')) return;
+  const r = await api('/admin/ban', 'POST', { key: k });
+  if (r.ok) { toast('Clé bannie', 'error'); loadKeys(); } else toast(r.error || 'Erreur', 'error');
+}
+async function doUnban(k) {
+  const r = await api('/admin/unban', 'POST', { key: k });
+  if (r.ok) { toast('Clé réactivée', 'success'); loadKeys(); } else toast(r.error || 'Erreur', 'error');
+}
+async function doDel(k) {
+  if (!confirm('Supprimer '+k+' ?')) return;
+  const r = await api('/admin/delete', 'POST', { key: k });
+  if (r.ok) { toast('Clé supprimée', 'info'); loadKeys(); } else toast(r.error || 'Erreur', 'error');
+}
+async function doBanHwid() {
+  const v = $('newHwid').value.trim().toUpperCase();
+  if (!v) return toast('Entrez un HWID', 'error');
+  const r = await api('/admin/hwid/ban', 'POST', { hwid: v });
+  if (r.ok) { $('newHwid').value = ''; toast('HWID banni', 'error'); loadHwids(); } else toast(r.error || 'Erreur', 'error');
+}
+async function doUnbanHwid(h) {
+  const r = await api('/admin/hwid/unban', 'POST', { hwid: h });
+  if (r.ok) { toast('HWID retiré', 'success'); loadHwids(); } else toast(r.error || 'Erreur', 'error');
 }
 
-$('btnNewKey').addEventListener('click', () => {
+/* ============================================================
+   NEW KEY
+   ============================================================ */
+$('btnNewKey').addEventListener('click', async () => {
   const d = prompt('Durée en jours ? (3 / 7 / 30 / 365)', '30');
   if (d === null) return;
   const days = parseInt(d, 10);
   if (!days || days <= 0) return toast('Durée invalide', 'error');
+
   const q = prompt('Combien de clés ?', '1');
   if (q === null) return;
   const qty = Math.max(1, Math.min(100, parseInt(q, 10) || 1));
+
   const h = prompt('HWID (laisser vide pour libre)', '');
   if (h === null) return;
   const hwid = h.trim().toUpperCase() || null;
-  const created = createKey(days, qty, hwid);
-  if (created.length === 1) navigator.clipboard.writeText(created[0]).then(() => toast('Clé copiée : '+created[0], 'success'));
+
+  const r = await api('/admin/keys', 'POST', { days, quantity: qty, hwid, level: 'basic' });
+  if (r.ok) {
+    toast(qty + ' clé(s) créée(s)', 'success');
+    loadKeys();
+    if (r.created && r.created.length === 1) {
+      navigator.clipboard.writeText(r.created[0].key).then(() => toast('Copié : ' + r.created[0].key, 'success'));
+    }
+  } else {
+    toast(r.error || 'Erreur', 'error');
+  }
 });
 
-/* ============ EXPORT ============ */
+/* ============================================================
+   REFRESH / EXPORT / EVENTS
+   ============================================================ */
+$('btnRefresh').addEventListener('click', () => { toast('Actualisation...', ''); loadAll(); });
+$('filterKeys').addEventListener('input', () => renderKeys(allKeys));
+$('filterStatus').addEventListener('change', () => renderKeys(allKeys));
+$('btnBanHwid').addEventListener('click', doBanHwid);
+$('newHwid').addEventListener('keydown', e => { if (e.key === 'Enter') doBanHwid(); });
+
 $('btnExport').addEventListener('click', () => {
-  if (!keys.length) return toast('Aucune clé', 'error');
-  const lines = keys.map(k => [k.key, status(k), k.days+'j', k.hwid||'-', new Date(k.expiresAt).toISOString()].join(' | '));
+  if (!allKeys.length) return toast('Aucune clé', 'error');
+  const lines = allKeys.map(k => [k.key, status(k), (k.days||'?')+'j', k.hwid||'-', new Date(k.expiresAt).toISOString()].join(' | '));
   const blob = new Blob(['key|status|days|hwid|expires\n' + lines.join('\n')], {type:'text/plain'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'keys_' + Date.now() + '.txt';
   a.click();
-  log('export', keys.length+' clé(s)');
   toast('Export OK', 'success');
 });
-
-/* ============ EVENTS ============ */
-$('filterKeys').addEventListener('input', renderKeys);
-$('filterStatus').addEventListener('change', renderKeys);
-$('btnBanHwid').addEventListener('click', banHwid);
-$('newHwid').addEventListener('keydown', e => { if (e.key === 'Enter') banHwid(); });
-$('btnClearLogs').addEventListener('click', () => {
-  if (!confirm('Effacer tous les logs ?')) return;
-  logs = []; persist(); renderLogs(); toast('Logs effacés', 'info');
-});
-
-/* ============ INIT ============ */
-function renderAll() { renderKeys(); renderHwids(); renderLogs(); }
 </script>
 </body>
 </html>
