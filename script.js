@@ -9,8 +9,24 @@ const ADMIN_PASSWORD = "zryi2424"; // ← à changer
    STORAGE
    ========================================================= */
 const LS = { keys: 'ka_keys', hwids: 'ka_hwids', logs: 'ka_logs' };
-const load = (k, d) => JSON.parse(localStorage.getItem(k) || d);
-const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+// Version robuste : ne crash plus si le stockage est vide/corrompu
+const load = (k, fallback) => {
+  try {
+    const raw = localStorage.getItem(k);
+    if (!raw || raw === 'undefined' || raw === 'null') return fallback;
+    const parsed = JSON.parse(raw);
+    return parsed ?? fallback;
+  } catch (e) {
+    console.warn('LocalStorage corrompu pour', k, '→ reset');
+    localStorage.removeItem(k);
+    return fallback;
+  }
+};
+
+const save = (k, v) => {
+  try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {}
+};
 
 let keys  = load(LS.keys,  []);
 let hwids = load(LS.hwids, []);
