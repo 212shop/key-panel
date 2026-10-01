@@ -6,99 +6,295 @@
 <title>KeyAuth Panel</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-body { background:#0b0d12; color:#e5e9f0; font-size:14px; min-height:100vh; }
+body {
+  background: #f5f6f8;
+  color: #1f2937;
+  font-size: 14px;
+  min-height: 100vh;
+}
 
+/* =========================================================
+   LOGIN
+   ========================================================= */
 #loginScreen {
-  position:fixed; inset:0;
-  display:flex; align-items:center; justify-content:center;
-  background:radial-gradient(circle at 50% 0%, #131826, #0b0d12 60%);
-  padding:20px; z-index:50;
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(180deg, #ffffff 0%, #eef0f3 100%);
+  padding: 20px; z-index: 50;
 }
 .login-box {
-  background:#12151c; border:1px solid #232a36; border-radius:12px;
-  padding:36px 32px; width:100%; max-width:380px; text-align:center;
-  box-shadow:0 8px 24px rgba(0,0,0,.4);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 40px 36px;
+  width: 100%; max-width: 400px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.06);
 }
-.login-box h1 { font-size:20px; font-weight:600; margin-bottom:4px; }
-.login-box p { color:#5c6577; font-size:12.5px; margin-bottom:24px; }
+.login-box h1 { font-size: 22px; font-weight: 700; color: #111827; margin-bottom: 6px; }
+.login-box p { color: #6b7280; font-size: 13px; margin-bottom: 28px; }
 .login-box input {
-  width:100%; padding:11px 14px; background:#0b0d12; border:1px solid #232a36;
-  border-radius:6px; color:#e5e9f0; font-size:14px; text-align:center;
-  outline:none; margin-bottom:12px;
+  width: 100%; padding: 13px 16px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  color: #111827; font-size: 14px;
+  text-align: center;
+  outline: none;
+  margin-bottom: 12px;
+  transition: border-color .15s, box-shadow .15s;
 }
-.login-box input:focus { border-color:#4f7cff; }
+.login-box input:focus {
+  border-color: #6b7280;
+  box-shadow: 0 0 0 3px rgba(107,114,128,0.1);
+}
 .login-box button {
-  width:100%; padding:11px; background:#4f7cff; color:#fff; border:none;
-  border-radius:6px; font-size:14px; font-weight:500; cursor:pointer;
+  width: 100%; padding: 13px;
+  background: #1f2937; color: #fff;
+  border: none; border-radius: 10px;
+  font-size: 14px; font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, transform .05s;
 }
-.login-box button:hover { background:#3d6bf0; }
-.login-error { color:#e5484d; font-size:12.5px; margin-top:12px; }
+.login-box button:hover { background: #111827; }
+.login-box button:active { transform: scale(0.99); }
+.login-error { color: #dc2626; font-size: 12.5px; margin-top: 12px; font-weight: 500; }
 
-#app { display:none; min-height:100vh; grid-template-columns:240px 1fr; }
-#app.visible { display:grid; }
+/* =========================================================
+   APP
+   ========================================================= */
+#app { display: none; min-height: 100vh; grid-template-columns: 240px 1fr; }
+#app.visible { display: grid; }
 
-.sidebar { background:#12151c; border-right:1px solid #232a36; display:flex; flex-direction:column; padding:20px; }
-.brand { font-size:16px; font-weight:700; margin-bottom:30px; }
-.brand small { display:block; font-size:10px; color:#5c6577; font-weight:400; text-transform:uppercase; letter-spacing:1px; margin-top:3px; }
-.nav-item { display:block; padding:9px 12px; color:#8b94a5; text-decoration:none; border-radius:6px; font-size:13px; margin-bottom:2px; cursor:pointer; transition:background .15s, color .15s; }
-.nav-item:hover { background:#171b24; color:#e5e9f0; }
-.nav-item.active { background:#171b24; color:#e5e9f0; box-shadow:inset 2px 0 0 #4f7cff; }
+/* Sidebar */
+.sidebar {
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  display: flex; flex-direction: column;
+  padding: 20px;
+}
+.brand { font-size: 17px; font-weight: 700; color: #111827; margin-bottom: 30px; }
+.brand small {
+  display: block; font-size: 10px; color: #9ca3af;
+  font-weight: 500; text-transform: uppercase;
+  letter-spacing: 1px; margin-top: 3px;
+}
+.nav-item {
+  display: block; padding: 10px 14px;
+  color: #6b7280; text-decoration: none;
+  border-radius: 10px; font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 3px; cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.nav-item:hover { background: #f3f4f6; color: #111827; }
+.nav-item.active {
+  background: #f3f4f6;
+  color: #111827;
+  font-weight: 600;
+}
 
-.main { padding:24px 28px; overflow-y:auto; }
-.topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:10px; }
-.topbar h1 { font-size:18px; font-weight:600; }
+/* Main */
+.main { padding: 28px 32px; overflow-y: auto; }
+.topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
+}
+.topbar h1 { font-size: 20px; font-weight: 700; color: #111827; }
 
-.btn { padding:8px 14px; font-size:13px; font-weight:500; border-radius:6px; border:1px solid transparent; cursor:pointer; transition:background .15s; }
-.btn-primary { background:#4f7cff; color:#fff; }
-.btn-primary:hover { background:#3d6bf0; }
-.btn-ghost { background:#12151c; color:#8b94a5; border-color:#232a36; }
-.btn-ghost:hover { color:#e5e9f0; }
-.btn-danger { background:#e5484d; color:#fff; }
-.btn-small { padding:5px 10px; font-size:12px; }
+/* Buttons */
+.btn {
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, transform .05s;
+}
+.btn:active { transform: scale(0.98); }
+.btn-primary { background: #1f2937; color: #fff; }
+.btn-primary:hover { background: #111827; }
+.btn-ghost { background: #ffffff; color: #6b7280; border-color: #e5e7eb; }
+.btn-ghost:hover { color: #111827; border-color: #d1d5db; background: #f9fafb; }
+.btn-danger { background: #fee2e2; color: #dc2626; border-color: #fecaca; }
+.btn-danger:hover { background: #fecaca; }
+.btn-small { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
 
-.stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; }
-.stat { background:#12151c; border:1px solid #232a36; border-radius:8px; padding:16px 18px; }
-.stat-label { font-size:11px; color:#5c6577; text-transform:uppercase; letter-spacing:.8px; font-weight:600; margin-bottom:6px; }
-.stat-val { font-size:24px; font-weight:600; }
-.stat-val.ok { color:#35c47a; } .stat-val.warn { color:#e0a939; } .stat-val.bad { color:#e5484d; }
+/* Stats */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px; margin-bottom: 24px;
+}
+.stat {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 18px 20px;
+  transition: transform .15s, box-shadow .15s;
+}
+.stat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.04);
+}
+.stat-label {
+  font-size: 11px; color: #9ca3af;
+  text-transform: uppercase; letter-spacing: .8px;
+  font-weight: 600; margin-bottom: 8px;
+}
+.stat-val { font-size: 26px; font-weight: 700; color: #111827; }
+.stat-val.ok { color: #059669; }
+.stat-val.warn { color: #d97706; }
+.stat-val.bad { color: #dc2626; }
 
-.card { background:#12151c; border:1px solid #232a36; border-radius:8px; overflow:hidden; }
-.toolbar { display:flex; gap:10px; padding:14px 16px; border-bottom:1px solid #1c222d; flex-wrap:wrap; }
-.toolbar input, .toolbar select { padding:8px 12px; background:#0b0d12; border:1px solid #232a36; border-radius:6px; color:#e5e9f0; font-size:13px; outline:none; }
-.toolbar input:focus, .toolbar select:focus { border-color:#4f7cff; }
-.toolbar input { flex:1; min-width:200px; }
+/* Card */
+.card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+.toolbar {
+  display: flex; gap: 10px;
+  padding: 16px 18px;
+  border-bottom: 1px solid #f3f4f6;
+  flex-wrap: wrap;
+}
+.toolbar input, .toolbar select {
+  padding: 9px 14px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  color: #111827; font-size: 13px;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.toolbar input:focus, .toolbar select:focus {
+  border-color: #9ca3af;
+  box-shadow: 0 0 0 3px rgba(156,163,175,0.15);
+}
+.toolbar input { flex: 1; min-width: 200px; }
 
-table { width:100%; border-collapse:collapse; font-size:13px; }
-thead th { text-align:left; padding:11px 16px; font-size:11px; color:#5c6577; text-transform:uppercase; letter-spacing:.6px; font-weight:600; background:#171b24; border-bottom:1px solid #1c222d; white-space:nowrap; }
-tbody td { padding:12px 16px; border-bottom:1px solid #1c222d; vertical-align:middle; }
-tbody tr:last-child td { border-bottom:none; }
-tbody tr:hover { background:rgba(255,255,255,.02); }
+/* Table */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th {
+  text-align: left; padding: 12px 18px;
+  font-size: 11px; color: #9ca3af;
+  text-transform: uppercase; letter-spacing: .6px;
+  font-weight: 600;
+  background: #fafbfc;
+  border-bottom: 1px solid #f3f4f6;
+  white-space: nowrap;
+}
+tbody td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
+  color: #374151;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: #fafbfc; }
 
-.key-mono { font-family:"SF Mono", Consolas, monospace; font-size:12.5px; cursor:pointer; padding:3px 6px; border-radius:4px; }
-.key-mono:hover { background:rgba(79,124,255,.15); color:#8aa7ff; }
-.hwid-mono { font-family:"SF Mono", Consolas, monospace; font-size:11.5px; color:#5c6577; }
+.key-mono {
+  font-family: "SF Mono", Consolas, monospace;
+  font-size: 12.5px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #f3f4f6;
+  color: #374151;
+  transition: background .15s;
+}
+.key-mono:hover { background: #e5e7eb; color: #111827; }
 
-.badge { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; font-size:11px; font-weight:600; border-radius:20px; text-transform:uppercase; }
-.badge::before { content:""; width:5px; height:5px; border-radius:50%; background:currentColor; }
-.badge.active { color:#35c47a; background:rgba(53,196,122,.1); }
-.badge.expired { color:#e0a939; background:rgba(224,169,57,.1); }
-.badge.banned { color:#e5484d; background:rgba(229,72,77,.1); }
+.hwid-mono {
+  font-family: "SF Mono", Consolas, monospace;
+  font-size: 11.5px;
+  color: #6b7280;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #f3f4f6;
+}
 
-.row-actions { display:flex; gap:4px; }
-.view { display:none; }
-.view.active { display:block; }
-.empty { padding:50px; text-align:center; color:#5c6577; font-size:13px; }
-.loading { padding:50px; text-align:center; color:#5c6577; font-size:13px; }
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  font-size: 11px; font-weight: 600;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.badge::before {
+  content: ""; width: 6px; height: 6px;
+  border-radius: 50%; background: currentColor;
+}
+.badge.active { color: #059669; background: #d1fae5; }
+.badge.expired { color: #d97706; background: #fef3c7; }
+.badge.banned { color: #dc2626; background: #fee2e2; }
 
-#toasts { position:fixed; bottom:20px; right:20px; display:flex; flex-direction:column; gap:8px; z-index:200; }
-.toast { background:#12151c; border:1px solid #232a36; border-left:3px solid #4f7cff; border-radius:6px; padding:11px 14px; font-size:13px; box-shadow:0 8px 24px rgba(0,0,0,.4); animation:tin .25s; }
-.toast.success { border-left-color:#35c47a; }
-.toast.error { border-left-color:#e5484d; }
-@keyframes tin { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:none; } }
+.row-actions { display: flex; gap: 6px; }
+.view { display: none; }
+.view.active { display: block; }
+
+.empty {
+  padding: 60px 20px; text-align: center;
+  color: #9ca3af; font-size: 13px;
+}
+.loading {
+  padding: 60px 20px; text-align: center;
+  color: #9ca3af; font-size: 13px;
+}
+
+/* =========================================================
+   TOASTS
+   ========================================================= */
+#toasts {
+  position: fixed; bottom: 20px; right: 20px;
+  display: flex; flex-direction: column;
+  gap: 10px; z-index: 200;
+}
+.toast {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-left: 4px solid #6b7280;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #111827;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  animation: tin .25s;
+  min-width: 220px;
+}
+.toast.success { border-left-color: #059669; }
+.toast.error { border-left-color: #dc2626; }
+@keyframes tin {
+  from { opacity:0; transform: translateX(20px); }
+  to { opacity:1; transform: none; }
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 900px) {
+  #app.visible { grid-template-columns: 1fr; }
+  .sidebar {
+    flex-direction: row; padding: 12px;
+    border-right: none; border-bottom: 1px solid #e5e7eb;
+    align-items: center;
+  }
+  .brand { margin-bottom: 0; margin-right: 20px; font-size: 15px; }
+  .brand small { display: none; }
+  .nav-item { padding: 8px 12px; margin-bottom: 0; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .main { padding: 20px; }
+}
 </style>
 </head>
 <body>
 
+<!-- ========== LOGIN ========== -->
 <div id="loginScreen">
   <form class="login-box" id="loginForm">
     <h1>KeyAuth Panel</h1>
@@ -109,6 +305,7 @@ tbody tr:hover { background:rgba(255,255,255,.02); }
   </form>
 </div>
 
+<!-- ========== PANEL ========== -->
 <div id="app">
   <aside class="sidebar">
     <div class="brand">KeyAuth<small>panel v2 · API</small></div>
@@ -130,6 +327,7 @@ tbody tr:hover { background:rgba(255,255,255,.02); }
       </div>
     </div>
 
+    <!-- Vue Licences -->
     <section class="view active" id="view-keys">
       <div class="stats">
         <div class="stat"><div class="stat-label">Total</div><div class="stat-val" id="statTotal">0</div></div>
@@ -139,7 +337,7 @@ tbody tr:hover { background:rgba(255,255,255,.02); }
       </div>
       <div class="card">
         <div class="toolbar">
-          <input type="text" id="filterKeys" placeholder="Rechercher..." />
+          <input type="text" id="filterKeys" placeholder="Rechercher une clé ou un HWID..." />
           <select id="filterStatus">
             <option value="">Tous</option>
             <option value="active">Actives</option>
@@ -148,30 +346,45 @@ tbody tr:hover { background:rgba(255,255,255,.02); }
           </select>
         </div>
         <div id="keysLoading" class="loading">Chargement...</div>
-        <table id="keysTable" style="display:none;"><thead><tr><th>Clé</th><th>Statut</th><th>Durée</th><th>HWID</th><th>Expire</th><th>Restant</th><th>Actions</th></tr></thead><tbody id="keysBody"></tbody></table>
+        <table id="keysTable" style="display:none;">
+          <thead><tr>
+            <th>Clé</th><th>Statut</th><th>Durée</th><th>HWID</th><th>Expire</th><th>Restant</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="keysBody"></tbody>
+        </table>
         <div class="empty" id="keysEmpty" style="display:none;">Aucune clé. Clique sur "+ Nouvelle clé".</div>
       </div>
     </section>
 
+    <!-- Vue HWID -->
     <section class="view" id="view-hwid">
       <div class="card">
         <div class="toolbar">
-          <input type="text" id="newHwid" placeholder="HWID à bannir..." />
-          <button class="btn btn-danger" id="btnBanHwid">Bannir</button>
+          <input type="text" id="newHwid" placeholder="Entrer un HWID à bannir (ex: A1B2C3D4E5F6)..." />
+          <button class="btn btn-danger" id="btnBanHwid">Bannir ce HWID</button>
         </div>
         <div id="hwidLoading" class="loading">Chargement...</div>
-        <table id="hwidTable" style="display:none;"><thead><tr><th>HWID</th><th>Ajouté le</th><th>Actions</th></tr></thead><tbody id="hwidBody"></tbody></table>
-        <div class="empty" id="hwidEmpty" style="display:none;">Aucun HWID banni.</div>
+        <table id="hwidTable" style="display:none;">
+          <thead><tr>
+            <th>HWID banni</th><th>Ajouté le</th><th style="width:130px;">Actions</th>
+          </tr></thead>
+          <tbody id="hwidBody"></tbody>
+        </table>
+        <div class="empty" id="hwidEmpty" style="display:none;">Aucun HWID banni pour le moment.</div>
       </div>
     </section>
 
+    <!-- Vue Logs -->
     <section class="view" id="view-logs">
       <div class="card">
         <div class="toolbar" style="justify-content:space-between;">
-          <span style="font-weight:600; color:#8b94a5;">Historique</span>
+          <span style="font-weight:600; color:#6b7280; font-size:13px;">Historique</span>
         </div>
         <div id="logsLoading" class="loading">Chargement...</div>
-        <table id="logsTable" style="display:none;"><thead><tr><th>Date</th><th>Type</th><th>Détail</th></tr></thead><tbody id="logsBody"></tbody></table>
+        <table id="logsTable" style="display:none;">
+          <thead><tr><th>Date</th><th>Type</th><th>Détail</th></tr></thead>
+          <tbody id="logsBody"></tbody>
+        </table>
         <div class="empty" id="logsEmpty" style="display:none;">Aucun log.</div>
       </div>
     </section>
@@ -182,11 +395,11 @@ tbody tr:hover { background:rgba(255,255,255,.02); }
 
 <script>
 /* ============================================================
-   CONFIG — À REMPLIR AVEC TES VALEURS
+   CONFIG
    ============================================================ */
 const API_URL    = "https://keyauth-api.cacamoussa70.workers.dev";
 const ADMIN_KEY  = "Kx9mP2qL7wN4vB8sT5rY3jH6fD1cZ0aQ";
-const PANEL_PASS = "zryi2424"; // ← mot de passe pour entrer dans le panel
+const PANEL_PASS = "zryi2424";
 
 /* ============================================================
    API CLIENT
@@ -208,7 +421,10 @@ async function api(path, method = 'GET', body = null) {
    UTILS
    ============================================================ */
 const $ = id => document.getElementById(id);
-const fmtDate = ts => new Date(ts).toLocaleString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+const fmtDate = ts => new Date(ts).toLocaleString('fr-FR', {
+  day:'2-digit', month:'2-digit', year:'numeric',
+  hour:'2-digit', minute:'2-digit'
+});
 const fmtLeft = ms => {
   if (ms <= 0) return '—';
   const d = Math.floor(ms/86400000), h = Math.floor((ms%86400000)/3600000), m = Math.floor((ms%3600000)/60000);
@@ -242,7 +458,10 @@ $('loginForm').addEventListener('submit', e => {
     $('loginPass').value = '';
   }
 });
-$('btnLogout').addEventListener('click', () => { sessionStorage.removeItem('ka_logged'); location.reload(); });
+$('btnLogout').addEventListener('click', () => {
+  sessionStorage.removeItem('ka_logged');
+  location.reload();
+});
 
 function showApp() {
   $('loginScreen').style.display = 'none';
@@ -264,7 +483,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
 });
 
 /* ============================================================
-   LOAD ALL
+   LOAD
    ============================================================ */
 async function loadAll() {
   await Promise.all([loadKeys(), loadHwids(), loadLogs()]);
@@ -346,10 +565,10 @@ function renderKeys(list) {
     tr.innerHTML =
       '<td><span class="key-mono" data-copy="'+k.key+'">'+k.key+'</span></td>' +
       '<td><span class="badge '+s+'">'+s+'</span></td>' +
-      '<td style="color:#8b94a5">'+(k.days||'?')+'j</td>' +
-      '<td>'+(k.hwid ? '<span class="hwid-mono">'+k.hwid+'</span>' : '<span style="color:#5c6577;font-style:italic;">libre</span>')+'</td>' +
-      '<td style="color:#8b94a5">'+fmtDate(k.expiresAt)+'</td>' +
-      '<td style="color:#5c6577">'+left+'</td>' +
+      '<td style="color:#6b7280">'+(k.days||'?')+'j</td>' +
+      '<td>'+(k.hwid ? '<span class="hwid-mono">'+k.hwid+'</span>' : '<span style="color:#9ca3af;font-style:italic;">libre</span>')+'</td>' +
+      '<td style="color:#6b7280">'+fmtDate(k.expiresAt)+'</td>' +
+      '<td style="color:#9ca3af">'+left+'</td>' +
       '<td><div class="row-actions">' +
         (k.banned
           ? '<button class="btn btn-ghost btn-small" data-act="unban" data-key="'+k.key+'">Déban</button>'
@@ -360,7 +579,7 @@ function renderKeys(list) {
   });
 
   tbody.querySelectorAll('[data-copy]').forEach(el => {
-    el.addEventListener('click', () => navigator.clipboard.writeText(el.dataset.copy).then(() => toast('Copié', 'success')));
+    el.addEventListener('click', () => navigator.clipboard.writeText(el.dataset.copy).then(() => toast('Clé copiée', 'success')));
   });
   tbody.querySelectorAll('[data-act]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -375,12 +594,22 @@ function renderKeys(list) {
 function renderHwids(list) {
   const tbody = $('hwidBody');
   tbody.innerHTML = '';
-  if (!list.length) { $('hwidTable').style.display = 'none'; $('hwidEmpty').style.display = 'block'; return; }
+  if (!list.length) {
+    $('hwidTable').style.display = 'none';
+    $('hwidEmpty').style.display = 'block';
+    return;
+  }
   $('hwidTable').style.display = 'table';
   $('hwidEmpty').style.display = 'none';
+
+  list.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+
   list.forEach(h => {
     const tr = document.createElement('tr');
-    tr.innerHTML = '<td><span class="hwid-mono">'+h.hwid+'</span></td><td style="color:#8b94a5">'+fmtDate(h.ts)+'</td><td><button class="btn btn-ghost btn-small" data-h="'+h.hwid+'">Retirer</button></td>';
+    tr.innerHTML =
+      '<td><span class="hwid-mono" style="color:#dc2626;background:#fee2e2;">'+h.hwid+'</span></td>' +
+      '<td style="color:#6b7280">'+fmtDate(h.ts || Date.now())+'</td>' +
+      '<td><button class="btn btn-ghost btn-small" data-h="'+h.hwid+'">Retirer</button></td>';
     tr.querySelector('button').addEventListener('click', () => doUnbanHwid(h.hwid));
     tbody.appendChild(tr);
   });
@@ -389,14 +618,32 @@ function renderHwids(list) {
 function renderLogs(list) {
   const tbody = $('logsBody');
   tbody.innerHTML = '';
-  if (!list.length) { $('logsTable').style.display = 'none'; $('logsEmpty').style.display = 'block'; return; }
+  if (!list.length) {
+    $('logsTable').style.display = 'none';
+    $('logsEmpty').style.display = 'block';
+    return;
+  }
   $('logsTable').style.display = 'table';
   $('logsEmpty').style.display = 'none';
-  const L = { create:['Création','active'], ban:['Ban','banned'], unban:['Déban','active'], 'delete':['Suppression','expired'], 'hwid-ban':['HWID+','banned'], 'hwid-unban':['HWID-','active'], export:['Export','active'], 'auth-ok':['Auth OK','active'], 'auth-banned':['Auth BAN','banned'], 'auth-expired':['Auth EXP','expired'], 'auth-hwid-banned':['Auth HWID BAN','banned'], 'auth-hwid-mismatch':['Auth HWID MISMATCH','expired'], redeem:['Redeem','active'] };
+  const L = {
+    create:['Création','active'],
+    ban:['Ban','banned'],
+    unban:['Déban','active'],
+    'delete':['Suppression','expired'],
+    'hwid-ban':['HWID+','banned'],
+    'hwid-unban':['HWID-','active'],
+    export:['Export','active'],
+    'auth-ok':['Auth OK','active'],
+    'auth-banned':['Auth BAN','banned'],
+    'auth-expired':['Auth EXP','expired'],
+    'auth-hwid-banned':['Auth HWID BAN','banned'],
+    'auth-hwid-mismatch':['Auth HWID MISMATCH','expired'],
+    redeem:['Redeem','active']
+  };
   list.forEach(l => {
     const [lab, cls] = L[l.type] || [l.type, 'active'];
     const tr = document.createElement('tr');
-    tr.innerHTML = '<td style="color:#8b94a5">'+fmtDate(l.ts)+'</td><td><span class="badge '+cls+'">'+lab+'</span></td><td>'+l.detail+'</td>';
+    tr.innerHTML = '<td style="color:#6b7280">'+fmtDate(l.ts)+'</td><td><span class="badge '+cls+'">'+lab+'</span></td><td>'+l.detail+'</td>';
     tbody.appendChild(tr);
   });
 }
@@ -421,16 +668,22 @@ async function doDel(k) {
 async function doBanHwid() {
   const v = $('newHwid').value.trim().toUpperCase();
   if (!v) return toast('Entrez un HWID', 'error');
+  if (v.length < 6) return toast('HWID trop court (min 6 caractères)', 'error');
   const r = await api('/admin/hwid/ban', 'POST', { hwid: v });
-  if (r.ok) { $('newHwid').value = ''; toast('HWID banni', 'error'); loadHwids(); } else toast(r.error || 'Erreur', 'error');
+  if (r.ok) {
+    $('newHwid').value = '';
+    toast('HWID banni : ' + v, 'error');
+    loadHwids();
+  } else toast(r.error || 'Erreur', 'error');
 }
 async function doUnbanHwid(h) {
+  if (!confirm('Retirer ce HWID de la blacklist ?\n' + h)) return;
   const r = await api('/admin/hwid/unban', 'POST', { hwid: h });
   if (r.ok) { toast('HWID retiré', 'success'); loadHwids(); } else toast(r.error || 'Erreur', 'error');
 }
 
 /* ============================================================
-   NEW KEY
+   NOUVELLE CLÉ
    ============================================================ */
 $('btnNewKey').addEventListener('click', async () => {
   const d = prompt('Durée en jours ? (3 / 7 / 30 / 365)', '30');
@@ -459,7 +712,7 @@ $('btnNewKey').addEventListener('click', async () => {
 });
 
 /* ============================================================
-   REFRESH / EXPORT / EVENTS
+   ÉVÉNEMENTS
    ============================================================ */
 $('btnRefresh').addEventListener('click', () => { toast('Actualisation...', ''); loadAll(); });
 $('filterKeys').addEventListener('input', () => renderKeys(allKeys));
