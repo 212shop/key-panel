@@ -104,6 +104,60 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
   main{padding:18px 16px 40px}.stats{grid-template-columns:repeat(2,1fr)}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ===== Style & animations ===== */
+@property --a{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes fade{from{opacity:0}}
+@keyframes rise{from{opacity:0;transform:translateY(24px) scale(.96)}}
+@keyframes pop{from{opacity:0;transform:scale(.92) translateY(10px)}}
+@keyframes viewIn{from{opacity:0;transform:translateY(12px)}}
+@keyframes rowIn{from{opacity:0;transform:translateX(-12px)}}
+@keyframes spin{to{--a:360deg}}
+@keyframes orb{to{transform:translate(140px,90px) scale(1.25)}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 currentColor}70%,100%{box-shadow:0 0 0 6px transparent}}
+@keyframes toastIn{from{opacity:0;transform:translateX(40px)}}
+@keyframes toastOut{to{opacity:0;transform:translateX(40px)}}
+
+#login{overflow:hidden}
+#login::before,#login::after{content:"";position:absolute;width:440px;height:440px;border-radius:50%;filter:blur(95px);opacity:.28;pointer-events:none}
+#login::before{background:var(--red);top:-140px;left:-120px;animation:orb 14s ease-in-out infinite alternate}
+#login::after{background:#4a5cff;bottom:-170px;right:-130px;animation:orb 18s ease-in-out infinite alternate-reverse}
+.lbox{position:relative;z-index:1;border:1px solid transparent;
+  background:linear-gradient(var(--panel),var(--panel)) padding-box,conic-gradient(from var(--a),var(--line) 55%,var(--red) 78%,var(--line)) border-box;
+  box-shadow:0 30px 80px -30px rgba(0,0,0,.8);
+  animation:spin 5s linear infinite,rise .8s cubic-bezier(.2,.8,.2,1) both}
+input{transition:border-color .2s,box-shadow .25s}
+input:focus{box-shadow:0 0 0 3px rgba(229,72,77,.16)}
+
+#app:not([hidden]){animation:fade .6s ease}
+main{background:radial-gradient(760px 280px at 85% -70px,rgba(229,72,77,.08),transparent)}
+.view.on{animation:viewIn .45s cubic-bezier(.2,.8,.2,1)}
+
+.nav{transition:background .25s,color .25s,box-shadow .3s,transform .25s}
+.nav:hover{transform:translateX(3px)}
+.brand i{box-shadow:0 0 22px -2px rgba(229,72,77,.65)}
+
+.btn{transition:transform .18s,background .25s,border-color .25s,box-shadow .3s,color .25s}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:scale(.96)}
+.btn.red:hover{box-shadow:0 10px 26px -10px var(--red)}
+
+.stat{transition:transform .3s cubic-bezier(.2,.8,.2,1),border-color .3s,box-shadow .3s;
+  background:linear-gradient(160deg,rgba(255,255,255,.035),transparent 60%),var(--panel)}
+.stat:hover{transform:translateY(-4px);border-color:var(--line2);box-shadow:0 16px 34px -18px rgba(0,0,0,.9)}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.02),transparent 120px),var(--panel);box-shadow:0 20px 50px -34px rgba(0,0,0,.9)}
+
+tbody tr{transition:background .25s}
+.fresh tr,#hwidBody tr,#logsBody tr{animation:rowIn .45s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*40ms)}
+.key{transition:background .2s,color .2s}
+.badge.active::before{animation:pulse 2.2s infinite}
+
+.modal{animation:fade .25s ease;backdrop-filter:blur(6px)}
+.box{animation:pop .35s cubic-bezier(.2,.9,.3,1.15);box-shadow:0 40px 90px -30px #000}
+.toast{animation:toastIn .4s cubic-bezier(.2,.9,.3,1.1);backdrop-filter:blur(8px)}
+.toast.out{animation:toastOut .3s ease forwards}
+
+@media(prefers-reduced-motion:reduce){*,::before,::after{animation:none!important}}
 </style>
 </head>
 <body>
@@ -204,7 +258,7 @@ const names = {active:'Active', expired:'Expirée', banned:'Bannie'};
 function toast(msg, type){
   const el = document.createElement('div');
   el.className = 'toast ' + (type || ''); el.textContent = msg;
-  $('toasts').appendChild(el); setTimeout(() => el.remove(), 2800);
+  $('toasts').appendChild(el); setTimeout(() => el.classList.add('out'), 2500); setTimeout(() => el.remove(), 2800);
 }
 async function api(path, method = 'GET', body){
   const r = await fetch(API_URL + path, {
@@ -238,7 +292,7 @@ $('logout').onclick = () => { sessionStorage.removeItem('ka_admin'); location.re
 
 function start(first){
   $('login').hidden = true; $('app').hidden = false;
-  if (first) renderKeys(first.keys || []); else loadKeys();
+  if (first) renderKeys(first.keys || [], true); else loadKeys();
   loadHwids(); loadLogs();
 }
 if (adminKey) api('/admin/keys').then(r => r.ok ? start(r) : sessionStorage.removeItem('ka_admin')).catch(() => {});
@@ -253,17 +307,34 @@ document.querySelectorAll('.nav').forEach(b => b.onclick = () => {
 });
 
 /* ---------- Licences ---------- */
+const prevStat = {};
+function countUp(){
+  document.querySelectorAll('#stats b').forEach((el, i) => {
+    const to = +el.dataset.n, from = prevStat[i] || 0; prevStat[i] = to;
+    el.textContent = from;
+    if (from === to) return;
+    const t0 = performance.now();
+    (function f(t){
+      const p = Math.min(1, (t - t0) / 800);
+      el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(f);
+    })(t0);
+  });
+}
 let allKeys = [];
 async function loadKeys(){
-  try { const r = await api('/admin/keys'); if (!r.ok) throw new Error(r.error); renderKeys(r.keys || []); }
+  try { const r = await api('/admin/keys'); if (!r.ok) throw new Error(r.error); renderKeys(r.keys || [], true); }
   catch(e){ toast('Erreur : ' + e.message, 'error'); $('keysEmpty').textContent = 'Impossible de charger les clés.'; }
 }
-function renderKeys(list){
+function renderKeys(list, anim){
   allKeys = list; $('nKeys').textContent = list.length;
   const c = {active:0, expired:0, banned:0}; list.forEach(k => c[status(k)]++);
   $('stats').innerHTML = [['Total',list.length,''],['Actives',c.active,'ok'],['Expirées',c.expired,'warn'],['Bannies',c.banned,'bad']]
-    .map(([a,b,cl]) => `<div class="stat"><span>${a}</span><b class="${cl}">${b}</b></div>`).join('');
+    .map(([a,b,cl]) => `<div class="stat"><span>${a}</span><b class="${cl}" data-n="${b}">${b}</b></div>`).join('');
 
+  countUp();
+  $('keysBody').classList.toggle('fresh', !!anim);
+  queueMicrotask(() => $('keysBody').querySelectorAll('tr').forEach((tr, i) => tr.style.setProperty('--i', Math.min(i, 14))));
   const q = $('q').value.trim().toUpperCase(), fs = $('st').value;
   const rows = list.filter(k => (!fs || status(k) === fs) && (!q || k.key.includes(q) || (k.hwid || '').includes(q)));
   $('keysEmpty').hidden = rows.length > 0;
