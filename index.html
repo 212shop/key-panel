@@ -310,7 +310,6 @@ tr:last-child td{border-bottom:0}
 tbody tr{transition:background .18s}
 tbody tr:hover{background:rgba(255,255,255,.02)}
 
-/* Optimisation rendu : skip layout des lignes hors écran */
 tbody tr{content-visibility:auto;contain-intrinsic-size:auto 52px}
 
 .key,.hw{font-family:var(--mono);font-size:12.5px;font-weight:500}
@@ -358,7 +357,6 @@ tbody tr{content-visibility:auto;contain-intrinsic-size:auto 52px}
   background-repeat:no-repeat;background-position:center;background-size:20px;
 }
 
-/* Skeleton loader */
 .sk{
   height:12px;border-radius:6px;
   background:linear-gradient(90deg,rgba(255,255,255,.03) 0%,rgba(255,255,255,.09) 50%,rgba(255,255,255,.03) 100%);
@@ -375,7 +373,6 @@ tr.skeleton td:nth-child(5) .sk{width:55%}
 tr.skeleton td:nth-child(6) .sk{width:45%}
 tr.skeleton td:nth-child(7) .sk{width:30%}
 
-/* ========== MODAL ========== */
 .modal{
   position:fixed;inset:0;background:rgba(4,5,8,.7);
   display:grid;place-items:center;padding:20px;z-index:60;
@@ -405,7 +402,6 @@ tr.skeleton td:nth-child(7) .sk{width:30%}
   letter-spacing:.02em;
 }
 
-/* ========== TOASTS ========== */
 #toasts{
   position:fixed;right:20px;bottom:calc(20px + var(--safe-b));
   display:flex;flex-direction:column;gap:10px;z-index:100;
@@ -430,7 +426,6 @@ tr.skeleton td:nth-child(7) .sk{width:30%}
 .toast.error svg{color:var(--red)}
 .toast.out{animation:toastOut .25s ease forwards}
 
-/* ========== ANIMATIONS ========== */
 @keyframes fade{from{opacity:0}}
 @keyframes rise{from{opacity:0;transform:translateY(20px) scale(.97)}}
 @keyframes pop{from{opacity:0;transform:scale(.94) translateY(8px)}}
@@ -443,7 +438,6 @@ tr.skeleton td:nth-child(7) .sk{width:30%}
 
 #app:not([hidden]){animation:fade .5s ease}
 
-/* Animation légère : seulement les 8 premières lignes */
 .fresh tr{animation:rowIn .3s cubic-bezier(.2,.8,.2,1) both}
 .fresh tr:nth-child(1){animation-delay:0ms}
 .fresh tr:nth-child(2){animation-delay:15ms}
@@ -454,12 +448,8 @@ tr.skeleton td:nth-child(7) .sk{width:30%}
 .fresh tr:nth-child(7){animation-delay:90ms}
 .fresh tr:nth-child(8){animation-delay:105ms}
 
-/* ============================================================
-   ============  RESPONSIVE TÉLÉPHONE / TABLETTE  =============
-   ============================================================ */
 @media(max-width:960px){
   #app{grid-template-columns:1fr}
-
   aside{
     position:sticky;top:0;z-index:40;height:auto;width:100%;
     flex-direction:row;align-items:center;gap:6px;
@@ -516,7 +506,6 @@ tr.skeleton td:nth-child(7) .sk{width:30%}
   #v-accounts .tb input{width:100%;flex:1 1 100%}
   #v-accounts .tb .btn{width:100%}
 
-  /* Tables → cards */
   .scroll{overflow:visible}
   table{min-width:0;width:100%;border:0}
   thead{display:none}
@@ -587,7 +576,6 @@ tr.skeleton td:nth-child(7) .sk{width:30%}
 </head>
 <body>
 
-<!-- ============ LOGIN ============ -->
 <div id="login">
   <form class="lbox" id="loginForm">
     <div class="logo">
@@ -604,7 +592,6 @@ tr.skeleton td:nth-child(7) .sk{width:30%}
   </form>
 </div>
 
-<!-- ============ APP ============ -->
 <div id="app" hidden>
   <aside>
     <div class="brand">
@@ -661,7 +648,6 @@ tr.skeleton td:nth-child(7) .sk{width:30%}
       </div>
     </div>
 
-    <!-- LICENCES -->
     <section class="view on" id="v-keys">
       <div class="stats" id="stats"></div>
       <div class="card">
@@ -699,7 +685,6 @@ tr.skeleton td:nth-child(7) .sk{width:30%}
       </div>
     </section>
 
-    <!-- HWID -->
     <section class="view" id="v-hwid">
       <div class="card">
         <div class="tb">
@@ -720,7 +705,6 @@ tr.skeleton td:nth-child(7) .sk{width:30%}
       </div>
     </section>
 
-    <!-- COMPTES -->
     <section class="view" id="v-accounts">
       <div class="card">
         <div class="tb">
@@ -742,7 +726,6 @@ tr.skeleton td:nth-child(7) .sk{width:30%}
       </div>
     </section>
 
-    <!-- LOGS -->
     <section class="view" id="v-logs">
       <div class="card">
         <div class="scroll"><table>
@@ -820,7 +803,7 @@ $('logout').onclick = () => {
   location.reload();
 };
 
-/* ---------- Cache clés (affichage instantané) ---------- */
+/* ---------- Cache clés ---------- */
 const KEYS_CACHE = 'ka_keys_cache';
 function saveKeysCache(list){ try{ sessionStorage.setItem(KEYS_CACHE, JSON.stringify({ts:Date.now(), keys:list})); }catch{} }
 function loadKeysCache(){ try{ const c = JSON.parse(sessionStorage.getItem(KEYS_CACHE)); return c && c.keys ? c.keys : null; }catch{ return null; } }
@@ -830,6 +813,10 @@ function skeletonRows(n = 6){
     `<tr class="skeleton"><td><div class="sk"></div></td><td><div class="sk"></div></td><td><div class="sk"></div></td><td><div class="sk"></div></td><td><div class="sk"></div></td><td><div class="sk"></div></td><td><div class="sk"></div></td></tr>`
   ).join('');
 }
+
+/* Verrou anti-resync : empêche loadKeys de remplacer la liste pendant une action */
+let syncLocked = 0;
+function lockSync(ms = 2500){ syncLocked = Date.now() + ms; }
 
 function start(first){
   $('login').hidden = true; $('app').hidden = false;
@@ -894,7 +881,9 @@ const STAT_ICONS = {
 let allKeys = [];
 
 async function loadKeys(anim = true){
-  // 1) Affiche immédiatement le cache s'il existe (0ms)
+  // Verrou : ne pas resync si une action récente est en cours
+  if (Date.now() < syncLocked) return;
+
   if (!allKeys.length){
     const cached = loadKeysCache();
     if (cached && cached.length){
@@ -904,10 +893,10 @@ async function loadKeys(anim = true){
       $('keysBody').innerHTML = skeletonRows();
     }
   }
-  // 2) Puis refresh en arrière-plan
   try {
     const r = await api('/admin/keys');
     if (!r.ok) throw new Error(r.error);
+    if (Date.now() < syncLocked) return; // revérifie après l'appel
     renderKeys(r.keys || [], anim, false);
   } catch(e){
     toast('Erreur : ' + e.message, 'error');
@@ -980,15 +969,17 @@ function renderKeys(list, anim, skipStats){
   renderRows(list, anim);
 }
 
-/* Insertion optimiste : affiche les clés créées immédiatement */
+/* Insertion optimiste : gère les deux formats (string[] ou {key}[]) */
 function insertKeysOptimistic(created, days, hwid){
   if (!created || !created.length) return;
   const now = Date.now();
   const fallbackExp = now + days * 864e5;
   const newKeys = created.map(x => {
     const obj = (typeof x === 'string') ? { key: x } : x;
+    const k = obj.key || obj.Key || obj.token || obj.license;
+    if (!k) return null; // skip si pas de clé identifiable
     return {
-      key: obj.key,
+      key: k,
       days: obj.days || days,
       hwid: obj.hwid || hwid || null,
       level: obj.level || 'basic',
@@ -996,24 +987,64 @@ function insertKeysOptimistic(created, days, hwid){
       banned: false,
       createdAt: obj.createdAt || now
     };
-  });
-  // Ajoute au début (les plus récentes en haut)
+  }).filter(Boolean);
+
+  if (!newKeys.length){ console.warn('Rien à insérer — format inattendu :', created); return; }
+
   allKeys = [...newKeys, ...allKeys];
   saveKeysCache(allKeys);
   renderStats(allKeys);
   renderRows(allKeys, true);
 }
 
+/* Handler clic : suppression/ban optimiste (pas de reload) */
 $('keysBody').addEventListener('click', async e => {
   const cp = e.target.closest('[data-copy]');
   if (cp) return navigator.clipboard.writeText(cp.dataset.copy).then(() => toast('Clé copiée', 'success'), () => toast('Copie impossible', 'error'));
+
   const b = e.target.closest('[data-act]'); if (!b) return;
   const key = b.dataset.key, a = b.dataset.act;
   if (a === 'ban' && !confirm('Bannir ' + key + ' ?')) return;
   if (a === 'del' && !confirm('Supprimer ' + key + ' ?')) return;
-  const r = await api({ban:'/admin/ban', unban:'/admin/unban', del:'/admin/delete'}[a], 'POST', {key});
-  if (r.ok) { toast({ban:'Clé bannie', unban:'Clé réactivée', del:'Clé supprimée'}[a], 'success'); loadKeys(false); loadLogs(); }
-  else toast(r.error || 'Erreur', 'error');
+
+  // === Snapshot pour rollback ===
+  const prevKeys = allKeys.slice();
+
+  // === Action locale immédiate ===
+  if (a === 'del'){
+    allKeys = allKeys.filter(k => k.key !== key);
+  } else if (a === 'ban'){
+    allKeys = allKeys.map(k => k.key === key ? {...k, banned: true} : k);
+  } else if (a === 'unban'){
+    allKeys = allKeys.map(k => k.key === key ? {...k, banned: false} : k);
+  }
+  saveKeysCache(allKeys);
+  renderStats(allKeys);
+  renderRows(allKeys, false);
+  lockSync(2500); // empêche tout resync pendant 2.5s
+
+  // === Appel API ===
+  const endpoint = {ban:'/admin/ban', unban:'/admin/unban', del:'/admin/delete'}[a];
+  try {
+    const r = await api(endpoint, 'POST', {key});
+    if (r.ok){
+      toast({ban:'Clé bannie', unban:'Clé réactivée', del:'Clé supprimée'}[a], 'success');
+      loadLogs();
+    } else {
+      // === Rollback ===
+      allKeys = prevKeys;
+      saveKeysCache(allKeys);
+      renderStats(allKeys);
+      renderRows(allKeys, false);
+      toast(r.error || 'Erreur', 'error');
+    }
+  } catch(err){
+    allKeys = prevKeys;
+    saveKeysCache(allKeys);
+    renderStats(allKeys);
+    renderRows(allKeys, false);
+    toast('Erreur réseau', 'error');
+  }
 });
 
 /* Recherche avec debounce */
@@ -1023,7 +1054,10 @@ $('q').oninput = () => {
   searchTimer = setTimeout(() => renderRows(allKeys, false), 120);
 };
 $('st').onchange = () => renderRows(allKeys, false);
-$('refresh').onclick = () => { loadKeys(false); loadHwids(); loadAccounts(); loadLogs(); };
+$('refresh').onclick = () => {
+  syncLocked = 0; // déverrouille pour ce refresh manuel
+  loadKeys(false); loadHwids(); loadAccounts(); loadLogs();
+};
 
 /* ---------- GÉNÉRATION RAPIDE ---------- */
 document.querySelectorAll('[data-quick]').forEach(btn => {
@@ -1044,7 +1078,8 @@ document.querySelectorAll('[data-quick]').forEach(btn => {
       if (!r.ok) return toast(r.error || 'Erreur', 'error');
       close();
       insertKeysOptimistic(r.created, days, hwid);
-      const made = (r.created || []).map(x => typeof x === 'string' ? x : x.key);
+      lockSync(2500); // empêche tout resync pendant 2.5s
+      const made = (r.created || []).map(x => typeof x === 'string' ? x : (x.key || x.Key || x.token || x.license)).filter(Boolean);
       loadLogs();
       if (!made.length) return toast(quantity + ' clé(s) ' + days + 'j créée(s)', 'success');
       toast(made.length + ' clé(s) ' + days + 'j créée(s)', 'success');
@@ -1090,7 +1125,8 @@ $('newKey').onclick = () => {
     if (!r.ok) return toast(r.error || 'Erreur', 'error');
     close();
     insertKeysOptimistic(r.created, days, hwid);
-    const made = (r.created || []).map(x => typeof x === 'string' ? x : x.key);
+    lockSync(2500);
+    const made = (r.created || []).map(x => typeof x === 'string' ? x : (x.key || x.Key || x.token || x.license)).filter(Boolean);
     loadLogs();
     if (!made.length) return toast(quantity + ' clé(s) créée(s)', 'success');
     const res = modal(`<h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>${made.length} clé(s) créée(s)</h2>
