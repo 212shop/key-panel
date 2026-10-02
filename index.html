@@ -154,7 +154,7 @@ main{background:radial-gradient(760px 280px at 85% -70px,rgba(229,72,77,.08),tra
 .card{background:linear-gradient(180deg,rgba(255,255,255,.02),transparent 120px),var(--panel);box-shadow:0 20px 50px -34px rgba(0,0,0,.9)}
 
 tbody tr{transition:background .25s}
-.fresh tr,#hwidBody tr,#logsBody tr{animation:rowIn .45s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*40ms)}
+.fresh tr,#hwidBody tr,#logsBody tr,#accBody tr{animation:rowIn .45s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*40ms)}
 .key{transition:background .2s,color .2s}
 .badge.active::before{animation:pulse 2.2s infinite}
 
@@ -183,6 +183,7 @@ tbody tr{transition:background .25s}
     <div class="brand"><i>🔑</i>KeyAuth</div>
     <button class="nav on" data-view="keys">Licences <small id="nKeys">0</small></button>
     <button class="nav" data-view="hwid">HWID bannis <small id="nHwid">0</small></button>
+    <button class="nav" data-view="accounts">Comptes Rockstar <small id="nAcc">0</small></button>
     <button class="nav" data-view="logs">Logs</button>
     <div class="bottom"><button class="btn ghost" id="logout" style="width:100%">Déconnexion</button></div>
   </aside>
@@ -238,6 +239,28 @@ tbody tr{transition:background .25s}
           <tbody id="hwidBody"></tbody>
         </table></div>
         <div class="empty" id="hwidEmpty">Chargement…</div>
+      </div>
+    </section>
+
+    <section class="view" id="v-accounts">
+      <div class="card">
+        <div class="tb">
+          <input id="newAccEmail" placeholder="Email Rockstar" aria-label="Email Rockstar">
+          <input id="newAccPass" type="password" placeholder="Mot de passe" aria-label="Mot de passe">
+          <button class="btn red" id="addAcc">+ Ajouter</button>
+        </div>
+        <div class="scroll"><table>
+          <thead><tr>
+            <th>Email</th>
+            <th>Mot de passe</th>
+            <th>Statut</th>
+            <th>Utilisé le</th>
+            <th>Utilisé par</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="accBody"></tbody>
+        </table></div>
+        <div class="empty" id="accEmpty">Chargement…</div>
       </div>
     </section>
 
@@ -316,12 +339,13 @@ function start(first){
 if (adminKey) api('/admin/keys').then(r => r.ok ? start(r) : sessionStorage.removeItem('ka_admin')).catch(() => {});
 
 /* ---------- Navigation ---------- */
-const titles = {keys:'Licences', hwid:'HWID bannis', logs:'Logs'};
+const titles = {keys:'Licences', hwid:'HWID bannis', accounts:'Comptes Rockstar', logs:'Logs'};
 document.querySelectorAll('.nav').forEach(b => b.onclick = () => {
   document.querySelectorAll('.nav').forEach(n => n.classList.toggle('on', n === b));
   document.querySelectorAll('.view').forEach(s => s.classList.toggle('on', s.id === 'v-' + b.dataset.view));
   $('title').textContent = titles[b.dataset.view];
   $('newKey').hidden = $('export').hidden = b.dataset.view !== 'keys';
+  if (b.dataset.view === 'accounts') loadAccounts();
 });
 
 /* ---------- Licences ---------- */
@@ -384,7 +408,7 @@ $('keysBody').addEventListener('click', async e => {
   else toast(r.error || 'Erreur', 'error');
 });
 $('q').oninput = $('st').onchange = () => renderKeys(allKeys);
-$('refresh').onclick = () => { loadKeys(); loadHwids(); loadLogs(); };
+$('refresh').onclick = () => { loadKeys(); loadHwids(); loadAccounts(); loadLogs(); };
 
 /* ---------- GÉNÉRATION RAPIDE ---------- */
 document.querySelectorAll('[data-quick]').forEach(btn => {
@@ -483,11 +507,67 @@ async function banHwid(){
 $('banHwid').onclick = banHwid;
 $('newHwid').onkeydown = e => e.key === 'Enter' && banHwid();
 
+/* ---------- COMPTES ROCKSTAR ---------- */
+let allAccounts = [];
+async function loadAccounts(){
+  try {
+    const r = await api('/admin/accounts'); if (!r.ok) throw new Error();
+    allAccounts = r.accounts || [];
+    renderAccounts();
+  } catch { $('accEmpty').hidden = false; $('accEmpty').textContent = 'Impossible de charger les comptes.'; }
+}
+function renderAccounts(){
+  $('nAcc').textContent = allAccounts.length;
+  const tbody = $('accBody'); tbody.innerHTML = '';
+  if (!allAccounts.length) {
+    $('accEmpty').hidden = false;
+    $('accEmpty').textContent = 'Aucun compte pour le moment.';
+    return;
+  }
+  $('accEmpty').hidden = true;
+  tbody.innerHTML = allAccounts.map(a => {
+    const stat = a.used
+      ? '<span class="badge banned">Utilisé</span>'
+      : '<span class="badge active">Disponible</span>';
+    return `<tr>
+      <td><span class="hw" style="color:#8ab4f8">${esc(a.email)}</span></td>
+      <td><span class="hw" style="color:#ff8f93">${esc(a.password)}</span></td>
+      <td>${stat}</td>
+      <td class="mut">${a.usedAt ? fmtDate(a.usedAt) : '—'}</td>
+      <td class="mut">${esc(a.usedBy || '—')}</td>
+      <td><div class="row">
+        ${a.used ? `<button class="btn ghost sm" data-act="reset" data-id="${a.id}">Libérer</button>` : ''}
+        <button class="btn ghost sm danger" data-act="del" data-id="${a.id}">Supprimer</button>
+      </div></td></tr>`;
+  }).join('');
+}
+$('accBody').addEventListener('click', async e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const id = b.dataset.id, a = b.dataset.act;
+  if (a === 'del' && !confirm('Supprimer ce compte ?')) return;
+  const r = await api({del:'/admin/accounts/delete', reset:'/admin/accounts/reset'}[a], 'POST', {id});
+  if (r.ok) { toast(a === 'del' ? 'Compte supprimé' : 'Compte libéré', 'success'); loadAccounts(); loadLogs(); }
+  else toast(r.error || 'Erreur', 'error');
+});
+$('addAcc').onclick = async () => {
+  const email = $('newAccEmail').value.trim();
+  const password = $('newAccPass').value.trim();
+  if (!email || !password) return toast('Email et mot de passe requis', 'error');
+  const r = await api('/admin/accounts', 'POST', {email, password});
+  if (r.ok) {
+    $('newAccEmail').value = ''; $('newAccPass').value = '';
+    toast('Compte ajouté', 'success'); loadAccounts();
+  } else toast(r.error || 'Erreur', 'error');
+};
+$('newAccPass').onkeydown = e => e.key === 'Enter' && $('addAcc').click();
+
 /* ---------- Logs ---------- */
 const L = {create:['Création','active'], ban:['Ban','banned'], unban:['Déban','active'], delete:['Suppression','expired'],
   'hwid-ban':['HWID banni','banned'], 'hwid-unban':['HWID retiré','active'], export:['Export','active'],
   'auth-ok':['Connexion','active'], 'auth-banned':['Clé bannie','banned'], 'auth-expired':['Clé expirée','expired'],
-  'auth-hwid-banned':['HWID banni','banned'], 'auth-hwid-mismatch':['HWID différent','expired'], redeem:['Activation','active']};
+  'auth-hwid-banned':['HWID banni','banned'], 'auth-hwid-mismatch':['HWID différent','expired'], redeem:['Activation','active'],
+  'account-add':['Compte ajouté','active'], 'account-del':['Compte supprimé','expired'],
+  'account-used':['Compte utilisé','warn'], 'account-reset':['Compte libéré','active']};
 async function loadLogs(){
   try {
     const r = await api('/admin/logs'); if (!r.ok) throw new Error();
