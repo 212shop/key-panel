@@ -443,7 +443,7 @@ tr.skeleton td:nth-child(7) .sk{width:30%}
 
 #app:not([hidden]){animation:fade .5s ease}
 
-/* Animation légère : seulement les 8 premières lignes, délai court */
+/* Animation légère : seulement les 8 premières lignes */
 .fresh tr{animation:rowIn .3s cubic-bezier(.2,.8,.2,1) both}
 .fresh tr:nth-child(1){animation-delay:0ms}
 .fresh tr:nth-child(2){animation-delay:15ms}
@@ -845,7 +845,7 @@ function start(first){
   if (first && first.keys){
     renderKeys(first.keys || [], true);
   } else {
-    loadKeys();
+    loadKeys(false);
   }
   loadHwids(); loadLogs();
 }
@@ -893,7 +893,7 @@ const STAT_ICONS = {
 
 let allKeys = [];
 
-async function loadKeys(){
+async function loadKeys(anim = true){
   // 1) Affiche immédiatement le cache s'il existe (0ms)
   if (!allKeys.length){
     const cached = loadKeysCache();
@@ -908,7 +908,7 @@ async function loadKeys(){
   try {
     const r = await api('/admin/keys');
     if (!r.ok) throw new Error(r.error);
-    renderKeys(r.keys || [], true, false);
+    renderKeys(r.keys || [], anim, false);
   } catch(e){
     toast('Erreur : ' + e.message, 'error');
     if (!allKeys.length){
@@ -968,8 +968,9 @@ function renderRows(list, anim){
   });
 
   const tbody = $('keysBody');
-  tbody.classList.toggle('fresh', !!anim);
+  tbody.classList.remove('fresh');
   tbody.replaceChildren(frag);
+  if (anim){ void tbody.offsetWidth; tbody.classList.add('fresh'); }
 }
 
 function renderKeys(list, anim, skipStats){
@@ -977,6 +978,30 @@ function renderKeys(list, anim, skipStats){
   saveKeysCache(list);
   if (!skipStats) renderStats(list);
   renderRows(list, anim);
+}
+
+/* Insertion optimiste : affiche les clés créées immédiatement */
+function insertKeysOptimistic(created, days, hwid){
+  if (!created || !created.length) return;
+  const now = Date.now();
+  const fallbackExp = now + days * 864e5;
+  const newKeys = created.map(x => {
+    const obj = (typeof x === 'string') ? { key: x } : x;
+    return {
+      key: obj.key,
+      days: obj.days || days,
+      hwid: obj.hwid || hwid || null,
+      level: obj.level || 'basic',
+      expiresAt: obj.expiresAt || fallbackExp,
+      banned: false,
+      createdAt: obj.createdAt || now
+    };
+  });
+  // Ajoute au début (les plus récentes en haut)
+  allKeys = [...newKeys, ...allKeys];
+  saveKeysCache(allKeys);
+  renderStats(allKeys);
+  renderRows(allKeys, true);
 }
 
 $('keysBody').addEventListener('click', async e => {
@@ -987,7 +1012,7 @@ $('keysBody').addEventListener('click', async e => {
   if (a === 'ban' && !confirm('Bannir ' + key + ' ?')) return;
   if (a === 'del' && !confirm('Supprimer ' + key + ' ?')) return;
   const r = await api({ban:'/admin/ban', unban:'/admin/unban', del:'/admin/delete'}[a], 'POST', {key});
-  if (r.ok) { toast({ban:'Clé bannie', unban:'Clé réactivée', del:'Clé supprimée'}[a], 'success'); loadKeys(); loadLogs(); }
+  if (r.ok) { toast({ban:'Clé bannie', unban:'Clé réactivée', del:'Clé supprimée'}[a], 'success'); loadKeys(false); loadLogs(); }
   else toast(r.error || 'Erreur', 'error');
 });
 
@@ -998,7 +1023,7 @@ $('q').oninput = () => {
   searchTimer = setTimeout(() => renderRows(allKeys, false), 120);
 };
 $('st').onchange = () => renderRows(allKeys, false);
-$('refresh').onclick = () => { loadKeys(); loadHwids(); loadAccounts(); loadLogs(); };
+$('refresh').onclick = () => { loadKeys(false); loadHwids(); loadAccounts(); loadLogs(); };
 
 /* ---------- GÉNÉRATION RAPIDE ---------- */
 document.querySelectorAll('[data-quick]').forEach(btn => {
@@ -1017,8 +1042,10 @@ document.querySelectorAll('[data-quick]').forEach(btn => {
       const hwid = m.querySelector('#nh').value.trim().toUpperCase() || null;
       const r = await api('/admin/keys', 'POST', {days, quantity, hwid, level:'basic'});
       if (!r.ok) return toast(r.error || 'Erreur', 'error');
-      close(); loadKeys(); loadLogs();
-      const made = (r.created || []).map(x => x.key);
+      close();
+      insertKeysOptimistic(r.created, days, hwid);
+      const made = (r.created || []).map(x => typeof x === 'string' ? x : x.key);
+      loadLogs();
       if (!made.length) return toast(quantity + ' clé(s) ' + days + 'j créée(s)', 'success');
       toast(made.length + ' clé(s) ' + days + 'j créée(s)', 'success');
       const res = modal(`<h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>${made.length} clé(s) créée(s)</h2>
@@ -1061,8 +1088,10 @@ $('newKey').onclick = () => {
     const hwid = m.querySelector('#nh').value.trim().toUpperCase() || null;
     const r = await api('/admin/keys', 'POST', {days, quantity, hwid, level:'basic'});
     if (!r.ok) return toast(r.error || 'Erreur', 'error');
-    close(); loadKeys(); loadLogs();
-    const made = (r.created || []).map(x => x.key);
+    close();
+    insertKeysOptimistic(r.created, days, hwid);
+    const made = (r.created || []).map(x => typeof x === 'string' ? x : x.key);
+    loadLogs();
     if (!made.length) return toast(quantity + ' clé(s) créée(s)', 'success');
     const res = modal(`<h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>${made.length} clé(s) créée(s)</h2>
       <div class="out"></div>
