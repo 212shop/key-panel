@@ -276,7 +276,6 @@ h1.t{font-size:24px;font-weight:700;letter-spacing:-.03em;line-height:1.2}
   flex-wrap:wrap;align-items:center;
 }
 
-/* ===== INPUTS avec icône en background (fiable sur tous les navigateurs) ===== */
 .tb input,.tb select,.fld input,.fld select{
   background-color:rgba(0,0,0,.3);
   border:1px solid var(--line-2);
@@ -304,7 +303,6 @@ h1.t{font-size:24px;font-weight:700;letter-spacing:-.03em;line-height:1.2}
   background-position:right 11px center;
 }
 
-/* Champs avec icône (search, ban) */
 .search-wrap{position:relative;flex:1;min-width:220px}
 .search-wrap input{
   width:100%;
@@ -396,6 +394,7 @@ tr.skeleton td:nth-child(4) .sk{width:60%}
 tr.skeleton td:nth-child(5) .sk{width:55%}
 tr.skeleton td:nth-child(6) .sk{width:45%}
 tr.skeleton td:nth-child(7) .sk{width:30%}
+tr.skeleton td:nth-child(3):last-child .sk{width:20%}
 
 .modal{
   position:fixed;inset:0;background:rgba(4,5,8,.7);
@@ -822,21 +821,30 @@ $('loginForm').addEventListener('submit', async e => {
 $('logout').onclick = () => {
   sessionStorage.removeItem('ka_admin');
   sessionStorage.removeItem('ka_keys_cache');
+  sessionStorage.removeItem('ka_hwids_cache');
+  sessionStorage.removeItem('ka_accs_cache');
+  sessionStorage.removeItem('ka_logs_cache');
   location.reload();
 };
 
-/* ---------- Cache clés ---------- */
-const KEYS_CACHE = 'ka_keys_cache';
-function saveKeysCache(list){ try{ sessionStorage.setItem(KEYS_CACHE, JSON.stringify({ts:Date.now(), keys:list})); }catch{} }
-function loadKeysCache(){ try{ const c = JSON.parse(sessionStorage.getItem(KEYS_CACHE)); return c && c.keys ? c.keys : null; }catch{ return null; } }
+/* ---------- Caches génériques ---------- */
+const KEYS_CACHE  = 'ka_keys_cache';
+const HWIDS_CACHE = 'ka_hwids_cache';
+const ACCS_CACHE  = 'ka_accs_cache';
+const LOGS_CACHE  = 'ka_logs_cache';
 
-function skeletonRows(n = 6){
+function saveCache(key, data){ try{ sessionStorage.setItem(key, JSON.stringify({ts:Date.now(), data})); }catch{} }
+function loadCache(key){ try{ const c = JSON.parse(sessionStorage.getItem(key)); return c && c.data ? c.data : null; }catch{ return null; } }
+
+function saveKeysCache(list){ saveCache(KEYS_CACHE, list); }
+function loadKeysCache(){ return loadCache(KEYS_CACHE); }
+
+function skeletonRows(n = 6, cols = 7){
   return Array.from({length:n}, () =>
-    `<tr class="skeleton"><td><div class="sk"></div></td><td><div class="sk"></div></td><td><div class="sk"></div></td><td><div class="sk"></div></td><td><div class="sk"></div></td><td><div class="sk"></div></td><td><div class="sk"></div></td></tr>`
+    `<tr class="skeleton">${Array.from({length:cols}, () => '<td><div class="sk"></div></td>').join('')}</tr>`
   ).join('');
 }
 
-/* Verrou anti-resync */
 let syncLocked = 0;
 function lockSync(ms = 2500){ syncLocked = Date.now() + ms; }
 
@@ -848,7 +856,7 @@ function start(first){
     renderKeys(cached, false);
   } else {
     $('keysEmpty').hidden = true;
-    $('keysBody').innerHTML = skeletonRows();
+    $('keysBody').innerHTML = skeletonRows(6, 7);
   }
 
   if (first && first.keys){
@@ -875,6 +883,8 @@ document.querySelectorAll('.nav').forEach(b => b.onclick = () => {
   const sub = $('subtitle'); if (sub) sub.textContent = s;
   $('newKey').hidden = $('export').hidden = b.dataset.view !== 'keys';
   if (b.dataset.view === 'accounts') loadAccounts();
+  if (b.dataset.view === 'hwid') loadHwids();
+  if (b.dataset.view === 'logs') loadLogs();
 });
 
 /* ---------- Licences ---------- */
@@ -911,7 +921,7 @@ async function loadKeys(anim = true){
       renderKeys(cached, false);
     } else {
       $('keysEmpty').hidden = true;
-      $('keysBody').innerHTML = skeletonRows();
+      $('keysBody').innerHTML = skeletonRows(6, 7);
     }
   }
   try {
@@ -1153,55 +1163,166 @@ $('newKey').onclick = () => {
   m.querySelector('#nq').focus();
 };
 
-/* ---------- HWID ---------- */
-async function loadHwids(){
-  try {
-    const r = await api('/admin/hwids'); if (!r.ok) throw new Error();
-    const list = (r.hwids || []).sort((a, b) => (b.ts || 0) - (a.ts || 0));
-    $('nHwid').textContent = list.length; $('hwidEmpty').hidden = list.length > 0;
-    $('hwidEmpty').textContent = 'Aucun HWID banni.';
-    $('hwidBody').innerHTML = list.map(h => `<tr>
+/* ---------- HWID (avec cache + insert optimiste) ---------- */
+let allHwids = [];
+
+function renderHwids(list){
+  allHwids = list;
+  $('nHwid').textContent = list.length;
+  $('hwidEmpty').hidden = list.length > 0;
+  $('hwidEmpty').textContent = 'Aucun HWID banni.';
+  const frag = document.createDocumentFragment();
+  list.forEach(h => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
       <td data-l="HWID"><span class="hw" style="color:#ff8b95">${esc(h.hwid)}</span></td>
       <td data-l="Ajouté le" class="mut">${fmtDate(h.ts || Date.now())}</td>
-      <td data-l=""><button class="btn ghost sm" data-h="${esc(h.hwid)}">Retirer</button></td></tr>`).join('');
-  } catch { $('hwidEmpty').hidden = false; $('hwidEmpty').textContent = 'Impossible de charger les HWID.'; }
+      <td data-l=""><button class="btn ghost sm" data-h="${esc(h.hwid)}">Retirer</button></td>`;
+    frag.appendChild(tr);
+  });
+  const tbody = $('hwidBody');
+  tbody.classList.remove('fresh');
+  tbody.replaceChildren(frag);
+  void tbody.offsetWidth; tbody.classList.add('fresh');
 }
+
+async function loadHwids(){
+  // 1) Affichage instantané du cache
+  const cached = loadCache(HWIDS_CACHE);
+  if (cached && cached.length){
+    renderHwids(cached);
+  } else if (!allHwids.length){
+    $('hwidEmpty').hidden = true;
+    $('hwidBody').innerHTML = skeletonRows(4, 3);
+  }
+  // 2) Refresh en arrière-plan
+  try {
+    const r = await api('/admin/hwids');
+    if (!r.ok) throw new Error();
+    const list = (r.hwids || []).sort((a, b) => (b.ts || 0) - (a.ts || 0));
+    saveCache(HWIDS_CACHE, list);
+    renderHwids(list);
+  } catch {
+    if (!cached || !cached.length){
+      $('hwidEmpty').hidden = false;
+      $('hwidEmpty').textContent = 'Impossible de charger les HWID.';
+    }
+  }
+}
+
+/* Insertion optimiste HWID */
+function insertHwidOptimistic(hwid){
+  if (!hwid) return;
+  const now = Date.now();
+  // Évite les doublons
+  if (allHwids.some(h => h.hwid === hwid)) return;
+  allHwids = [{hwid, ts: now}, ...allHwids];
+  saveCache(HWIDS_CACHE, allHwids);
+  renderHwids(allHwids);
+}
+
+/* Suppression optimiste HWID */
+function removeHwidOptimistic(hwid){
+  allHwids = allHwids.filter(h => h.hwid !== hwid);
+  saveCache(HWIDS_CACHE, allHwids);
+  renderHwids(allHwids);
+}
+
 $('hwidBody').addEventListener('click', async e => {
-  const b = e.target.closest('[data-h]'); if (!b || !confirm('Retirer ce HWID ?\n' + b.dataset.h)) return;
-  const r = await api('/admin/hwid/unban', 'POST', {hwid: b.dataset.h});
-  if (r.ok) { toast('HWID retiré', 'success'); loadHwids(); loadLogs(); } else toast(r.error || 'Erreur', 'error');
+  const b = e.target.closest('[data-h]'); if (!b) return;
+  const hwid = b.dataset.h;
+  if (!confirm('Retirer ce HWID ?\n' + hwid)) return;
+
+  const prev = allHwids.slice();
+  removeHwidOptimistic(hwid); // suppression locale immédiate
+
+  try {
+    const r = await api('/admin/hwid/unban', 'POST', {hwid});
+    if (r.ok){
+      toast('HWID retiré', 'success');
+      loadLogs();
+    } else {
+      // rollback
+      allHwids = prev;
+      saveCache(HWIDS_CACHE, allHwids);
+      renderHwids(allHwids);
+      toast(r.error || 'Erreur', 'error');
+    }
+  } catch {
+    allHwids = prev;
+    saveCache(HWIDS_CACHE, allHwids);
+    renderHwids(allHwids);
+    toast('Erreur réseau', 'error');
+  }
 });
+
 async function banHwid(){
-  const v = $('newHwid').value.trim().toUpperCase(); if (!v) return toast('Entre un HWID', 'error');
-  const r = await api('/admin/hwid/ban', 'POST', {hwid: v});
-  if (r.ok) { $('newHwid').value = ''; toast('HWID banni', 'success'); loadHwids(); loadLogs(); } else toast(r.error || 'Erreur', 'error');
+  const v = $('newHwid').value.trim().toUpperCase();
+  if (!v) return toast('Entre un HWID', 'error');
+
+  // Insertion locale immédiate
+  insertHwidOptimistic(v);
+  $('newHwid').value = '';
+
+  try {
+    const r = await api('/admin/hwid/ban', 'POST', {hwid: v});
+    if (r.ok){
+      toast('HWID banni', 'success');
+      loadLogs();
+    } else {
+      // rollback
+      removeHwidOptimistic(v);
+      toast(r.error || 'Erreur', 'error');
+    }
+  } catch {
+    removeHwidOptimistic(v);
+    toast('Erreur réseau', 'error');
+  }
 }
 $('banHwid').onclick = banHwid;
 $('newHwid').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); banHwid(); } });
 
-/* ---------- COMPTES ---------- */
+/* ---------- COMPTES (avec cache) ---------- */
 let allAccounts = [];
 async function loadAccounts(){
-  try {
-    const r = await api('/admin/accounts'); if (!r.ok) throw new Error();
-    allAccounts = r.accounts || [];
+  const cached = loadCache(ACCS_CACHE);
+  if (cached && cached.length){
+    allAccounts = cached;
     renderAccounts();
-  } catch { $('accEmpty').hidden = false; $('accEmpty').textContent = 'Impossible de charger les comptes.'; }
+  } else if (!allAccounts.length){
+    $('accEmpty').hidden = true;
+    $('accBody').innerHTML = skeletonRows(4, 6);
+  }
+  try {
+    const r = await api('/admin/accounts');
+    if (!r.ok) throw new Error();
+    allAccounts = r.accounts || [];
+    saveCache(ACCS_CACHE, allAccounts);
+    renderAccounts();
+  } catch {
+    if (!cached || !cached.length){
+      $('accEmpty').hidden = false;
+      $('accEmpty').textContent = 'Impossible de charger les comptes.';
+    }
+  }
 }
 function renderAccounts(){
   $('nAcc').textContent = allAccounts.length;
-  const tbody = $('accBody'); tbody.innerHTML = '';
+  const tbody = $('accBody');
   if (!allAccounts.length) {
+    tbody.innerHTML = '';
     $('accEmpty').hidden = false;
     $('accEmpty').textContent = 'Aucun compte pour le moment.';
     return;
   }
   $('accEmpty').hidden = true;
-  tbody.innerHTML = allAccounts.map(a => {
+  const frag = document.createDocumentFragment();
+  allAccounts.forEach(a => {
     const stat = a.used
       ? '<span class="badge banned">Utilisé</span>'
       : '<span class="badge active">Disponible</span>';
-    return `<tr>
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
       <td data-l="Email"><span class="hw" style="color:#8ab4f8">${esc(a.email)}</span></td>
       <td data-l="Mot de passe"><span class="hw" style="color:#ff8b95">${esc(a.password)}</span></td>
       <td data-l="Statut">${stat}</td>
@@ -1210,32 +1331,91 @@ function renderAccounts(){
       <td data-l=""><div class="row">
         ${a.used ? `<button class="btn ghost sm" data-act="reset" data-id="${a.id}">Libérer</button>` : ''}
         <button class="btn ghost sm danger" data-act="del" data-id="${a.id}">Supprimer</button>
-      </div></td></tr>`;
-  }).join('');
+      </div></td>`;
+    frag.appendChild(tr);
+  });
+  tbody.classList.remove('fresh');
+  tbody.replaceChildren(frag);
+  void tbody.offsetWidth; tbody.classList.add('fresh');
 }
 $('accBody').addEventListener('click', async e => {
   const b = e.target.closest('[data-act]'); if (!b) return;
   const id = b.dataset.id, a = b.dataset.act;
   if (a === 'del' && !confirm('Supprimer ce compte ?')) return;
-  const r = await api({del:'/admin/accounts/delete', reset:'/admin/accounts/reset'}[a], 'POST', {id});
-  if (r.ok) { toast(a === 'del' ? 'Compte supprimé' : 'Compte libéré', 'success'); loadAccounts(); loadLogs(); }
-  else toast(r.error || 'Erreur', 'error');
+
+  const prev = allAccounts.slice();
+
+  if (a === 'del'){
+    allAccounts = allAccounts.filter(x => x.id !== id);
+  } else if (a === 'reset'){
+    allAccounts = allAccounts.map(x => x.id === id ? {...x, used:false, usedAt:null, usedBy:null} : x);
+  }
+  saveCache(ACCS_CACHE, allAccounts);
+  renderAccounts();
+
+  try {
+    const r = await api({del:'/admin/accounts/delete', reset:'/admin/accounts/reset'}[a], 'POST', {id});
+    if (r.ok){
+      toast(a === 'del' ? 'Compte supprimé' : 'Compte libéré', 'success');
+      loadLogs();
+    } else {
+      allAccounts = prev;
+      saveCache(ACCS_CACHE, allAccounts);
+      renderAccounts();
+      toast(r.error || 'Erreur', 'error');
+    }
+  } catch {
+    allAccounts = prev;
+    saveCache(ACCS_CACHE, allAccounts);
+    renderAccounts();
+    toast('Erreur réseau', 'error');
+  }
 });
 $('addAcc').onclick = async () => {
   const email = $('newAccEmail').value.trim();
   const password = $('newAccPass').value.trim();
   if (!email || !password) return toast('Email et mot de passe requis', 'error');
-  const r = await api('/admin/accounts', 'POST', {email, password});
-  if (r.ok) {
-    $('newAccEmail').value = ''; $('newAccPass').value = '';
-    toast('Compte ajouté', 'success'); loadAccounts();
-  } else toast(r.error || 'Erreur', 'error');
+
+  const tempId = 'tmp_' + Date.now();
+  const newAcc = { id: tempId, email, password, used: false };
+
+  // Insertion locale immédiate
+  allAccounts = [newAcc, ...allAccounts];
+  saveCache(ACCS_CACHE, allAccounts);
+  renderAccounts();
+  $('newAccEmail').value = ''; $('newAccPass').value = '';
+
+  try {
+    const r = await api('/admin/accounts', 'POST', {email, password});
+    if (r.ok){
+      toast('Compte ajouté', 'success');
+      // Remplace le temp par le vrai compte si l'API en renvoie un
+      if (r.account){
+        allAccounts = allAccounts.map(x => x.id === tempId ? r.account : x);
+      } else {
+        allAccounts = allAccounts.map(x => x.id === tempId ? {...x, id: 'srv_' + Date.now()} : x);
+      }
+      saveCache(ACCS_CACHE, allAccounts);
+      renderAccounts();
+      loadLogs();
+    } else {
+      allAccounts = allAccounts.filter(x => x.id !== tempId);
+      saveCache(ACCS_CACHE, allAccounts);
+      renderAccounts();
+      toast(r.error || 'Erreur', 'error');
+    }
+  } catch {
+    allAccounts = allAccounts.filter(x => x.id !== tempId);
+    saveCache(ACCS_CACHE, allAccounts);
+    renderAccounts();
+    toast('Erreur réseau', 'error');
+  }
 };
 $('newAccPass').addEventListener('keydown', e => {
   if (e.key === 'Enter'){ e.preventDefault(); $('addAcc').click(); }
 });
 
-/* ---------- LOGS ---------- */
+/* ---------- LOGS (avec cache) ---------- */
 const L = {
   create:['Création','active'], ban:['Ban','banned'], unban:['Déban','active'], delete:['Suppression','expired'],
   'hwid-ban':['HWID banni','banned'], 'hwid-unban':['HWID retiré','active'], export:['Export','active'],
@@ -1244,18 +1424,46 @@ const L = {
   'account-add':['Compte ajouté','active'], 'account-del':['Compte supprimé','expired'],
   'account-used':['Compte utilisé','warn'], 'account-reset':['Compte libéré','active']
 };
+
+function renderLogs(list){
+  $('logsEmpty').hidden = list.length > 0;
+  $('logsEmpty').textContent = 'Aucun log.';
+  const frag = document.createDocumentFragment();
+  list.forEach(l => {
+    const [lab, cls] = L[l.type] || [l.type, 'active'];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td data-l="Date" class="mut">${fmtDate(l.ts)}</td>
+      <td data-l="Type"><span class="badge ${cls}">${esc(lab)}</span></td>
+      <td data-l="Détail">${esc(l.detail)}</td>`;
+    frag.appendChild(tr);
+  });
+  const tbody = $('logsBody');
+  tbody.classList.remove('fresh');
+  tbody.replaceChildren(frag);
+  void tbody.offsetWidth; tbody.classList.add('fresh');
+}
+
 async function loadLogs(){
+  const cached = loadCache(LOGS_CACHE);
+  if (cached && cached.length){
+    renderLogs(cached);
+  } else {
+    $('logsEmpty').hidden = true;
+    $('logsBody').innerHTML = skeletonRows(5, 3);
+  }
   try {
-    const r = await api('/admin/logs'); if (!r.ok) throw new Error();
-    const list = r.logs || []; $('logsEmpty').hidden = list.length > 0; $('logsEmpty').textContent = 'Aucun log.';
-    $('logsBody').innerHTML = list.map(l => {
-      const [lab, cls] = L[l.type] || [l.type, 'active'];
-      return `<tr>
-        <td data-l="Date" class="mut">${fmtDate(l.ts)}</td>
-        <td data-l="Type"><span class="badge ${cls}">${esc(lab)}</span></td>
-        <td data-l="Détail">${esc(l.detail)}</td></tr>`;
-    }).join('');
-  } catch { $('logsEmpty').hidden = false; $('logsEmpty').textContent = 'Impossible de charger les logs.'; }
+    const r = await api('/admin/logs');
+    if (!r.ok) throw new Error();
+    const list = r.logs || [];
+    saveCache(LOGS_CACHE, list);
+    renderLogs(list);
+  } catch {
+    if (!cached || !cached.length){
+      $('logsEmpty').hidden = false;
+      $('logsEmpty').textContent = 'Impossible de charger les logs.';
+    }
+  }
 }
 
 /* ---------- EXPORT ---------- */
