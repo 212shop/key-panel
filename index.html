@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0c0e12">
 <title>KeyAuth Panel</title>
 <style>
 :root{
@@ -11,9 +12,12 @@
   --red:#e5484d;--red2:#c93a3f;--ok:#46c97d;--warn:#f0b13a;
   --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
   --mono:ui-monospace,Consolas,"Courier New",monospace;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font:13.5px/1.5 var(--sans);min-height:100vh}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font:13.5px/1.5 var(--sans);min-height:100vh;min-height:100dvh}
 button,input,select{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--red);outline-offset:2px}
 [hidden]{display:none!important}
@@ -29,8 +33,8 @@ button,input,select{font:inherit;color:inherit}
 .err{color:var(--red);font-size:12.5px;margin-top:12px}
 
 /* Mise en page */
-#app{display:grid;grid-template-columns:210px 1fr;min-height:100vh}
-aside{background:var(--side);border-right:1px solid var(--line);padding:18px 12px;display:flex;flex-direction:column;gap:3px;position:sticky;top:0;height:100vh}
+#app{display:grid;grid-template-columns:210px 1fr;min-height:100vh;min-height:100dvh}
+aside{background:var(--side);border-right:1px solid var(--line);padding:18px 12px;display:flex;flex-direction:column;gap:3px;position:sticky;top:0;height:100vh;height:100dvh}
 .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px;padding:4px 10px 20px}
 .brand i{width:26px;height:26px;border-radius:7px;background:var(--red);display:grid;place-items:center;font-style:normal;font-size:13px}
 .nav{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-radius:8px;color:var(--mute);font-weight:600;cursor:pointer;background:none;border:0;text-align:left;width:100%}
@@ -62,7 +66,7 @@ h1.t{font-size:20px;font-weight:700;letter-spacing:-.2px}
 .tb{display:flex;gap:8px;padding:12px;border-bottom:1px solid var(--line);flex-wrap:wrap;align-items:center}
 .tb input,.tb select,.fld input,.fld select{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 11px;outline:none}
 .tb input{flex:1;min-width:200px}
-.scroll{overflow-x:auto}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;min-width:720px}
 th{text-align:left;padding:10px 14px;font-size:12px;color:var(--mute);font-weight:600;background:var(--side);border-bottom:1px solid var(--line);white-space:nowrap}
 td{padding:11px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
@@ -98,18 +102,9 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
 .foot{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
 .out{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;font-family:var(--mono);font-size:12.5px;color:#ff8f93;max-height:200px;overflow:auto;white-space:pre;margin-bottom:12px}
 
-#toasts{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:8px;z-index:100}
+#toasts{position:fixed;right:20px;bottom:calc(20px + var(--safe-b));display:flex;flex-direction:column;gap:8px;z-index:100}
 .toast{background:var(--panel2);border:1px solid var(--line2);border-left:3px solid var(--dim);border-radius:8px;padding:10px 15px;min-width:200px;font-weight:600}
 .toast.success{border-left-color:var(--ok)}.toast.error{border-left-color:var(--red)}
-
-@media(max-width:900px){
-  #app{grid-template-columns:1fr}
-  aside{position:static;height:auto;flex-direction:row;align-items:center;overflow-x:auto;padding:10px;border-right:0;border-bottom:1px solid var(--line)}
-  .brand{padding:0 10px 0 0}.nav{width:auto;gap:8px;white-space:nowrap}.nav.on{box-shadow:inset 0 -2px var(--red)}
-  .bottom{margin:0 0 0 auto}
-  main{padding:18px 16px 40px}.stats{grid-template-columns:repeat(2,1fr)}
-}
-@media(prefers-reduced-motion:reduce){*{transition:none!important}}
 
 /* ===== Style & animations ===== */
 @property --a{syntax:'<angle>';initial-value:0deg;inherits:false}
@@ -163,7 +158,139 @@ tbody tr{transition:background .25s}
 .toast{animation:toastIn .4s cubic-bezier(.2,.9,.3,1.1);backdrop-filter:blur(8px)}
 .toast.out{animation:toastOut .3s ease forwards}
 
-@media(prefers-reduced-motion:reduce){*,::before,::after{animation:none!important}}
+/* ============================================================
+   ============  RESPONSIVE TÉLÉPHONE / TABLETTE  =============
+   ============================================================ */
+@media(max-width:900px){
+  #app{grid-template-columns:1fr}
+
+  /* Sidebar -> barre horizontale scrollable en haut */
+  aside{
+    position:sticky;top:0;z-index:40;height:auto;width:100%;
+    flex-direction:row;align-items:center;gap:8px;
+    padding:10px 12px;padding-top:calc(10px + var(--safe-t));
+    border-right:0;border-bottom:1px solid var(--line);
+    overflow-x:auto;overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  aside::-webkit-scrollbar{display:none}
+  .brand{padding:0 12px 0 0;flex:0 0 auto;font-size:14px}
+  .brand i{width:24px;height:24px;font-size:12px}
+  .nav{
+    width:auto;flex:0 0 auto;white-space:nowrap;gap:8px;
+    padding:8px 12px;font-size:13px;
+  }
+  .nav:hover{transform:none}
+  .nav.on{box-shadow:inset 0 -2px var(--red);background:var(--panel2)}
+  .bottom{margin:0 0 0 auto;flex:0 0 auto}
+  .bottom .btn{padding:8px 12px;font-size:13px;white-space:nowrap}
+
+  main{padding:16px 14px calc(40px + var(--safe-b))}
+
+  .top{margin-bottom:14px;gap:10px}
+  h1.t{font-size:18px;width:100%}
+  .acts{width:100%;gap:8px}
+  .acts .btn{flex:1;min-width:0;padding:10px 12px;font-size:13px}
+
+  /* Stats : 2 colonnes sur mobile */
+  .stats{grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+  .stat{padding:12px 14px}
+  .stat b{font-size:22px}
+  .stat span{font-size:11.5px}
+
+  /* Quick : scroll horizontal */
+  .quick{padding:10px 12px;gap:6px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .quick::-webkit-scrollbar{display:none}
+  .quick span{flex:0 0 auto}
+  .quick button{flex:0 0 auto;padding:7px 12px;font-size:12.5px}
+
+  /* Barres de filtres : champs empilés */
+  .tb{padding:10px;gap:8px}
+  .tb input{min-width:0;width:100%;flex:1 1 100%;padding:10px 12px}
+  .tb select{width:100%;padding:10px 12px}
+  .tb .btn{width:100%;padding:10px 12px}
+  #v-accounts .tb input{flex:1 1 100%}
+
+  /* Tableaux -> cartes empilées */
+  .scroll{overflow:visible}
+  table{min-width:0;width:100%}
+  thead{display:none}
+  table,tbody,tr,td{display:block;width:100%}
+  tbody tr{
+    background:var(--panel2);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px 14px;
+    margin:10px;
+    margin-bottom:10px;
+    animation:rowIn .45s cubic-bezier(.2,.8,.2,1) both;
+    animation-delay:calc(var(--i,0)*40ms);
+  }
+  tbody tr:hover{background:var(--panel2)}
+  td{
+    border:0;padding:6px 0;white-space:normal;
+    display:flex;justify-content:space-between;align-items:center;gap:12px;
+    font-size:13px;
+  }
+  td::before{
+    content:attr(data-l);
+    color:var(--mute);font-size:11.5px;font-weight:600;
+    text-transform:uppercase;letter-spacing:.4px;
+    flex:0 0 auto;
+  }
+  td:empty{display:none}
+  td .row{justify-content:flex-end;width:100%;gap:8px}
+  td .row .btn{flex:1;text-align:center;padding:8px 10px;font-size:12.5px}
+  td[data-l=""]::before{display:none}
+
+  /* Cellule clé : autoriser le wrap */
+  .key,.hw{word-break:break-all;white-space:normal}
+  .key{display:inline-block}
+
+  /* Fenêtres : plein écran bas */
+  .modal{padding:0;place-items:end center;backdrop-filter:blur(4px)}
+  .box{
+    max-width:100%;width:100%;
+    border-radius:16px 16px 0 0;
+    padding:20px 18px calc(20px + var(--safe-b));
+    animation:rise .35s cubic-bezier(.2,.9,.3,1.05);
+    max-height:92dvh;overflow-y:auto;
+  }
+  .box h2{font-size:16px}
+  .two{grid-template-columns:1fr}
+  .foot .btn{flex:1;padding:12px 14px}
+  .fld input,.fld select{padding:12px 13px;font-size:15px} /* évite zoom iOS */
+  .out{font-size:12px}
+
+  /* Toasts */
+  #toasts{left:12px;right:12px;bottom:calc(12px + var(--safe-b))}
+  .toast{min-width:0;width:100%;padding:12px 14px;font-size:13px}
+
+  /* Inputs : éviter le zoom iOS (>=16px) */
+  .lbox input,.tb input,.tb select,.fld input,.fld select,#newHwid,#newAccEmail,#newAccPass{font-size:16px}
+  .lbox{padding:26px 20px}
+  .lbox h1{font-size:17px}
+  .lbox input{padding:13px 14px}
+  .lbox .btn{padding:13px 14px;font-size:15px}
+}
+
+/* Très petits écrans */
+@media(max-width:380px){
+  .stats{grid-template-columns:1fr 1fr}
+  .stat b{font-size:20px}
+  .brand span{display:none}
+  .nav{font-size:12.5px;padding:7px 10px}
+  .acts .btn{padding:9px 10px;font-size:12.5px}
+}
+
+/* Orientation paysage sur mobile : sidebar plus compacte */
+@media(max-width:900px) and (orientation:landscape){
+  aside{padding:8px 12px}
+  main{padding:14px 14px 30px}
+}
+
+@media(prefers-reduced-motion:reduce){*,::before,::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -180,7 +307,7 @@ tbody tr{transition:background .25s}
 
 <div id="app" hidden>
   <aside>
-    <div class="brand"><i>🔑</i>KeyAuth</div>
+    <div class="brand"><i>🔑</i><span>KeyAuth</span></div>
     <button class="nav on" data-view="keys">Licences <small id="nKeys">0</small></button>
     <button class="nav" data-view="hwid">HWID bannis <small id="nHwid">0</small></button>
     <button class="nav" data-view="accounts">Comptes Rockstar <small id="nAcc">0</small></button>
@@ -204,7 +331,7 @@ tbody tr{transition:background .25s}
 
         <!-- GÉNÉRATION RAPIDE -->
         <div class="quick">
-          <span>Génération rapide</span>
+          <span>Rapide</span>
           <button type="button" data-quick="1">1 jour</button>
           <button type="button" data-quick="3">3 jours</button>
           <button type="button" data-quick="7">7 jours</button>
@@ -384,13 +511,13 @@ function renderKeys(list, anim){
   $('keysBody').innerHTML = rows.map(k => {
     const s = status(k);
     return `<tr>
-      <td><span class="key" title="Cliquer pour copier" data-copy="${esc(k.key)}">${esc(k.key)}</span></td>
-      <td><span class="badge ${s}">${names[s]}</span></td>
-      <td class="mut">${esc(k.days || '?')} j</td>
-      <td>${k.hwid ? `<span class="hw">${esc(k.hwid)}</span>` : '<span class="mut"><i>libre</i></span>'}</td>
-      <td class="mut">${fmtDate(k.expiresAt)}</td>
-      <td class="mut">${s === 'active' ? fmtLeft(k.expiresAt - Date.now()) : '—'}</td>
-      <td><div class="row">
+      <td data-l="Clé"><span class="key" title="Cliquer pour copier" data-copy="${esc(k.key)}">${esc(k.key)}</span></td>
+      <td data-l="Statut"><span class="badge ${s}">${names[s]}</span></td>
+      <td data-l="Durée" class="mut">${esc(k.days || '?')} j</td>
+      <td data-l="HWID">${k.hwid ? `<span class="hw">${esc(k.hwid)}</span>` : '<span class="mut"><i>libre</i></span>'}</td>
+      <td data-l="Expire le" class="mut">${fmtDate(k.expiresAt)}</td>
+      <td data-l="Restant" class="mut">${s === 'active' ? fmtLeft(k.expiresAt - Date.now()) : '—'}</td>
+      <td data-l=""><div class="row">
         <button class="btn ghost sm" data-act="${k.banned ? 'unban' : 'ban'}" data-key="${esc(k.key)}">${k.banned ? 'Débannir' : 'Bannir'}</button>
         <button class="btn ghost sm danger" data-act="del" data-key="${esc(k.key)}">Supprimer</button>
       </div></td></tr>`;
@@ -489,9 +616,9 @@ async function loadHwids(){
     $('nHwid').textContent = list.length; $('hwidEmpty').hidden = list.length > 0;
     $('hwidEmpty').textContent = 'Aucun HWID banni.';
     $('hwidBody').innerHTML = list.map(h => `<tr>
-      <td><span class="hw" style="color:#ff8f93">${esc(h.hwid)}</span></td>
-      <td class="mut">${fmtDate(h.ts || Date.now())}</td>
-      <td><button class="btn ghost sm" data-h="${esc(h.hwid)}">Retirer</button></td></tr>`).join('');
+      <td data-l="HWID"><span class="hw" style="color:#ff8f93">${esc(h.hwid)}</span></td>
+      <td data-l="Ajouté le" class="mut">${fmtDate(h.ts || Date.now())}</td>
+      <td data-l=""><button class="btn ghost sm" data-h="${esc(h.hwid)}">Retirer</button></td></tr>`).join('');
   } catch { $('hwidEmpty').hidden = false; $('hwidEmpty').textContent = 'Impossible de charger les HWID.'; }
 }
 $('hwidBody').addEventListener('click', async e => {
@@ -530,12 +657,12 @@ function renderAccounts(){
       ? '<span class="badge banned">Utilisé</span>'
       : '<span class="badge active">Disponible</span>';
     return `<tr>
-      <td><span class="hw" style="color:#8ab4f8">${esc(a.email)}</span></td>
-      <td><span class="hw" style="color:#ff8f93">${esc(a.password)}</span></td>
-      <td>${stat}</td>
-      <td class="mut">${a.usedAt ? fmtDate(a.usedAt) : '—'}</td>
-      <td class="mut">${esc(a.usedBy || '—')}</td>
-      <td><div class="row">
+      <td data-l="Email"><span class="hw" style="color:#8ab4f8">${esc(a.email)}</span></td>
+      <td data-l="Mot de passe"><span class="hw" style="color:#ff8f93">${esc(a.password)}</span></td>
+      <td data-l="Statut">${stat}</td>
+      <td data-l="Utilisé le" class="mut">${a.usedAt ? fmtDate(a.usedAt) : '—'}</td>
+      <td data-l="Utilisé par" class="mut">${esc(a.usedBy || '—')}</td>
+      <td data-l=""><div class="row">
         ${a.used ? `<button class="btn ghost sm" data-act="reset" data-id="${a.id}">Libérer</button>` : ''}
         <button class="btn ghost sm danger" data-act="del" data-id="${a.id}">Supprimer</button>
       </div></td></tr>`;
@@ -579,7 +706,7 @@ async function loadLogs(){
     const list = r.logs || []; $('logsEmpty').hidden = list.length > 0; $('logsEmpty').textContent = 'Aucun log.';
     $('logsBody').innerHTML = list.map(l => {
       const [lab, cls] = L[l.type] || [l.type, 'active'];
-      return `<tr><td class="mut">${fmtDate(l.ts)}</td><td><span class="badge ${cls}">${esc(lab)}</span></td><td>${esc(l.detail)}</td></tr>`;
+      return `<tr><td data-l="Date" class="mut">${fmtDate(l.ts)}</td><td data-l="Type"><span class="badge ${cls}">${esc(lab)}</span></td><td data-l="Détail">${esc(l.detail)}</td></tr>`;
     }).join('');
   } catch { $('logsEmpty').hidden = false; $('logsEmpty').textContent = 'Impossible de charger les logs.'; }
 }
