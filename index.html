@@ -559,7 +559,12 @@ $('addAcc').onclick = async () => {
     toast('Compte ajouté', 'success'); loadAccounts();
   } else toast(r.error || 'Erreur', 'error');
 };
-$('newAccPass').onkeydown = e => e.key === 'Enter' && $('addAcc').click();
+$('newAccPass').onkeydown = e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    $('addAcc').click();
+  }
+};
 
 /* ---------- Logs ---------- */
 const L = {create:['Création','active'], ban:['Ban','banned'], unban:['Déban','active'], delete:['Suppression','expired'],
