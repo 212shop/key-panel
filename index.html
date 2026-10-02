@@ -96,14 +96,14 @@ button,input,select{font:inherit;color:inherit}
 .lbox p{color:var(--mute);margin-bottom:26px;font-size:13.5px}
 .lbox input{
   width:100%;padding:13px 15px;
-  background:rgba(0,0,0,.35);
+  background-color:rgba(0,0,0,.35);
   border:1px solid var(--line-2);
   border-radius:var(--r-md);
   margin-bottom:14px;outline:none;
-  transition:border-color .2s,box-shadow .2s,background .2s;
+  transition:border-color .2s,box-shadow .2s,background-color .2s;
   font-size:14px;
 }
-.lbox input:focus{border-color:var(--red);box-shadow:0 0 0 4px var(--red-glow);background:rgba(0,0,0,.5)}
+.lbox input:focus{border-color:var(--red);box-shadow:0 0 0 4px var(--red-glow);background-color:rgba(0,0,0,.5)}
 .err{color:var(--red);font-size:13px;margin-top:14px;padding:10px 12px;background:rgba(255,77,90,.08);border-radius:var(--r-sm);border-left:2px solid var(--red)}
 
 /* ========== LAYOUT ========== */
@@ -275,25 +275,49 @@ h1.t{font-size:24px;font-weight:700;letter-spacing:-.03em;line-height:1.2}
   border-bottom:1px solid var(--line);
   flex-wrap:wrap;align-items:center;
 }
-.search-wrap{position:relative;flex:1;min-width:220px}
-.search-wrap svg{
-  position:absolute;left:13px;top:50%;transform:translateY(-50%);
-  width:15px;height:15px;color:var(--mute);pointer-events:none;
-}
+
+/* ===== INPUTS avec icône en background (fiable sur tous les navigateurs) ===== */
 .tb input,.tb select,.fld input,.fld select{
-  background:rgba(0,0,0,.3);
+  background-color:rgba(0,0,0,.3);
   border:1px solid var(--line-2);
-  border-radius:9px;padding:9px 13px;outline:none;
-  transition:border-color .2s,box-shadow .2s,background .2s;
+  border-radius:9px;
+  padding:9px 13px;
+  outline:none;
+  transition:border-color .2s,box-shadow .2s,background-color .2s;
   font-size:13.5px;
+  pointer-events:auto;
+  user-select:text;
+  -webkit-user-select:text;
+  cursor:text;
+  touch-action:manipulation;
+  -webkit-appearance:none;
+  appearance:none;
 }
-.search-wrap input{width:100%;padding-left:38px}
 .tb input:focus,.tb select:focus,.fld input:focus,.fld select:focus{
-  border-color:var(--red);box-shadow:0 0 0 4px var(--red-glow);background:rgba(0,0,0,.5);
+  border-color:var(--red);
+  box-shadow:0 0 0 4px var(--red-glow);
+  background-color:rgba(0,0,0,.5);
 }
-.tb select{cursor:pointer;padding-right:32px;appearance:none;
+.tb select{cursor:pointer;padding-right:32px;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236f7889' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-  background-repeat:no-repeat;background-position:right 11px center;
+  background-repeat:no-repeat;
+  background-position:right 11px center;
+}
+
+/* Champs avec icône (search, ban) */
+.search-wrap{position:relative;flex:1;min-width:220px}
+.search-wrap input{
+  width:100%;
+  padding-left:38px;
+  background-repeat:no-repeat;
+  background-position:13px center;
+  background-size:15px 15px;
+}
+#q{
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236f7889' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.35-4.35'/></svg>");
+}
+#newHwid{
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236f7889' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><line x1='4.93' y1='4.93' x2='19.07' y2='19.07'/></svg>");
 }
 
 .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
@@ -667,7 +691,6 @@ tr.skeleton td:nth-child(7) .sk{width:30%}
 
         <div class="tb">
           <div class="search-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             <input id="q" type="search" placeholder="Rechercher une clé ou un HWID…" aria-label="Rechercher">
           </div>
           <select id="st" aria-label="Statut">
@@ -689,8 +712,7 @@ tr.skeleton td:nth-child(7) .sk{width:30%}
       <div class="card">
         <div class="tb">
           <div class="search-wrap">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-            <input id="newHwid" placeholder="HWID à bannir" aria-label="HWID à bannir">
+            <input id="newHwid" type="text" inputmode="text" placeholder="HWID à bannir" aria-label="HWID à bannir" autocomplete="off" spellcheck="false" autocapitalize="characters">
           </div>
           <button class="btn red" id="banHwid">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
@@ -814,7 +836,7 @@ function skeletonRows(n = 6){
   ).join('');
 }
 
-/* Verrou anti-resync : empêche loadKeys de remplacer la liste pendant une action */
+/* Verrou anti-resync */
 let syncLocked = 0;
 function lockSync(ms = 2500){ syncLocked = Date.now() + ms; }
 
@@ -881,7 +903,6 @@ const STAT_ICONS = {
 let allKeys = [];
 
 async function loadKeys(anim = true){
-  // Verrou : ne pas resync si une action récente est en cours
   if (Date.now() < syncLocked) return;
 
   if (!allKeys.length){
@@ -896,7 +917,7 @@ async function loadKeys(anim = true){
   try {
     const r = await api('/admin/keys');
     if (!r.ok) throw new Error(r.error);
-    if (Date.now() < syncLocked) return; // revérifie après l'appel
+    if (Date.now() < syncLocked) return;
     renderKeys(r.keys || [], anim, false);
   } catch(e){
     toast('Erreur : ' + e.message, 'error');
@@ -969,7 +990,6 @@ function renderKeys(list, anim, skipStats){
   renderRows(list, anim);
 }
 
-/* Insertion optimiste : gère les deux formats (string[] ou {key}[]) */
 function insertKeysOptimistic(created, days, hwid){
   if (!created || !created.length) return;
   const now = Date.now();
@@ -977,7 +997,7 @@ function insertKeysOptimistic(created, days, hwid){
   const newKeys = created.map(x => {
     const obj = (typeof x === 'string') ? { key: x } : x;
     const k = obj.key || obj.Key || obj.token || obj.license;
-    if (!k) return null; // skip si pas de clé identifiable
+    if (!k) return null;
     return {
       key: k,
       days: obj.days || days,
@@ -997,7 +1017,6 @@ function insertKeysOptimistic(created, days, hwid){
   renderRows(allKeys, true);
 }
 
-/* Handler clic : suppression/ban optimiste (pas de reload) */
 $('keysBody').addEventListener('click', async e => {
   const cp = e.target.closest('[data-copy]');
   if (cp) return navigator.clipboard.writeText(cp.dataset.copy).then(() => toast('Clé copiée', 'success'), () => toast('Copie impossible', 'error'));
@@ -1007,10 +1026,8 @@ $('keysBody').addEventListener('click', async e => {
   if (a === 'ban' && !confirm('Bannir ' + key + ' ?')) return;
   if (a === 'del' && !confirm('Supprimer ' + key + ' ?')) return;
 
-  // === Snapshot pour rollback ===
   const prevKeys = allKeys.slice();
 
-  // === Action locale immédiate ===
   if (a === 'del'){
     allKeys = allKeys.filter(k => k.key !== key);
   } else if (a === 'ban'){
@@ -1021,9 +1038,8 @@ $('keysBody').addEventListener('click', async e => {
   saveKeysCache(allKeys);
   renderStats(allKeys);
   renderRows(allKeys, false);
-  lockSync(2500); // empêche tout resync pendant 2.5s
+  lockSync(2500);
 
-  // === Appel API ===
   const endpoint = {ban:'/admin/ban', unban:'/admin/unban', del:'/admin/delete'}[a];
   try {
     const r = await api(endpoint, 'POST', {key});
@@ -1031,7 +1047,6 @@ $('keysBody').addEventListener('click', async e => {
       toast({ban:'Clé bannie', unban:'Clé réactivée', del:'Clé supprimée'}[a], 'success');
       loadLogs();
     } else {
-      // === Rollback ===
       allKeys = prevKeys;
       saveKeysCache(allKeys);
       renderStats(allKeys);
@@ -1047,7 +1062,6 @@ $('keysBody').addEventListener('click', async e => {
   }
 });
 
-/* Recherche avec debounce */
 let searchTimer;
 $('q').oninput = () => {
   clearTimeout(searchTimer);
@@ -1055,7 +1069,7 @@ $('q').oninput = () => {
 };
 $('st').onchange = () => renderRows(allKeys, false);
 $('refresh').onclick = () => {
-  syncLocked = 0; // déverrouille pour ce refresh manuel
+  syncLocked = 0;
   loadKeys(false); loadHwids(); loadAccounts(); loadLogs();
 };
 
@@ -1078,7 +1092,7 @@ document.querySelectorAll('[data-quick]').forEach(btn => {
       if (!r.ok) return toast(r.error || 'Erreur', 'error');
       close();
       insertKeysOptimistic(r.created, days, hwid);
-      lockSync(2500); // empêche tout resync pendant 2.5s
+      lockSync(2500);
       const made = (r.created || []).map(x => typeof x === 'string' ? x : (x.key || x.Key || x.token || x.license)).filter(Boolean);
       loadLogs();
       if (!made.length) return toast(quantity + ' clé(s) ' + days + 'j créée(s)', 'success');
@@ -1163,7 +1177,7 @@ async function banHwid(){
   if (r.ok) { $('newHwid').value = ''; toast('HWID banni', 'success'); loadHwids(); loadLogs(); } else toast(r.error || 'Erreur', 'error');
 }
 $('banHwid').onclick = banHwid;
-$('newHwid').onkeydown = e => e.key === 'Enter' && banHwid();
+$('newHwid').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); banHwid(); } });
 
 /* ---------- COMPTES ---------- */
 let allAccounts = [];
@@ -1217,9 +1231,9 @@ $('addAcc').onclick = async () => {
     toast('Compte ajouté', 'success'); loadAccounts();
   } else toast(r.error || 'Erreur', 'error');
 };
-$('newAccPass').onkeydown = e => {
-  if (e.key === 'Enter') { e.preventDefault(); $('addAcc').click(); }
-};
+$('newAccPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter'){ e.preventDefault(); $('addAcc').click(); }
+});
 
 /* ---------- LOGS ---------- */
 const L = {
