@@ -59,7 +59,7 @@ h1.t{font-size:20px;font-weight:700;letter-spacing:-.2px}
 .ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--red)}
 
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
-.tb{display:flex;gap:8px;padding:12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tb{display:flex;gap:8px;padding:12px;border-bottom:1px solid var(--line);flex-wrap:wrap;align-items:center}
 .tb input,.tb select,.fld input,.fld select{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 11px;outline:none}
 .tb input{flex:1;min-width:200px}
 .scroll{overflow-x:auto}
@@ -81,6 +81,12 @@ tbody tr:hover{background:rgba(255,255,255,.02)}
 .row{display:flex;gap:6px}
 .view{display:none}.view.on{display:block}
 .empty{padding:38px 20px;text-align:center;color:var(--dim)}
+
+/* Barre de génération rapide */
+.quick{padding:10px 14px;border-bottom:1px solid var(--line);display:flex;gap:6px;flex-wrap:wrap;align-items:center;background:var(--panel2)}
+.quick span{font-size:11.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-right:6px}
+.quick button{padding:5px 11px;font-size:12px;border-radius:6px;border:1px solid var(--line2);background:var(--panel);color:var(--mute);font-weight:600;cursor:pointer}
+.quick button:hover{border-color:var(--red);color:var(--text)}
 
 /* Fenêtre */
 .modal{position:fixed;inset:0;background:rgba(4,5,8,.75);display:grid;place-items:center;padding:20px;z-index:60}
@@ -194,6 +200,18 @@ tbody tr{transition:background .25s}
     <section class="view on" id="v-keys">
       <div class="stats" id="stats"></div>
       <div class="card">
+
+        <!-- GÉNÉRATION RAPIDE -->
+        <div class="quick">
+          <span>Génération rapide</span>
+          <button type="button" data-quick="1">1 jour</button>
+          <button type="button" data-quick="3">3 jours</button>
+          <button type="button" data-quick="7">7 jours</button>
+          <button type="button" data-quick="30">30 jours</button>
+          <button type="button" data-quick="90">90 jours</button>
+          <button type="button" data-quick="365">1 an</button>
+        </div>
+
         <div class="tb">
           <input id="q" type="search" placeholder="Rechercher une clé ou un HWID" aria-label="Rechercher">
           <select id="st" aria-label="Statut">
@@ -241,8 +259,6 @@ tbody tr{transition:background .25s}
 /* ---------- Configuration ---------- */
 const API_URL = "https://keyauth-api.cacamoussa70.workers.dev";
 
-/* La clé admin n'est jamais écrite dans le code : elle est saisie à la connexion
-   et gardée uniquement le temps de la session de l'onglet. */
 let adminKey = sessionStorage.getItem('ka_admin') || '';
 
 const $ = id => document.getElementById(id);
@@ -258,7 +274,9 @@ const names = {active:'Active', expired:'Expirée', banned:'Bannie'};
 function toast(msg, type){
   const el = document.createElement('div');
   el.className = 'toast ' + (type || ''); el.textContent = msg;
-  $('toasts').appendChild(el); setTimeout(() => el.classList.add('out'), 2500); setTimeout(() => el.remove(), 2800);
+  $('toasts').appendChild(el);
+  setTimeout(() => el.classList.add('out'), 2500);
+  setTimeout(() => el.remove(), 2800);
 }
 async function api(path, method = 'GET', body){
   const r = await fetch(API_URL + path, {
@@ -280,10 +298,10 @@ $('loginForm').addEventListener('submit', async e => {
     let r = null;
     try { r = await res.json(); } catch {}
     if (res.ok && r && r.ok) { sessionStorage.setItem('ka_admin', v); start(r); }
-    else if (res.status === 401 || res.status === 403) msg = 'Clé refusée par l\'API (erreur ' + res.status + '). Utilise la clé admin du Worker, pas l\'ancien mot de passe du panel.';
+    else if (res.status === 401 || res.status === 403) msg = 'Clé refusée par l\'API (erreur ' + res.status + '). Utilise la clé admin du Worker.';
     else msg = 'Réponse inattendue de l\'API (erreur ' + res.status + (r && r.error ? ' : ' + r.error : '') + ').';
   } catch {
-    msg = 'API injoignable. Vérifie l\'adresse du Worker et que le CORS autorise l\'en-tête X-Admin-Key.';
+    msg = 'API injoignable. Vérifie l\'adresse du Worker et le CORS.';
   }
   if (msg) { adminKey = ''; $('loginErr').textContent = msg; $('loginErr').hidden = false; }
   $('loginBtn').disabled = false; $('adminKey').value = '';
@@ -368,6 +386,36 @@ $('keysBody').addEventListener('click', async e => {
 $('q').oninput = $('st').onchange = () => renderKeys(allKeys);
 $('refresh').onclick = () => { loadKeys(); loadHwids(); loadLogs(); };
 
+/* ---------- GÉNÉRATION RAPIDE ---------- */
+document.querySelectorAll('[data-quick]').forEach(btn => {
+  btn.onclick = async () => {
+    const days = parseInt(btn.dataset.quick, 10);
+    const {m, close} = modal(`
+      <h2>Nouvelle clé — ${days} jour${days > 1 ? 's' : ''}</h2>
+      <div class="fld"><label for="nq">Quantité</label><input id="nq" type="number" min="1" max="100" value="1"></div>
+      <div class="fld"><label for="nh">HWID (facultatif)</label><input id="nh" placeholder="Laisser vide pour une clé libre"></div>
+      <div class="foot"><button class="btn ghost" id="c1">Annuler</button><button class="btn red" id="c2">Créer</button></div>`);
+    m.querySelector('#c1').onclick = close;
+    m.querySelector('#nq').focus();
+    m.querySelector('#nq').select();
+    m.querySelector('#c2').onclick = async () => {
+      const quantity = Math.max(1, Math.min(100, parseInt(m.querySelector('#nq').value, 10) || 1));
+      const hwid = m.querySelector('#nh').value.trim().toUpperCase() || null;
+      const r = await api('/admin/keys', 'POST', {days, quantity, hwid, level:'basic'});
+      if (!r.ok) return toast(r.error || 'Erreur', 'error');
+      close(); loadKeys(); loadLogs();
+      const made = (r.created || []).map(x => x.key);
+      if (!made.length) return toast(quantity + ' clé(s) ' + days + 'j créée(s)', 'success');
+      toast(made.length + ' clé(s) ' + days + 'j créée(s)', 'success');
+      const res = modal(`<h2>${made.length} clé(s) créée(s)</h2><div class="out"></div>
+        <div class="foot"><button class="btn ghost" id="r1">Fermer</button><button class="btn red" id="r2">Copier tout</button></div>`);
+      res.m.querySelector('.out').textContent = made.join('\n');
+      res.m.querySelector('#r1').onclick = res.close;
+      res.m.querySelector('#r2').onclick = () => navigator.clipboard.writeText(made.join('\n')).then(() => toast('Copié', 'success'));
+    };
+  };
+});
+
 /* ---------- Nouvelle clé (fenêtre) ---------- */
 function modal(html){
   const m = document.createElement('div'); m.className = 'modal'; m.innerHTML = `<div class="box" role="dialog" aria-modal="true">${html}</div>`;
@@ -382,8 +430,10 @@ $('newKey').onclick = () => {
     <h2>Nouvelle clé</h2>
     <div class="two">
       <div class="fld"><label for="nd">Durée</label><select id="nd">
+        <option value="1">1 jour</option>
         <option value="3">3 jours</option><option value="7">7 jours</option>
-        <option value="30" selected>30 jours</option><option value="365">1 an</option></select></div>
+        <option value="30" selected>30 jours</option><option value="90">90 jours</option>
+        <option value="365">1 an</option></select></div>
       <div class="fld"><label for="nq">Quantité</label><input id="nq" type="number" min="1" max="100" value="1"></div>
     </div>
     <div class="fld"><label for="nh">HWID (facultatif)</label><input id="nh" placeholder="Laisser vide pour une clé libre"></div>
