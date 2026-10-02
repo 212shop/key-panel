@@ -220,13 +220,18 @@ $('loginForm').addEventListener('submit', async e => {
   const v = $('adminKey').value.trim(); if (!v) return;
   $('loginBtn').disabled = true; $('loginErr').hidden = true;
   adminKey = v;
+  let msg = '';
   try {
-    const r = await api('/admin/keys');
-    if (!r.ok) throw new Error();
-    sessionStorage.setItem('ka_admin', v); start(r);
+    const res = await fetch(API_URL + '/admin/keys', {headers: {'X-Admin-Key': v}});
+    let r = null;
+    try { r = await res.json(); } catch {}
+    if (res.ok && r && r.ok) { sessionStorage.setItem('ka_admin', v); start(r); }
+    else if (res.status === 401 || res.status === 403) msg = 'Clé refusée par l\'API (erreur ' + res.status + '). Utilise la clé admin du Worker, pas l\'ancien mot de passe du panel.';
+    else msg = 'Réponse inattendue de l\'API (erreur ' + res.status + (r && r.error ? ' : ' + r.error : '') + ').';
   } catch {
-    adminKey = ''; $('loginErr').textContent = 'Clé incorrecte ou API injoignable.'; $('loginErr').hidden = false;
+    msg = 'API injoignable. Vérifie l\'adresse du Worker et que le CORS autorise l\'en-tête X-Admin-Key.';
   }
+  if (msg) { adminKey = ''; $('loginErr').textContent = msg; $('loginErr').hidden = false; }
   $('loginBtn').disabled = false; $('adminKey').value = '';
 });
 $('logout').onclick = () => { sessionStorage.removeItem('ka_admin'); location.reload(); };
