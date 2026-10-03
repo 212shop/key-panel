@@ -640,6 +640,18 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       Logs
     </button>
+    <button class="nav" data-view="config">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Config
+    </button>
+    <button class="nav" data-view="notice">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      Notice
+    </button>
+    <button class="nav" data-view="kill">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+      Kill switch
+    </button>
 
     <div class="bottom">
       <button class="btn ghost" id="logout" style="width:100%">
@@ -754,6 +766,106 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
           <tbody id="logsBody"></tbody>
         </table></div>
         <div class="empty" id="logsEmpty">Chargement…</div>
+      </div>
+    </section>
+
+    <!-- ═══════════ CONFIG ═══════════ -->
+    <section class="view" id="v-config">
+      <div class="card" style="padding:24px">
+        <h2 style="font-size:16px;font-weight:700;margin-bottom:18px;color:#fff">🎨 Configuration dynamique du loader</h2>
+        <p style="color:#6f7889;font-size:13px;margin-bottom:20px">Ces valeurs sont envoyées à tous les loaders au démarrage. Modifie-les puis clique "Sauvegarder".</p>
+
+        <div class="two">
+          <div class="fld">
+            <label for="cfgAccent">Couleur d'accent (hex)</label>
+            <input id="cfgAccent" type="text" placeholder="#64AAFF">
+          </div>
+          <div class="fld">
+            <label for="cfgText">Couleur du texte (hex)</label>
+            <input id="cfgText" type="text" placeholder="#F0F0F0">
+          </div>
+        </div>
+
+        <div class="fld">
+          <label for="cfgLoginTitle">Titre du login</label>
+          <input id="cfgLoginTitle" type="text" placeholder="Authentication Portal">
+        </div>
+
+        <div class="two">
+          <div class="fld">
+            <label for="cfgP1Name">Nom produit 1</label>
+            <input id="cfgP1Name" type="text" placeholder="Vyse X Menu">
+          </div>
+          <div class="fld">
+            <label for="cfgP1Status">Statut produit 1</label>
+            <input id="cfgP1Status" type="text" placeholder="Working / Undetected">
+          </div>
+          <div class="fld">
+            <label for="cfgP2Name">Nom produit 2</label>
+            <input id="cfgP2Name" type="text" placeholder="Vyse X Spoofer">
+          </div>
+          <div class="fld">
+            <label for="cfgP2Status">Statut produit 2</label>
+            <input id="cfgP2Status" type="text" placeholder="USE AT OWN RISK">
+          </div>
+        </div>
+
+        <div class="foot" style="justify-content:flex-start;gap:10px;margin-top:20px">
+          <button class="btn red" id="cfgSave">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Sauvegarder la config
+          </button>
+          <button class="btn ghost" id="cfgReload">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/></svg>
+            Recharger
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ NOTICE ═══════════ -->
+    <section class="view" id="v-notice">
+      <div class="card" style="padding:24px">
+        <h2 style="font-size:16px;font-weight:700;margin-bottom:18px;color:#fff">📢 Message au démarrage</h2>
+        <p style="color:#6f7889;font-size:13px;margin-bottom:20px">Ce message s'affichera dans une popup Windows quand l'utilisateur ouvre son loader.</p>
+
+        <div class="fld">
+          <label for="noticeMsg">Message</label>
+          <input id="noticeMsg" type="text" placeholder="Update V3">
+        </div>
+
+        <div class="fld" style="flex-direction:row;align-items:center;gap:10px">
+          <input type="checkbox" id="noticeEnabled" style="width:auto">
+          <label for="noticeEnabled" style="text-transform:none;font-size:13px;color:#eef1f6">Activer l'affichage du message</label>
+        </div>
+
+        <div class="foot" style="justify-content:flex-start;gap:10px;margin-top:20px">
+          <button class="btn red" id="noticeSave">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Envoyer le message
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ KILL SWITCH ═══════════ -->
+    <section class="view" id="v-kill">
+      <div class="card" style="padding:24px">
+        <h2 style="font-size:16px;font-weight:700;margin-bottom:18px;color:#fff">☠️ Kill Switch</h2>
+        <p style="color:#6f7889;font-size:13px;margin-bottom:20px">Quand activé, tous les loaders afficheront un message d'erreur et se fermeront au prochain démarrage. À utiliser en cas d'urgence (fuite, mise à jour critique…).</p>
+
+        <div id="killStatus" class="badge active" style="margin-bottom:20px">Chargement…</div>
+
+        <div class="foot" style="justify-content:flex-start;gap:10px">
+          <button class="btn red" id="killOn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+            Désactiver tous les loaders
+          </button>
+          <button class="btn" id="killOff">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Réactiver tous les loaders
+          </button>
+        </div>
       </div>
     </section>
   </main>
@@ -873,7 +985,10 @@ const titles = {
   keys:['Licences','Gère les clés d\'accès de ton application'],
   hwid:['HWID bannis','Liste noire des identifiants matériels'],
   accounts:['Comptes Rockstar','Gère le stock de comptes à distribuer'],
-  logs:['Journal d\'activité','Historique des événements du panel']
+  logs:['Journal d\'activité','Historique des événements du panel'],
+  config:['Configuration','Modifie les couleurs et les textes du loader à distance'],
+  notice:['Notice','Envoie un message Windows au démarrage du loader'],
+  kill:['Kill Switch','Désactive tous les loaders d\'un seul clic']
 };
 document.querySelectorAll('.nav').forEach(b => b.onclick = () => {
   document.querySelectorAll('.nav').forEach(n => n.classList.toggle('on', n === b));
@@ -885,6 +1000,9 @@ document.querySelectorAll('.nav').forEach(b => b.onclick = () => {
   if (b.dataset.view === 'accounts') loadAccounts();
   if (b.dataset.view === 'hwid') loadHwids();
   if (b.dataset.view === 'logs') loadLogs();
+  if (b.dataset.view === 'config') loadConfig();
+  if (b.dataset.view === 'notice') loadNotice();
+  if (b.dataset.view === 'kill') loadKill();
 });
 
 /* ---------- Licences ---------- */
@@ -1163,7 +1281,7 @@ $('newKey').onclick = () => {
   m.querySelector('#nq').focus();
 };
 
-/* ---------- HWID (avec cache + insert optimiste) ---------- */
+/* ---------- HWID ---------- */
 let allHwids = [];
 
 function renderHwids(list){
@@ -1187,7 +1305,6 @@ function renderHwids(list){
 }
 
 async function loadHwids(){
-  // 1) Affichage instantané du cache
   const cached = loadCache(HWIDS_CACHE);
   if (cached && cached.length){
     renderHwids(cached);
@@ -1195,7 +1312,6 @@ async function loadHwids(){
     $('hwidEmpty').hidden = true;
     $('hwidBody').innerHTML = skeletonRows(4, 3);
   }
-  // 2) Refresh en arrière-plan
   try {
     const r = await api('/admin/hwids');
     if (!r.ok) throw new Error();
@@ -1210,18 +1326,15 @@ async function loadHwids(){
   }
 }
 
-/* Insertion optimiste HWID */
 function insertHwidOptimistic(hwid){
   if (!hwid) return;
   const now = Date.now();
-  // Évite les doublons
   if (allHwids.some(h => h.hwid === hwid)) return;
   allHwids = [{hwid, ts: now}, ...allHwids];
   saveCache(HWIDS_CACHE, allHwids);
   renderHwids(allHwids);
 }
 
-/* Suppression optimiste HWID */
 function removeHwidOptimistic(hwid){
   allHwids = allHwids.filter(h => h.hwid !== hwid);
   saveCache(HWIDS_CACHE, allHwids);
@@ -1234,7 +1347,7 @@ $('hwidBody').addEventListener('click', async e => {
   if (!confirm('Retirer ce HWID ?\n' + hwid)) return;
 
   const prev = allHwids.slice();
-  removeHwidOptimistic(hwid); // suppression locale immédiate
+  removeHwidOptimistic(hwid);
 
   try {
     const r = await api('/admin/hwid/unban', 'POST', {hwid});
@@ -1242,7 +1355,6 @@ $('hwidBody').addEventListener('click', async e => {
       toast('HWID retiré', 'success');
       loadLogs();
     } else {
-      // rollback
       allHwids = prev;
       saveCache(HWIDS_CACHE, allHwids);
       renderHwids(allHwids);
@@ -1260,7 +1372,6 @@ async function banHwid(){
   const v = $('newHwid').value.trim().toUpperCase();
   if (!v) return toast('Entre un HWID', 'error');
 
-  // Insertion locale immédiate
   insertHwidOptimistic(v);
   $('newHwid').value = '';
 
@@ -1270,7 +1381,6 @@ async function banHwid(){
       toast('HWID banni', 'success');
       loadLogs();
     } else {
-      // rollback
       removeHwidOptimistic(v);
       toast(r.error || 'Erreur', 'error');
     }
@@ -1282,7 +1392,7 @@ async function banHwid(){
 $('banHwid').onclick = banHwid;
 $('newHwid').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); banHwid(); } });
 
-/* ---------- COMPTES (avec cache) ---------- */
+/* ---------- COMPTES ---------- */
 let allAccounts = [];
 async function loadAccounts(){
   const cached = loadCache(ACCS_CACHE);
@@ -1379,7 +1489,6 @@ $('addAcc').onclick = async () => {
   const tempId = 'tmp_' + Date.now();
   const newAcc = { id: tempId, email, password, used: false };
 
-  // Insertion locale immédiate
   allAccounts = [newAcc, ...allAccounts];
   saveCache(ACCS_CACHE, allAccounts);
   renderAccounts();
@@ -1389,7 +1498,6 @@ $('addAcc').onclick = async () => {
     const r = await api('/admin/accounts', 'POST', {email, password});
     if (r.ok){
       toast('Compte ajouté', 'success');
-      // Remplace le temp par le vrai compte si l'API en renvoie un
       if (r.account){
         allAccounts = allAccounts.map(x => x.id === tempId ? r.account : x);
       } else {
@@ -1415,14 +1523,15 @@ $('newAccPass').addEventListener('keydown', e => {
   if (e.key === 'Enter'){ e.preventDefault(); $('addAcc').click(); }
 });
 
-/* ---------- LOGS (avec cache) ---------- */
+/* ---------- LOGS ---------- */
 const L = {
   create:['Création','active'], ban:['Ban','banned'], unban:['Déban','active'], delete:['Suppression','expired'],
   'hwid-ban':['HWID banni','banned'], 'hwid-unban':['HWID retiré','active'], export:['Export','active'],
   'auth-ok':['Connexion','active'], 'auth-banned':['Clé bannie','banned'], 'auth-expired':['Clé expirée','expired'],
   'auth-hwid-banned':['HWID banni','banned'], 'auth-hwid-mismatch':['HWID différent','expired'], redeem:['Activation','active'],
   'account-add':['Compte ajouté','active'], 'account-del':['Compte supprimé','expired'],
-  'account-used':['Compte utilisé','warn'], 'account-reset':['Compte libéré','active']
+  'account-used':['Compte utilisé','warn'], 'account-reset':['Compte libéré','active'],
+  'config-update':['Config MAJ','active'], 'notice-update':['Notice MAJ','warn'], 'kill-switch':['Kill switch','banned']
 };
 
 function renderLogs(list){
@@ -1465,6 +1574,98 @@ async function loadLogs(){
     }
   }
 }
+
+/* ---------- CONFIG DYNAMIQUE ---------- */
+async function loadConfig(){
+  try {
+    const r = await api('/admin/get-config');
+    if (!r.ok) throw new Error(r.error);
+    const c = r.config || {};
+    $('cfgAccent').value = c.accentColor || '#64AAFF';
+    $('cfgText').value = c.textColor || '#F0F0F0';
+    $('cfgLoginTitle').value = c.loginTitle || 'Authentication Portal';
+    $('cfgP1Name').value = c.product1Name || 'Vyse X Menu';
+    $('cfgP1Status').value = c.product1Status || 'Working / Undetected';
+    $('cfgP2Name').value = c.product2Name || 'Vyse X Spoofer';
+    $('cfgP2Status').value = c.product2Status || 'USE AT OWN RISK';
+  } catch(e){
+    toast('Impossible de charger la config : ' + (e.message || ''), 'error');
+  }
+}
+$('cfgReload').onclick = loadConfig;
+$('cfgSave').onclick = async () => {
+  const config = {
+    accentColor: $('cfgAccent').value.trim() || '#64AAFF',
+    textColor: $('cfgText').value.trim() || '#F0F0F0',
+    backgroundColor: '#000000',
+    loginTitle: $('cfgLoginTitle').value.trim() || 'Authentication Portal',
+    product1Name: $('cfgP1Name').value.trim() || 'Vyse X Menu',
+    product1Status: $('cfgP1Status').value.trim() || 'Working / Undetected',
+    product2Name: $('cfgP2Name').value.trim() || 'Vyse X Spoofer',
+    product2Status: $('cfgP2Status').value.trim() || 'USE AT OWN RISK',
+    showProducts: true,
+    showUpdates: true
+  };
+  try {
+    const r = await api('/admin/set-config', 'POST', {config});
+    if (r.ok) { toast('Config sauvegardée', 'success'); loadLogs(); }
+    else toast(r.error || 'Erreur', 'error');
+  } catch { toast('Erreur réseau', 'error'); }
+};
+
+/* ---------- NOTICE ---------- */
+async function loadNotice(){
+  try {
+    const r = await api('/admin/get-config');
+    if (!r.ok) throw new Error(r.error);
+    $('noticeMsg').value = r.notice || '';
+    $('noticeEnabled').checked = !!r.noticeEnabled;
+  } catch(e){
+    toast('Impossible de charger la notice : ' + (e.message || ''), 'error');
+  }
+}
+$('noticeSave').onclick = async () => {
+  const message = $('noticeMsg').value.trim();
+  const enabled = $('noticeEnabled').checked;
+  try {
+    const r = await api('/admin/set-notice', 'POST', {message, enabled});
+    if (r.ok) { toast('Notice envoyée', 'success'); loadLogs(); }
+    else toast(r.error || 'Erreur', 'error');
+  } catch { toast('Erreur réseau', 'error'); }
+};
+
+/* ---------- KILL SWITCH ---------- */
+async function loadKill(){
+  try {
+    const r = await api('/admin/get-config');
+    if (!r.ok) throw new Error(r.error);
+    const el = $('killStatus');
+    if (r.kill){
+      el.className = 'badge banned';
+      el.textContent = '☠️ Tous les loaders sont désactivés';
+    } else {
+      el.className = 'badge active';
+      el.textContent = '✓ Loaders opérationnels';
+    }
+  } catch(e){
+    toast('Impossible de charger le kill switch : ' + (e.message || ''), 'error');
+  }
+}
+$('killOn').onclick = async () => {
+  if (!confirm('Désactiver TOUS les loaders ? Les utilisateurs verront un message d\'erreur au démarrage.')) return;
+  try {
+    const r = await api('/admin/kill', 'POST', {kill: true});
+    if (r.ok) { toast('Kill switch activé', 'success'); loadKill(); loadLogs(); }
+    else toast(r.error || 'Erreur', 'error');
+  } catch { toast('Erreur réseau', 'error'); }
+};
+$('killOff').onclick = async () => {
+  try {
+    const r = await api('/admin/kill', 'POST', {kill: false});
+    if (r.ok) { toast('Kill switch désactivé', 'success'); loadKill(); loadLogs(); }
+    else toast(r.error || 'Erreur', 'error');
+  } catch { toast('Erreur réseau', 'error'); }
+};
 
 /* ---------- EXPORT ---------- */
 $('export').onclick = () => {
