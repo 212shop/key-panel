@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0a0b0d">
-<title>KeyAuth — Panel d'administration</title>
+<title>Panel Vyse X</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -16,7 +16,6 @@
   --panel:rgba(24,26,31,.88);
   --panel-2:rgba(30,32,38,.88);
   --panel-3:rgba(38,40,47,.92);
-  --glass:rgba(255,255,255,.02);
   --line:rgba(255,255,255,.06);
   --line-2:rgba(255,255,255,.10);
   --line-3:rgba(255,255,255,.18);
@@ -40,9 +39,6 @@
   --safe-b:env(safe-area-inset-bottom,0px);
   --safe-t:env(safe-area-inset-top,0px);
   --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:22px; --r-2xl:28px;
-  --shadow-1:0 2px 8px rgba(0,0,0,.4);
-  --shadow-2:0 12px 40px -12px rgba(0,0,0,.85);
-  --shadow-glow:0 0 60px -15px var(--red-glow);
 }
 
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -64,11 +60,6 @@ body::before{
     radial-gradient(900px 500px at 90% 110%, rgba(160,170,190,.05), transparent 55%),
     radial-gradient(700px 400px at 50% 50%, rgba(180,185,200,.03), transparent 60%);
 }
-body::after{
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.3;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.12 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  mix-blend-mode:overlay;
-}
 button,input,select,textarea{font:inherit;color:inherit;font-weight:500}
 input,select,textarea{font-weight:600}
 :focus-visible{outline:2px solid var(--red);outline-offset:3px;border-radius:8px}
@@ -86,11 +77,11 @@ input,select,textarea{font-weight:600}
 @keyframes slideRight{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
 @keyframes slideLeft{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-@keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(.85)}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 @keyframes logoGlow{0%,100%{filter:drop-shadow(0 0 20px rgba(220,225,235,.5))}50%{filter:drop-shadow(0 0 40px rgba(220,225,235,.85))}}
 @keyframes borderFlow{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+@keyframes dropIn{from{opacity:0;transform:translateY(-8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 
 /* ═══ LOGIN ═══ */
 #login{
@@ -100,18 +91,6 @@ input,select,textarea{font-weight:600}
     radial-gradient(900px 600px at 85% 110%,rgba(160,170,190,.10),transparent 60%),
     radial-gradient(700px 500px at 10% 90%,rgba(180,185,200,.06),transparent 60%),
     var(--bg);
-  overflow:hidden;
-}
-#login::before{
-  content:"";position:absolute;inset:0;
-  background-image:
-    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
-  background-size:52px 52px;
-  mask-image:radial-gradient(circle at 50% 50%,black,transparent 75%);
-  -webkit-mask-image:radial-gradient(circle at 50% 50%,black,transparent 75%);
-  pointer-events:none;
-  animation:fadeIn 1.2s ease both;
 }
 .lbox{
   position:relative;z-index:2;width:100%;max-width:440px;
@@ -122,11 +101,7 @@ input,select,textarea{font-weight:600}
   border:1px solid rgba(255,255,255,.10);
   border-radius:var(--r-2xl);
   padding:44px 36px;
-  box-shadow:
-    0 60px 140px -40px rgba(0,0,0,1),
-    0 0 0 1px rgba(255,255,255,.03) inset,
-    0 1px 0 rgba(255,255,255,.10) inset,
-    0 0 80px -20px rgba(200,205,215,.20);
+  box-shadow:0 60px 140px -40px rgba(0,0,0,1),0 0 0 1px rgba(255,255,255,.03) inset,0 1px 0 rgba(255,255,255,.10) inset,0 0 80px -20px rgba(200,205,215,.20);
   animation:riseIn .9s cubic-bezier(.16,1,.3,1) both;
   overflow:hidden;
 }
@@ -142,20 +117,11 @@ input,select,textarea{font-weight:600}
   border:1px solid rgba(230,232,236,.25);
   display:grid;place-items:center;
   margin:0 auto 24px;
-  box-shadow:
-    0 15px 40px -10px var(--red-glow),
-    0 0 0 1px rgba(255,255,255,.10) inset;
+  box-shadow:0 15px 40px -10px var(--red-glow),0 0 0 1px rgba(255,255,255,.10) inset;
   animation:float 4s ease-in-out infinite, logoGlow 3s ease-in-out infinite;
 }
-.lbox .logo-wrap img{
-  width:52px;height:52px;object-fit:contain;
-  filter:drop-shadow(0 4px 12px rgba(0,0,0,.5));
-}
-.lbox .logo-wrap .fallback{
-  font-size:38px;font-weight:900;color:#e6e8ec;
-  letter-spacing:-.05em;
-  text-shadow:0 0 24px var(--red-glow);
-}
+.lbox .logo-wrap img{width:52px;height:52px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,.5))}
+.lbox .logo-wrap .fallback{font-size:38px;font-weight:900;color:#e6e8ec;letter-spacing:-.05em;text-shadow:0 0 24px var(--red-glow)}
 .lbox h1{
   font-size:28px;font-weight:800;letter-spacing:-.035em;
   margin-bottom:8px;text-align:center;
@@ -170,167 +136,69 @@ input,select,textarea{font-weight:600}
   border-radius:14px;
   margin-bottom:16px;outline:none;
   transition:all .25s cubic-bezier(.2,.8,.2,1);
-  font-size:15px;font-weight:600;
-  color:#fff;
+  font-size:15px;font-weight:600;color:#fff;
 }
 .lbox input::placeholder{color:rgba(184,188,196,.4);font-weight:500}
-.lbox input:focus{
-  border-color:#e6e8ec;
-  box-shadow:0 0 0 4px var(--red-glow), 0 0 30px -8px var(--red-glow);
-  background:rgba(0,0,0,.6);
-  transform:translateY(-1px);
-}
-.err{
-  color:#e6e8ec;font-size:13px;margin-top:16px;padding:14px 16px;
-  background:linear-gradient(180deg,rgba(230,232,236,.10),rgba(230,232,236,.03));
-  border-radius:12px;
-  border-left:3px solid #e6e8ec;
-  font-weight:600;
-  animation:slideRight .35s ease both;
-}
+.lbox input:focus{border-color:#e6e8ec;box-shadow:0 0 0 4px var(--red-glow),0 0 30px -8px var(--red-glow);background:rgba(0,0,0,.6);transform:translateY(-1px)}
+.err{color:#e6e8ec;font-size:13px;margin-top:16px;padding:14px 16px;background:linear-gradient(180deg,rgba(230,232,236,.10),rgba(230,232,236,.03));border-radius:12px;border-left:3px solid #e6e8ec;font-weight:600;animation:slideRight .35s ease both}
 
 /* ═══ LAYOUT ═══ */
 #app{display:grid;grid-template-columns:270px 1fr;min-height:100vh;min-height:100dvh;position:relative;z-index:2}
 #app:not([hidden]){animation:fadeIn .6s ease both}
 
 aside{
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.03),transparent 40%),
-    var(--side);
+  background:linear-gradient(180deg,rgba(255,255,255,.03),transparent 40%),var(--side);
   backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
   border-right:1px solid rgba(255,255,255,.05);
   padding:24px 16px;
   display:flex;flex-direction:column;gap:5px;
   position:sticky;top:0;height:100vh;height:100dvh;
-  z-index:30;
-  overflow-y:auto;
+  z-index:30;overflow-y:auto;
 }
 aside::-webkit-scrollbar{width:6px}
 aside::-webkit-scrollbar-thumb{background:rgba(255,255,255,.10);border:0;background-clip:padding-box}
 
-.brand{
-  display:flex;align-items:center;gap:14px;
-  font-weight:800;font-size:17px;letter-spacing:-.03em;
-  padding:8px 12px 26px;
-  position:relative;
-}
-.brand::after{
-  content:"";position:absolute;bottom:12px;left:12px;right:12px;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent);
-}
-.brand .logo{
-  width:42px;height:42px;border-radius:12px;
-  background:linear-gradient(135deg,rgba(230,232,236,.14),rgba(230,232,236,.03));
-  border:1px solid rgba(230,232,236,.25);
-  display:grid;place-items:center;flex:0 0 auto;
-  box-shadow:0 8px 24px -6px var(--red-glow),0 0 0 1px rgba(255,255,255,.08) inset;
-  transition:all .3s cubic-bezier(.2,.8,.2,1);
-}
+.brand{display:flex;align-items:center;gap:14px;font-weight:800;font-size:17px;letter-spacing:-.03em;padding:8px 12px 26px;position:relative}
+.brand::after{content:"";position:absolute;bottom:12px;left:12px;right:12px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent)}
+.brand .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,rgba(230,232,236,.14),rgba(230,232,236,.03));border:1px solid rgba(230,232,236,.25);display:grid;place-items:center;flex:0 0 auto;box-shadow:0 8px 24px -6px var(--red-glow),0 0 0 1px rgba(255,255,255,.08) inset;transition:all .3s cubic-bezier(.2,.8,.2,1)}
 .brand .logo:hover{transform:scale(1.08) rotate(-3deg);box-shadow:0 12px 32px -6px var(--red-glow)}
 .brand .logo img{width:28px;height:28px;object-fit:contain}
 .brand .logo .fallback{font-size:22px;font-weight:900;color:#e6e8ec;letter-spacing:-.05em;text-shadow:0 0 16px var(--red-glow)}
 .brand .name b{color:var(--text);display:block;font-weight:800;letter-spacing:-.03em}
-.brand .name small{
-  display:block;font-size:10.5px;font-weight:700;color:var(--mute);
-  letter-spacing:1.2px;text-transform:uppercase;margin-top:2px;
-}
+.brand .name small{display:block;font-size:10.5px;font-weight:700;color:var(--mute);letter-spacing:1.2px;text-transform:uppercase;margin-top:2px}
 
-.nav{
-  display:flex;align-items:center;gap:12px;
-  padding:12px 14px;border-radius:12px;
-  color:var(--mute);font-weight:600;font-size:14px;
-  cursor:pointer;background:none;border:0;text-align:left;width:100%;
-  transition:all .22s cubic-bezier(.2,.8,.2,1);
-  position:relative;
-  overflow:hidden;
-}
-.nav::before{
-  content:"";position:absolute;inset:0;
-  background:linear-gradient(90deg,rgba(230,232,236,.10),rgba(230,232,236,.02) 60%,transparent);
-  opacity:0;transition:opacity .22s ease;
-}
+.nav{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;color:var(--mute);font-weight:600;font-size:14px;cursor:pointer;background:none;border:0;text-align:left;width:100%;transition:all .22s cubic-bezier(.2,.8,.2,1);position:relative;overflow:hidden}
+.nav::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(230,232,236,.10),rgba(230,232,236,.02) 60%,transparent);opacity:0;transition:opacity .22s ease}
 .nav:hover{color:var(--text-2);transform:translateX(3px)}
 .nav:hover::before{opacity:1}
 .nav.on{color:var(--text);transform:translateX(4px)}
 .nav.on::before{opacity:1}
-.nav.on::after{
-  content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;
-  background:linear-gradient(180deg,#e6e8ec,#a8adb6);
-  border-radius:0 3px 3px 0;
-  box-shadow:0 0 14px var(--red-glow);
-  animation:slideRight .3s ease both;
-}
+.nav.on::after{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;background:linear-gradient(180deg,#e6e8ec,#a8adb6);border-radius:0 3px 3px 0;box-shadow:0 0 14px var(--red-glow);animation:slideRight .3s ease both}
 .nav > *{position:relative;z-index:1}
 .nav svg{width:18px;height:18px;flex:0 0 auto;opacity:.9;transition:all .22s ease}
 .nav.on svg{color:#e6e8ec;opacity:1;transform:scale(1.05)}
 .nav:hover svg{opacity:1;color:#e6e8ec}
-.nav small{
-  margin-left:auto;font-size:11.5px;font-weight:800;
-  color:var(--dim);font-variant-numeric:tabular-nums;
-  background:rgba(255,255,255,.06);padding:3px 9px;border-radius:7px;
-  min-width:26px;text-align:center;
-  transition:all .22s ease;
-}
+.nav small{margin-left:auto;font-size:11.5px;font-weight:800;color:var(--dim);font-variant-numeric:tabular-nums;background:rgba(255,255,255,.06);padding:3px 9px;border-radius:7px;min-width:26px;text-align:center;transition:all .22s ease}
 .nav.on small{color:#08090b;background:linear-gradient(180deg,#f0f2f5,#c8ccd3);box-shadow:0 4px 12px -2px var(--red-glow)}
 .bottom{margin-top:auto;padding-top:18px;border-top:1px solid rgba(255,255,255,.05)}
 
 main{padding:32px 40px 80px;min-width:0;position:relative}
-
-.top{
-  display:flex;justify-content:space-between;align-items:flex-end;
-  gap:16px;flex-wrap:wrap;margin-bottom:32px;
-  animation:riseIn .6s cubic-bezier(.2,.8,.2,1) both;
-}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:32px;animation:riseIn .6s cubic-bezier(.2,.8,.2,1) both}
 .page-head{display:flex;flex-direction:column;gap:6px;position:relative}
-h1.t{
-  font-size:34px;font-weight:800;letter-spacing:-.04em;line-height:1.15;
-  background:linear-gradient(180deg,#fff 20%,#b8bcc4);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  position:relative;
-}
+h1.t{font-size:34px;font-weight:800;letter-spacing:-.04em;line-height:1.15;background:linear-gradient(180deg,#fff 20%,#b8bcc4);-webkit-background-clip:text;background-clip:text;color:transparent;position:relative}
 .t-sub{font-size:14px;color:var(--mute);font-weight:500}
 .acts{display:flex;gap:10px;flex-wrap:wrap}
 
 /* ═══ BUTTONS ═══ */
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  padding:11px 18px;border-radius:12px;
-  border:1px solid rgba(255,255,255,.10);
-  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
-  font-weight:700;font-size:13.5px;letter-spacing:-.01em;cursor:pointer;
-  transition:all .22s cubic-bezier(.2,.8,.2,1);
-  white-space:nowrap;
-  box-shadow:0 1px 0 rgba(255,255,255,.06) inset, 0 2px 6px rgba(0,0,0,.3);
-  position:relative;
-  overflow:hidden;
-}
-.btn::before{
-  content:"";position:absolute;inset:0;
-  background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.15) 50%,transparent 70%);
-  background-size:200% 100%;
-  opacity:0;transition:opacity .3s ease;
-}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border-radius:12px;border:1px solid rgba(255,255,255,.10);background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));font-weight:700;font-size:13.5px;letter-spacing:-.01em;cursor:pointer;transition:all .22s cubic-bezier(.2,.8,.2,1);white-space:nowrap;box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 2px 6px rgba(0,0,0,.3);position:relative;overflow:hidden}
+.btn::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.15) 50%,transparent 70%);background-size:200% 100%;opacity:0;transition:opacity .3s ease}
 .btn:hover::before{opacity:1;animation:shimmer 1.2s linear infinite}
-.btn:hover{
-  border-color:rgba(255,255,255,.22);
-  background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.04));
-  transform:translateY(-2px);
-  box-shadow:0 1px 0 rgba(255,255,255,.10) inset, 0 8px 24px -6px rgba(0,0,0,.6);
-}
+.btn:hover{border-color:rgba(255,255,255,.22);background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.04));transform:translateY(-2px);box-shadow:0 1px 0 rgba(255,255,255,.10) inset,0 8px 24px -6px rgba(0,0,0,.6)}
 .btn:active{transform:translateY(0) scale(.97)}
 .btn svg{width:15px;height:15px;flex:0 0 auto;transition:transform .22s ease}
 .btn:hover svg{transform:scale(1.08)}
-.btn.red{
-  background:linear-gradient(135deg,#f4f5f7,#c8ccd3 60%,#a8adb6);
-  border-color:rgba(230,232,236,.35);color:#08090b;
-  box-shadow:0 8px 24px -8px var(--red-glow), 0 1px 0 rgba(255,255,255,.30) inset;
-  font-weight:800;
-}
-.btn.red:hover{
-  box-shadow:0 14px 34px -8px var(--red-glow), 0 1px 0 rgba(255,255,255,.35) inset;
-  transform:translateY(-2px);
-  filter:brightness(1.05);
-}
+.btn.red{background:linear-gradient(135deg,#f4f5f7,#c8ccd3 60%,#a8adb6);border-color:rgba(230,232,236,.35);color:#08090b;box-shadow:0 8px 24px -8px var(--red-glow),0 1px 0 rgba(255,255,255,.30) inset;font-weight:800}
+.btn.red:hover{box-shadow:0 14px 34px -8px var(--red-glow),0 1px 0 rgba(255,255,255,.35) inset;transform:translateY(-2px);filter:brightness(1.05)}
 .btn.ghost{background:transparent;border-color:rgba(255,255,255,.08)}
 .btn.ghost:hover{background:rgba(255,255,255,.05)}
 .btn.sm{padding:6px 12px;font-size:12px;border-radius:9px;font-weight:700}
@@ -339,117 +207,112 @@ h1.t{
 .btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;filter:none}
 
 /* ═══ CARDS ═══ */
-.card{
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.035),transparent 250px),
-    var(--panel);
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:var(--r-xl);
-  overflow:hidden;
-  box-shadow:
-    0 40px 100px -50px rgba(0,0,0,1),
-    0 0 0 1px rgba(255,255,255,.02) inset,
-    0 1px 0 rgba(255,255,255,.06) inset;
-  animation:riseIn .55s cubic-bezier(.2,.8,.2,1) both;
-  position:relative;
-}
-.card::before{
-  content:"";position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(230,232,236,.4),rgba(168,184,208,.3),transparent);
-  opacity:.7;
-}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.035),transparent 250px),var(--panel);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08);border-radius:var(--r-xl);overflow:hidden;box-shadow:0 40px 100px -50px rgba(0,0,0,1),0 0 0 1px rgba(255,255,255,.02) inset,0 1px 0 rgba(255,255,255,.06) inset;animation:riseIn .55s cubic-bezier(.2,.8,.2,1) both;position:relative}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(230,232,236,.4),rgba(168,184,208,.3),transparent);opacity:.7}
 
-.tb{
-  display:flex;gap:12px;padding:18px 20px;
-  border-bottom:1px solid rgba(255,255,255,.05);
-  flex-wrap:wrap;align-items:center;
-  background:linear-gradient(180deg,rgba(255,255,255,.02),transparent);
-}
+.tb{display:flex;gap:12px;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.05);flex-wrap:wrap;align-items:center;background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)}
 
-.tb input,.tb select,.fld input,.fld select{
+.tb input,.tb select,.fld input,.fld select{background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.10);border-radius:12px;padding:12px 16px;outline:none;transition:all .22s cubic-bezier(.2,.8,.2,1);font-size:14px;font-weight:600;color:#fff}
+.tb input::placeholder,.fld input::placeholder{color:rgba(184,188,196,.4);font-weight:500}
+.tb input:focus,.fld input:focus{border-color:#e6e8ec;box-shadow:0 0 0 4px var(--red-glow),0 0 30px -8px var(--red-glow);background:rgba(0,0,0,.6)}
+
+.search-wrap{position:relative;flex:1;min-width:240px}
+.search-wrap input{width:100%;padding-left:44px}
+.search-wrap::before{content:"";position:absolute;left:16px;top:50%;transform:translateY(-50%);width:16px;height:16px;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a7f8a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.35-4.35'/></svg>");background-size:contain;background-repeat:no-repeat;transition:all .22s ease;opacity:.7}
+.search-wrap:focus-within::before{opacity:1;filter:drop-shadow(0 0 8px var(--red-glow))}
+
+/* ═══ DROPDOWN CUSTOM (remplace les <select> natifs) ═══ */
+.dropdown{position:relative;user-select:none;min-width:180px}
+.dropdown-trigger{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
   background:rgba(0,0,0,.4);
   border:1px solid rgba(255,255,255,.10);
   border-radius:12px;
   padding:12px 16px;
-  outline:none;
+  font-size:14px;font-weight:600;color:#fff;
+  cursor:pointer;
   transition:all .22s cubic-bezier(.2,.8,.2,1);
-  font-size:14px;font-weight:600;
-  color:#fff;
+  width:100%;
+  text-align:left;
 }
-.tb input::placeholder,.fld input::placeholder{color:rgba(184,188,196,.4);font-weight:500}
-.tb input:focus,.tb select:focus,.fld input:focus,.fld select:focus{
+.dropdown-trigger:hover{
+  border-color:rgba(255,255,255,.20);
+  background:rgba(0,0,0,.5);
+}
+.dropdown.open .dropdown-trigger{
   border-color:#e6e8ec;
-  box-shadow:0 0 0 4px var(--red-glow), 0 0 30px -8px var(--red-glow);
+  box-shadow:0 0 0 4px var(--red-glow),0 0 30px -8px var(--red-glow);
   background:rgba(0,0,0,.6);
 }
-.tb select{cursor:pointer;padding-right:38px;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237a7f8a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-  background-repeat:no-repeat;
-  background-position:right 14px center;
-  -webkit-appearance:none;appearance:none;
+.dropdown-trigger svg{
+  width:14px;height:14px;flex:0 0 auto;
+  color:var(--mute);
+  transition:transform .22s cubic-bezier(.2,.8,.2,1);
 }
-
-.search-wrap{position:relative;flex:1;min-width:240px}
-.search-wrap input{width:100%;padding-left:44px}
-.search-wrap::before{
-  content:"";position:absolute;left:16px;top:50%;transform:translateY(-50%);
-  width:16px;height:16px;pointer-events:none;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a7f8a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.35-4.35'/></svg>");
-  background-size:contain;background-repeat:no-repeat;
-  transition:all .22s ease;
-  opacity:.7;
+.dropdown.open .dropdown-trigger svg{transform:rotate(180deg);color:#e6e8ec}
+.dropdown-menu{
+  position:absolute;top:calc(100% + 6px);left:0;right:0;
+  background:linear-gradient(180deg,rgba(38,40,47,.99),rgba(24,26,31,.99));
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;
+  padding:6px;
+  z-index:500;
+  box-shadow:
+    0 20px 50px -10px rgba(0,0,0,.9),
+    0 0 0 1px rgba(255,255,255,.03) inset,
+    0 0 40px -15px var(--red-glow);
+  animation:dropIn .18s cubic-bezier(.2,.9,.3,1.1) both;
+  max-height:260px;
+  overflow-y:auto;
 }
-.search-wrap:focus-within::before{opacity:1;filter:drop-shadow(0 0 8px var(--red-glow))}
+.dropdown-menu::-webkit-scrollbar{width:6px}
+.dropdown-menu::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
+.dropdown-item{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 12px;
+  border-radius:8px;
+  font-size:13.5px;font-weight:600;
+  color:var(--text-2);
+  cursor:pointer;
+  transition:all .15s ease;
+}
+.dropdown-item:hover{
+  background:rgba(230,232,236,.10);
+  color:#fff;
+}
+.dropdown-item.active{
+  background:linear-gradient(180deg,rgba(230,232,236,.18),rgba(230,232,236,.08));
+  color:#fff;
+  box-shadow:0 0 0 1px rgba(230,232,236,.30) inset;
+}
+.dropdown-item .check{
+  width:14px;height:14px;
+  color:#e6e8ec;
+  opacity:0;
+  transition:opacity .15s ease;
+}
+.dropdown-item.active .check{opacity:1}
 
 /* ═══ TABLE ═══ */
 .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;min-width:760px}
-th{
-  text-align:left;padding:14px 20px;
-  font-size:11.5px;color:var(--mute);font-weight:800;
-  background:rgba(0,0,0,.35);
-  border-bottom:1px solid rgba(255,255,255,.06);
-  white-space:nowrap;text-transform:uppercase;letter-spacing:1px;
-}
+th{text-align:left;padding:14px 20px;font-size:11.5px;color:var(--mute);font-weight:800;background:rgba(0,0,0,.35);border-bottom:1px solid rgba(255,255,255,.06);white-space:nowrap;text-transform:uppercase;letter-spacing:1px}
 td{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.04);white-space:nowrap;font-size:13.5px;font-weight:500}
 tr:last-child td{border-bottom:0}
 tbody tr{transition:all .22s cubic-bezier(.2,.8,.2,1);position:relative}
-tbody tr:hover{
-  background:linear-gradient(90deg,rgba(230,232,236,.05),rgba(230,232,236,.015) 40%,transparent);
-}
+tbody tr:hover{background:linear-gradient(90deg,rgba(230,232,236,.05),rgba(230,232,236,.015) 40%,transparent)}
 tbody tr:hover td:first-child{box-shadow:inset 3px 0 0 #e6e8ec}
 
 .key,.hw{font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.02em}
-.key{
-  color:#e6e8ec;cursor:pointer;padding:5px 10px;border-radius:8px;
-  background:linear-gradient(180deg,rgba(230,232,236,.10),rgba(230,232,236,.03));
-  border:1px solid rgba(230,232,236,.16);
-  transition:all .22s cubic-bezier(.2,.8,.2,1);
-  display:inline-block;
-}
-.key:hover{
-  background:linear-gradient(180deg,rgba(230,232,236,.22),rgba(230,232,236,.08));
-  border-color:rgba(230,232,236,.4);color:#fff;
-  transform:translateY(-1px);
-  box-shadow:0 6px 16px -6px var(--red-glow);
-}
+.key{color:#e6e8ec;cursor:pointer;padding:5px 10px;border-radius:8px;background:linear-gradient(180deg,rgba(230,232,236,.10),rgba(230,232,236,.03));border:1px solid rgba(230,232,236,.16);transition:all .22s cubic-bezier(.2,.8,.2,1);display:inline-block}
+.key:hover{background:linear-gradient(180deg,rgba(230,232,236,.22),rgba(230,232,236,.08));border-color:rgba(230,232,236,.4);color:#fff;transform:translateY(-1px);box-shadow:0 6px 16px -6px var(--red-glow)}
 .hw{color:var(--text-2)}
 .mut{color:var(--mute);font-size:13px}
 
 /* ═══ BADGES ═══ */
-.badge{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:5px 12px;border-radius:99px;
-  font-size:11.5px;font-weight:800;letter-spacing:.02em;
-  border:1px solid transparent;
-  transition:all .22s ease;
-}
-.badge::before{
-  content:"";width:7px;height:7px;border-radius:50%;background:currentColor;
-  flex:0 0 auto;
-  box-shadow:0 0 10px currentColor;
-}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:99px;font-size:11.5px;font-weight:800;letter-spacing:.02em;border:1px solid transparent;transition:all .22s ease}
+.badge::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:0 0 auto;box-shadow:0 0 10px currentColor}
 .badge.active{color:var(--ok);background:linear-gradient(180deg,rgba(143,217,168,.14),rgba(143,217,168,.05));border-color:rgba(143,217,168,.25)}
 .badge.expired{color:var(--warn);background:linear-gradient(180deg,rgba(232,200,138,.14),rgba(232,200,138,.05));border-color:rgba(232,200,138,.25)}
 .badge.banned{color:#e6e8ec;background:linear-gradient(180deg,rgba(230,232,236,.14),rgba(230,232,236,.05));border-color:rgba(230,232,236,.25)}
@@ -457,112 +320,55 @@ tbody tr:hover td:first-child{box-shadow:inset 3px 0 0 #e6e8ec}
 .badge.active::before{animation:pulse 2.4s ease-in-out infinite}
 
 .row{display:flex;gap:8px}
-
 .view{display:none}
 .view.on{display:block;animation:riseIn .5s cubic-bezier(.2,.8,.2,1)}
 
-.empty{
-  padding:60px 24px;text-align:center;color:var(--dim);
-  display:flex;flex-direction:column;align-items:center;gap:14px;
-  font-size:14px;font-weight:500;
-  animation:fadeIn .6s ease both;
-}
-.empty::before{
-  content:"";width:60px;height:60px;
-  background:linear-gradient(135deg,rgba(230,232,236,.08),rgba(230,232,236,.02));
-  border:1px solid rgba(230,232,236,.15);
-  border-radius:18px;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234f545e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.35-4.35'/></svg>");
-  background-repeat:no-repeat;background-position:center;background-size:26px;
-  box-shadow:0 0 30px -10px var(--red-glow);
-}
+.empty{padding:60px 24px;text-align:center;color:var(--dim);display:flex;flex-direction:column;align-items:center;gap:14px;font-size:14px;font-weight:500;animation:fadeIn .6s ease both}
+.empty::before{content:"";width:60px;height:60px;background:linear-gradient(135deg,rgba(230,232,236,.08),rgba(230,232,236,.02));border:1px solid rgba(230,232,236,.15);border-radius:18px;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234f545e' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.35-4.35'/></svg>");background-repeat:no-repeat;background-position:center;background-size:26px;box-shadow:0 0 30px -10px var(--red-glow)}
 
-.sk{
-  height:14px;border-radius:7px;
-  background:linear-gradient(90deg,rgba(255,255,255,.03) 0%,rgba(255,255,255,.10) 50%,rgba(255,255,255,.03) 100%);
-  background-size:200% 100%;
-  animation:shimmer 1.4s linear infinite;
-  width:80%;
-}
+.sk{height:14px;border-radius:7px;background:linear-gradient(90deg,rgba(255,255,255,.03) 0%,rgba(255,255,255,.10) 50%,rgba(255,255,255,.03) 100%);background-size:200% 100%;animation:shimmer 1.4s linear infinite;width:80%}
 tr.skeleton td{padding:18px 20px}
-tr.skeleton td:nth-child(1) .sk{width:70%}
-tr.skeleton td:nth-child(2) .sk{width:50%}
-tr.skeleton td:nth-child(3) .sk{width:40%}
-tr.skeleton td:nth-child(4) .sk{width:60%}
-tr.skeleton td:nth-child(5) .sk{width:55%}
-tr.skeleton td:nth-child(6) .sk{width:45%}
-tr.skeleton td:nth-child(7) .sk{width:30%}
-tr.skeleton td:nth-child(3):last-child .sk{width:20%}
 
-.modal{
-  position:fixed;inset:0;background:rgba(4,5,8,.75);
-  display:grid;place-items:center;padding:20px;z-index:200;
-  animation:fadeIn .3s ease both;
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+/* ═══ MODAL ═══ */
+.modal{position:fixed;inset:0;background:rgba(4,5,8,.75);display:grid;place-items:center;padding:20px;z-index:200;animation:fadeIn .3s ease both;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.box{background:linear-gradient(180deg,rgba(255,255,255,.035),transparent 120px),linear-gradient(180deg,rgba(30,32,38,.98),rgba(18,19,23,.98));border:1px solid rgba(255,255,255,.10);border-radius:var(--r-xl);width:100%;max-width:480px;padding:32px;box-shadow:0 60px 140px -30px #000,0 0 0 1px rgba(255,255,255,.03) inset,0 1px 0 rgba(255,255,255,.10) inset,0 0 80px -20px var(--red-glow);animation:popIn .45s cubic-bezier(.2,.9,.3,1.15) both;position:relative;overflow:hidden}
+.box::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#e6e8ec,transparent);background-size:200% 100%;animation:borderFlow 3s linear infinite}
+
+/* ═══ MODAL HEADER avec logo ═══ */
+.modal-header{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:22px;
+  padding-bottom:18px;
+  border-bottom:1px solid rgba(255,255,255,.06);
 }
-.box{
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.035),transparent 120px),
-    linear-gradient(180deg,rgba(30,32,38,.98),rgba(18,19,23,.98));
-  border:1px solid rgba(255,255,255,.10);
-  border-radius:var(--r-xl);
-  width:100%;max-width:480px;padding:32px;
-  box-shadow:
-    0 60px 140px -30px #000,
-    0 0 0 1px rgba(255,255,255,.03) inset,
-    0 1px 0 rgba(255,255,255,.10) inset,
-    0 0 80px -20px var(--red-glow);
-  animation:popIn .45s cubic-bezier(.2,.9,.3,1.15) both;
-  position:relative;
-  overflow:hidden;
+.modal-header .modal-logo{
+  width:48px;height:48px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(230,232,236,.14),rgba(230,232,236,.03));
+  border:1px solid rgba(230,232,236,.25);
+  display:grid;place-items:center;flex:0 0 auto;
+  box-shadow:0 8px 22px -8px var(--red-glow),0 0 0 1px rgba(255,255,255,.08) inset;
+  animation:logoGlow 3s ease-in-out infinite;
 }
-.box::before{
-  content:"";position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,transparent,#e6e8ec,transparent);
-  background-size:200% 100%;
-  animation:borderFlow 3s linear infinite;
+.modal-header .modal-logo img{width:32px;height:32px;object-fit:contain}
+.modal-header .modal-logo .fallback{font-size:24px;font-weight:900;color:#e6e8ec;letter-spacing:-.05em;text-shadow:0 0 18px var(--red-glow)}
+.modal-header .modal-title{display:flex;flex-direction:column;gap:2px;min-width:0}
+.modal-header .modal-title b{
+  font-size:18px;font-weight:800;letter-spacing:-.03em;color:#fff;line-height:1.2;
 }
-.box h2{
-  font-size:20px;font-weight:800;letter-spacing:-.03em;margin-bottom:22px;
-  display:flex;align-items:center;gap:11px;
+.modal-header .modal-title span{
+  font-size:11px;font-weight:800;color:var(--mute);
+  letter-spacing:1.2px;text-transform:uppercase;
 }
-.box h2 svg{width:22px;height:22px;color:#e6e8ec;filter:drop-shadow(0 0 12px var(--red-glow))}
+
 .fld{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
 .fld label{font-size:11.5px;font-weight:800;color:var(--mute);text-transform:uppercase;letter-spacing:1px}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .foot{display:flex;justify-content:flex-end;gap:10px;margin-top:12px}
-.out{
-  background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.10);
-  border-radius:12px;padding:16px 18px;
-  font-family:var(--mono);font-size:12.5px;color:#e6e8ec;font-weight:600;
-  max-height:240px;overflow:auto;white-space:pre;
-  margin-bottom:16px;line-height:1.8;
-  letter-spacing:.02em;
-}
+.out{background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.10);border-radius:12px;padding:16px 18px;font-family:var(--mono);font-size:12.5px;color:#e6e8ec;font-weight:600;max-height:240px;overflow:auto;white-space:pre;margin-bottom:16px;line-height:1.8;letter-spacing:.02em}
 
-#toasts{
-  position:fixed;right:24px;bottom:calc(24px + var(--safe-b));
-  display:flex;flex-direction:column;gap:12px;z-index:300;
-  pointer-events:none;
-}
-.toast{
-  display:flex;align-items:center;gap:13px;
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.05),transparent),
-    linear-gradient(180deg,rgba(38,40,47,.98),rgba(24,26,31,.98));
-  border:1px solid rgba(255,255,255,.12);
-  border-left:3px solid var(--mute);
-  border-radius:14px;padding:15px 20px;min-width:260px;
-  font-weight:700;font-size:13.5px;
-  box-shadow:
-    0 30px 70px -20px rgba(0,0,0,.95),
-    0 0 0 1px rgba(255,255,255,.03) inset;
-  animation:slideLeft .4s cubic-bezier(.2,.9,.3,1.1) both;
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  pointer-events:auto;
-  position:relative;
-  overflow:hidden;
-}
+/* ═══ TOASTS ═══ */
+#toasts{position:fixed;right:24px;bottom:calc(24px + var(--safe-b));display:flex;flex-direction:column;gap:12px;z-index:300;pointer-events:none}
+.toast{display:flex;align-items:center;gap:13px;background:linear-gradient(180deg,rgba(255,255,255,.05),transparent),linear-gradient(180deg,rgba(38,40,47,.98),rgba(24,26,31,.98));border:1px solid rgba(255,255,255,.12);border-left:3px solid var(--mute);border-radius:14px;padding:15px 20px;min-width:260px;font-weight:700;font-size:13.5px;box-shadow:0 30px 70px -20px rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.03) inset;animation:slideLeft .4s cubic-bezier(.2,.9,.3,1.1) both;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);pointer-events:auto;position:relative;overflow:hidden}
 .toast svg{width:18px;height:18px;flex:0 0 auto}
 .toast.success{border-left-color:var(--ok);box-shadow:0 30px 70px -20px rgba(0,0,0,.95),0 0 30px -10px var(--ok-glow)}
 .toast.success svg{color:var(--ok);filter:drop-shadow(0 0 10px var(--ok-glow))}
@@ -571,175 +377,46 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
 .toast.out{animation:slideLeft .3s ease reverse forwards}
 
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
-.stat{
-  position:relative;overflow:hidden;
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.045),transparent 60%),
-    var(--panel);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:var(--r-lg);
-  padding:22px 24px;
-  transition:all .35s cubic-bezier(.2,.8,.2,1);
-  box-shadow:0 1px 0 rgba(255,255,255,.05) inset;
-  animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both;
-}
-.stat:nth-child(1){animation-delay:.05s}
-.stat:nth-child(2){animation-delay:.10s}
-.stat:nth-child(3){animation-delay:.15s}
-.stat:nth-child(4){animation-delay:.20s}
-.stat::before{
-  content:"";position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,transparent,var(--accent,var(--red)),transparent);
-  opacity:.7;
-}
-.stat:hover{
-  transform:translateY(-4px);
-  border-color:rgba(255,255,255,.16);
-  box-shadow:
-    0 25px 50px -20px rgba(0,0,0,.95),
-    0 0 0 1px rgba(255,255,255,.06) inset,
-    0 0 40px -15px var(--accent,var(--red-glow));
-}
-.stat .ico{
-  width:38px;height:38px;border-radius:11px;
-  background:var(--accent-bg,rgba(255,255,255,.06));
-  color:var(--accent,var(--text-2));
-  display:grid;place-items:center;margin-bottom:14px;
-  border:1px solid var(--accent-border,rgba(255,255,255,.06));
-  box-shadow:0 8px 20px -8px var(--accent,transparent);
-  transition:all .3s cubic-bezier(.2,.8,.2,1);
-}
-.stat:hover .ico{transform:scale(1.10) rotate(-4deg)}
+.stat{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(255,255,255,.045),transparent 60%),var(--panel);border:1px solid rgba(255,255,255,.08);border-radius:var(--r-lg);padding:22px 24px;transition:all .35s cubic-bezier(.2,.8,.2,1);box-shadow:0 1px 0 rgba(255,255,255,.05) inset;animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both}
+.stat::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent,var(--red)),transparent);opacity:.7}
+.stat:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.16)}
+.stat .ico{width:38px;height:38px;border-radius:11px;background:var(--accent-bg,rgba(255,255,255,.06));color:var(--accent,var(--text-2));display:grid;place-items:center;margin-bottom:14px;border:1px solid var(--accent-border,rgba(255,255,255,.06))}
 .stat .ico svg{width:18px;height:18px}
 .stat span{display:block;font-size:11.5px;color:var(--mute);font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px}
-.stat b{
-  display:block;font-size:36px;font-weight:800;letter-spacing:-.05em;
-  font-variant-numeric:tabular-nums;line-height:1;
-  color:var(--accent,var(--text));
-}
+.stat b{display:block;font-size:36px;font-weight:800;letter-spacing:-.05em;font-variant-numeric:tabular-nums;line-height:1;color:var(--accent,var(--text))}
 .stat[data-tone="ok"]{--accent:var(--ok);--accent-bg:rgba(143,217,168,.12);--accent-border:rgba(143,217,168,.25)}
 .stat[data-tone="warn"]{--accent:var(--warn);--accent-bg:rgba(232,200,138,.12);--accent-border:rgba(232,200,138,.25)}
 .stat[data-tone="bad"]{--accent:#e6e8ec;--accent-bg:rgba(230,232,236,.12);--accent-border:rgba(230,232,236,.25)}
 .stat[data-tone="total"]{--accent:var(--blue);--accent-bg:rgba(168,184,208,.12);--accent-border:rgba(168,184,208,.25)}
 
-.quick{
-  padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.05);
-  display:flex;gap:8px;flex-wrap:wrap;align-items:center;
-  background:linear-gradient(180deg,rgba(255,255,255,.02),transparent);
-}
-.quick .lbl{
-  display:flex;align-items:center;gap:8px;
-  font-size:11.5px;color:var(--dim);text-transform:uppercase;
-  letter-spacing:1.2px;font-weight:800;margin-right:10px;
-}
+.quick{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)}
+.quick .lbl{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--dim);text-transform:uppercase;letter-spacing:1.2px;font-weight:800;margin-right:10px}
 .quick .lbl svg{width:14px;height:14px;color:#e6e8ec;filter:drop-shadow(0 0 8px var(--red-glow))}
-.quick button{
-  padding:8px 15px;font-size:12.5px;border-radius:10px;
-  border:1px solid rgba(255,255,255,.10);
-  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
-  color:var(--text-2);font-weight:700;cursor:pointer;
-  transition:all .22s cubic-bezier(.2,.8,.2,1);font-variant-numeric:tabular-nums;
-  position:relative;
-  overflow:hidden;
-}
-.quick button::before{
-  content:"";position:absolute;inset:0;
-  background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.20) 50%,transparent 70%);
-  background-size:200% 100%;opacity:0;transition:opacity .3s;
-}
-.quick button:hover::before{opacity:1;animation:shimmer 1.2s linear infinite}
-.quick button:hover{
-  border-color:#e6e8ec;color:#fff;
-  background:linear-gradient(180deg,rgba(230,232,236,.14),rgba(230,232,236,.04));
-  transform:translateY(-2px);
-  box-shadow:0 10px 24px -10px var(--red-glow);
-}
-.quick button:active{transform:translateY(0)}
+.quick button{padding:8px 15px;font-size:12.5px;border-radius:10px;border:1px solid rgba(255,255,255,.10);background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));color:var(--text-2);font-weight:700;cursor:pointer;transition:all .22s cubic-bezier(.2,.8,.2,1);font-variant-numeric:tabular-nums}
+.quick button:hover{border-color:#e6e8ec;color:#fff;background:linear-gradient(180deg,rgba(230,232,236,.14),rgba(230,232,236,.04));transform:translateY(-2px);box-shadow:0 10px 24px -10px var(--red-glow)}
 
 .fresh tr{animation:riseIn .4s cubic-bezier(.2,.8,.2,1) both}
-.fresh tr:nth-child(1){animation-delay:0ms}
-.fresh tr:nth-child(2){animation-delay:20ms}
-.fresh tr:nth-child(3){animation-delay:40ms}
-.fresh tr:nth-child(4){animation-delay:60ms}
-.fresh tr:nth-child(5){animation-delay:80ms}
-.fresh tr:nth-child(6){animation-delay:100ms}
-.fresh tr:nth-child(7){animation-delay:120ms}
-.fresh tr:nth-child(8){animation-delay:140ms}
-.fresh tr:nth-child(9){animation-delay:160ms}
-.fresh tr:nth-child(10){animation-delay:180ms}
 
-/* ═══ CONFIRM DIALOG (remplace window.confirm) ═══ */
-.confirm-modal{
-  position:fixed;inset:0;background:rgba(4,5,8,.75);
-  display:grid;place-items:center;padding:20px;z-index:400;
-  animation:fadeIn .25s ease both;
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-}
-.confirm-box{
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.035),transparent 120px),
-    linear-gradient(180deg,rgba(30,32,38,.98),rgba(18,19,23,.98));
-  border:1px solid rgba(255,255,255,.10);
-  border-radius:var(--r-xl);
-  width:100%;max-width:400px;padding:28px;
-  box-shadow:
-    0 60px 140px -30px #000,
-    0 0 0 1px rgba(255,255,255,.03) inset,
-    0 1px 0 rgba(255,255,255,.10) inset,
-    0 0 80px -20px var(--red-glow);
-  animation:popIn .35s cubic-bezier(.2,.9,.3,1.15) both;
-  position:relative;
-  overflow:hidden;
-}
-.confirm-box::before{
-  content:"";position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,transparent,#e6e8ec,transparent);
-  background-size:200% 100%;
-  animation:borderFlow 3s linear infinite;
-}
-.confirm-box h2{
-  font-size:18px;font-weight:800;letter-spacing:-.03em;margin-bottom:12px;
-  display:flex;align-items:center;gap:11px;color:#f6f7f9;
-}
-.confirm-box h2 svg{
-  width:22px;height:22px;flex:0 0 auto;
-  color:#e6e8ec;filter:drop-shadow(0 0 12px var(--red-glow));
-}
-.confirm-box p{
-  color:var(--mute);font-size:13.5px;font-weight:500;
-  margin-bottom:22px;line-height:1.65;word-break:break-word;
-}
-.confirm-box p b{
-  color:#e6e8ec;font-family:var(--mono);font-size:12.5px;
-  background:rgba(230,232,236,.10);padding:2px 8px;border-radius:6px;
-  border:1px solid rgba(230,232,236,.15);
-  word-break:break-all;
-}
-.confirm-foot{
-  display:flex;justify-content:flex-end;gap:10px;
-}
+/* ═══ CONFIRM DIALOG ═══ */
+.confirm-modal{position:fixed;inset:0;background:rgba(4,5,8,.75);display:grid;place-items:center;padding:20px;z-index:400;animation:fadeIn .25s ease both;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.confirm-box{background:linear-gradient(180deg,rgba(255,255,255,.035),transparent 120px),linear-gradient(180deg,rgba(30,32,38,.98),rgba(18,19,23,.98));border:1px solid rgba(255,255,255,.10);border-radius:var(--r-xl);width:100%;max-width:400px;padding:28px;box-shadow:0 60px 140px -30px #000,0 0 0 1px rgba(255,255,255,.03) inset,0 1px 0 rgba(255,255,255,.10) inset,0 0 80px -20px var(--red-glow);animation:popIn .35s cubic-bezier(.2,.9,.3,1.15) both;position:relative;overflow:hidden}
+.confirm-box::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#e6e8ec,transparent);background-size:200% 100%;animation:borderFlow 3s linear infinite}
+.confirm-box h2{font-size:18px;font-weight:800;letter-spacing:-.03em;margin-bottom:12px;display:flex;align-items:center;gap:11px;color:#f6f7f9}
+.confirm-box h2 svg{width:22px;height:22px;flex:0 0 auto;color:#e6e8ec;filter:drop-shadow(0 0 12px var(--red-glow))}
+.confirm-box p{color:var(--mute);font-size:13.5px;font-weight:500;margin-bottom:22px;line-height:1.65;word-break:break-word}
+.confirm-box p b{color:#e6e8ec;font-family:var(--mono);font-size:12.5px;background:rgba(230,232,236,.10);padding:2px 8px;border-radius:6px;border:1px solid rgba(230,232,236,.15);word-break:break-all}
+.confirm-foot{display:flex;justify-content:flex-end;gap:10px}
 
 @media(max-width:960px){
   #app{grid-template-columns:1fr}
-  aside{
-    position:sticky;top:0;z-index:40;height:auto;width:100%;
-    flex-direction:row;align-items:center;gap:8px;
-    padding:12px 14px;
-    padding-top:calc(12px + var(--safe-t));
-    border-right:0;border-bottom:1px solid rgba(255,255,255,.05);
-    overflow-x:auto;overflow-y:hidden;
-    -webkit-overflow-scrolling:touch;scrollbar-width:none;
-  }
+  aside{position:sticky;top:0;z-index:40;height:auto;width:100%;flex-direction:row;align-items:center;gap:8px;padding:12px 14px;padding-top:calc(12px + var(--safe-t));border-right:0;border-bottom:1px solid rgba(255,255,255,.05);overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   aside::-webkit-scrollbar{display:none}
   .brand{padding:0 12px 0 0;flex:0 0 auto}
   .brand::after{display:none}
   .brand .logo{width:34px;height:34px}
   .brand .logo img{width:22px;height:22px}
   .brand .name{display:none}
-  .nav{
-    width:auto;flex:0 0 auto;white-space:nowrap;
-    padding:10px 14px;font-size:13px;gap:9px;border-radius:10px;
-  }
+  .nav{width:auto;flex:0 0 auto;white-space:nowrap;padding:10px 14px;font-size:13px;gap:9px;border-radius:10px}
   .nav.on::after{display:none}
   .nav.on{background:rgba(230,232,236,.15);box-shadow:0 0 0 1px rgba(230,232,236,.30) inset}
   .nav svg{width:16px;height:16px}
@@ -747,106 +424,59 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
   .bottom{margin:0 0 0 auto;padding:0;border:0;flex:0 0 auto}
   .bottom .btn{padding:9px 13px;font-size:13px}
   .bottom .btn .txt{display:none}
-
   main{padding:20px 18px calc(60px + var(--safe-b))}
   h1.t{font-size:26px}
   .top{margin-bottom:22px;gap:14px}
   .page-head{width:100%}
-  .t-sub{font-size:13px}
   .acts{width:100%;gap:8px}
   .acts .btn{flex:1;min-width:0;padding:12px 14px}
-
   .stats{grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}
   .stat{padding:16px 18px}
   .stat .ico{width:32px;height:32px;margin-bottom:10px}
   .stat .ico svg{width:15px;height:15px}
   .stat b{font-size:26px}
-  .stat span{font-size:10.5px}
-
   .quick{padding:14px 16px;gap:8px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .quick::-webkit-scrollbar{display:none}
   .quick .lbl{flex:0 0 auto}
   .quick button{flex:0 0 auto;padding:9px 14px;font-size:12.5px}
-
   .tb{padding:14px;gap:10px}
   .search-wrap{min-width:0;width:100%;flex:1 1 100%}
-  .search-wrap input{width:100%}
-  .tb select{width:100%;flex:1 1 100%;padding:12px 15px}
+  .dropdown{width:100%;flex:1 1 100%}
   .tb .btn{width:100%;flex:1 1 100%;padding:13px 15px}
   #v-accounts .tb input{width:100%;flex:1 1 100%}
   #v-accounts .tb .btn{width:100%}
-
   .scroll{overflow:visible}
   table{min-width:0;width:100%;border:0}
   thead{display:none}
   table,tbody,tr,td{display:block;width:100%}
-  tbody tr{
-    background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--panel-2);
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:var(--r-lg);
-    padding:18px 20px;
-    margin:12px;
-    margin-bottom:12px;
-    content-visibility:visible;
-    contain-intrinsic-size:auto;
-    box-shadow:0 12px 30px -15px rgba(0,0,0,.7);
-  }
-  tbody tr:hover{
-    background:linear-gradient(180deg,rgba(255,255,255,.05),transparent),var(--panel-2);
-    transform:translateY(-2px);
-  }
-  td{
-    border:0;padding:9px 0;white-space:normal;
-    display:flex;justify-content:space-between;align-items:center;gap:14px;
-    font-size:13.5px;
-  }
-  td::before{
-    content:attr(data-l);
-    color:var(--mute);font-size:11px;font-weight:800;
-    text-transform:uppercase;letter-spacing:1px;
-    flex:0 0 auto;
-  }
+  tbody tr{background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--panel-2);border:1px solid rgba(255,255,255,.08);border-radius:var(--r-lg);padding:18px 20px;margin:12px;margin-bottom:12px;box-shadow:0 12px 30px -15px rgba(0,0,0,.7)}
+  td{border:0;padding:9px 0;white-space:normal;display:flex;justify-content:space-between;align-items:center;gap:14px;font-size:13.5px}
+  td::before{content:attr(data-l);color:var(--mute);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;flex:0 0 auto}
   td:empty{display:none}
   td[data-l=""]::before{display:none}
   td .row{justify-content:stretch;width:100%;gap:8px}
   td .row .btn{flex:1;text-align:center;padding:10px 12px;font-size:12.5px;justify-content:center}
   td:last-child{border-top:1px solid rgba(255,255,255,.06);padding-top:14px;margin-top:8px}
-
   .key,.hw{word-break:break-all;white-space:normal;text-align:right}
-
   .modal{padding:0;place-items:end center;backdrop-filter:blur(6px)}
-  .box{
-    max-width:100%;width:100%;
-    border-radius:28px 28px 0 0;
-    padding:26px 20px calc(26px + var(--safe-b));
-    animation:riseIn .4s cubic-bezier(.2,.9,.3,1.05) both;
-    max-height:92dvh;overflow-y:auto;
-  }
+  .box{max-width:100%;width:100%;border-radius:28px 28px 0 0;padding:26px 20px calc(26px + var(--safe-b));animation:riseIn .4s cubic-bezier(.2,.9,.3,1.05) both;max-height:92dvh;overflow-y:auto}
   .box::before{display:none}
   .two{grid-template-columns:1fr}
   .foot .btn{flex:1;padding:14px 16px}
-  .fld input,.fld select{padding:14px 15px;font-size:16px}
-
-  /* Confirm modal mobile */
+  .fld input{padding:14px 15px;font-size:16px}
   .confirm-modal{padding:0;place-items:end center}
-  .confirm-box{
-    max-width:100%;width:100%;
-    border-radius:28px 28px 0 0;
-    padding:26px 20px calc(26px + var(--safe-b));
-    animation:riseIn .4s cubic-bezier(.2,.9,.3,1.05) both;
-  }
+  .confirm-box{max-width:100%;width:100%;border-radius:28px 28px 0 0;padding:26px 20px calc(26px + var(--safe-b));animation:riseIn .4s cubic-bezier(.2,.9,.3,1.05) both}
   .confirm-box::before{display:none}
   .confirm-foot{flex-direction:column-reverse;gap:10px}
   .confirm-foot .btn{width:100%;padding:14px 16px;font-size:14px}
-
   #toasts{left:14px;right:14px;bottom:calc(14px + var(--safe-b));gap:10px}
   .toast{min-width:0;width:100%;padding:14px 16px;font-size:13px}
-
   .lbox{padding:36px 26px}
-  .lbox input,.tb input,.tb select,.fld input,.fld select{font-size:16px}
+  .lbox input,.tb input,.fld input{font-size:16px}
   .lbox h1{font-size:24px}
-  .lbox .logo-wrap{width:64px;height:64px}
-  .lbox .logo-wrap img{width:44px;height:44px}
+  .modal-header .modal-logo{width:42px;height:42px}
+  .modal-header .modal-logo img{width:28px;height:28px}
+  .modal-header .modal-title b{font-size:16px}
 }
 
 @media(max-width:420px){
@@ -854,7 +484,6 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
   .stat b{font-size:22px}
   .acts .btn{padding:11px 12px;font-size:12.5px}
   .acts .btn .txt{display:none}
-  .acts .btn svg{margin:0}
   h1.t{font-size:22px}
 }
 
@@ -870,7 +499,7 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
       <span class="fallback" style="display:none">V</span>
     </div>
     <h1>Bienvenue</h1>
-    <p>Connecte-toi au panneau d'administration KeyAuth.</p>
+    <p>Connecte-toi au panel Vyse X.</p>
     <input type="password" id="adminKey" placeholder="Clé d'administration" autocomplete="off" aria-label="Clé d'administration">
     <button class="btn red" style="width:100%;padding:16px 18px;font-size:15px" id="loginBtn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
@@ -887,7 +516,7 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
         <img src="logo.png" alt="Logo" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
         <span class="fallback" style="display:none">V</span>
       </div>
-      <div class="name"><b>KeyAuth</b><small>Admin Panel</small></div>
+      <div class="name"><b>Vyse X</b><small>Admin Panel</small></div>
     </div>
 
     <button class="nav on" data-view="keys">
@@ -969,12 +598,31 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
           <div class="search-wrap">
             <input id="q" type="search" placeholder="Rechercher une clé ou un HWID…" aria-label="Rechercher">
           </div>
-          <select id="st" aria-label="Statut">
-            <option value="">Tous les statuts</option>
-            <option value="active">Actives</option>
-            <option value="expired">Expirées</option>
-            <option value="banned">Bannies</option>
-          </select>
+          <!-- ═══ DROPDOWN CUSTOM (remplace <select>) ═══ -->
+          <div class="dropdown" id="ddStatus">
+            <button type="button" class="dropdown-trigger" data-dropdown-trigger>
+              <span data-dropdown-label>Tous les statuts</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="dropdown-menu" data-dropdown-menu hidden>
+              <div class="dropdown-item active" data-value="">
+                <span>Tous les statuts</span>
+                <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="dropdown-item" data-value="active">
+                <span>Actives</span>
+                <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="dropdown-item" data-value="expired">
+                <span>Expirées</span>
+                <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="dropdown-item" data-value="banned">
+                <span>Bannies</span>
+                <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="scroll"><table>
           <thead><tr><th>Clé</th><th>Statut</th><th>Durée</th><th>HWID</th><th>Expire le</th><th>Restant</th><th></th></tr></thead>
@@ -1014,10 +662,7 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
           </button>
         </div>
         <div class="scroll"><table>
-          <thead><tr>
-            <th>Email</th><th>Mot de passe</th><th>Statut</th>
-            <th>Utilisé le</th><th>Utilisé par</th><th></th>
-          </tr></thead>
+          <thead><tr><th>Email</th><th>Mot de passe</th><th>Statut</th><th>Utilisé le</th><th>Utilisé par</th><th></th></tr></thead>
           <tbody id="accBody"></tbody>
         </table></div>
         <div class="empty" id="accEmpty">Chargement…</div>
@@ -1040,38 +685,17 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
         <p style="color:#7a7f8a;font-size:13.5px;margin-bottom:26px;font-weight:500">Ces valeurs sont envoyées à tous les loaders au démarrage. Modifie-les puis clique "Sauvegarder".</p>
 
         <div class="two">
-          <div class="fld">
-            <label for="cfgAccent">Couleur d'accent (hex)</label>
-            <input id="cfgAccent" type="text" placeholder="#e6e8ec">
-          </div>
-          <div class="fld">
-            <label for="cfgText">Couleur du texte (hex)</label>
-            <input id="cfgText" type="text" placeholder="#F0F0F0">
-          </div>
+          <div class="fld"><label for="cfgAccent">Couleur d'accent (hex)</label><input id="cfgAccent" type="text" placeholder="#e6e8ec"></div>
+          <div class="fld"><label for="cfgText">Couleur du texte (hex)</label><input id="cfgText" type="text" placeholder="#F0F0F0"></div>
         </div>
 
-        <div class="fld">
-          <label for="cfgLoginTitle">Titre du login</label>
-          <input id="cfgLoginTitle" type="text" placeholder="Authentication Portal">
-        </div>
+        <div class="fld"><label for="cfgLoginTitle">Titre du login</label><input id="cfgLoginTitle" type="text" placeholder="Authentication Portal"></div>
 
         <div class="two">
-          <div class="fld">
-            <label for="cfgP1Name">Nom produit 1</label>
-            <input id="cfgP1Name" type="text" placeholder="Vyse X Menu">
-          </div>
-          <div class="fld">
-            <label for="cfgP1Status">Statut produit 1</label>
-            <input id="cfgP1Status" type="text" placeholder="Working / Undetected">
-          </div>
-          <div class="fld">
-            <label for="cfgP2Name">Nom produit 2</label>
-            <input id="cfgP2Name" type="text" placeholder="Vyse X Spoofer">
-          </div>
-          <div class="fld">
-            <label for="cfgP2Status">Statut produit 2</label>
-            <input id="cfgP2Status" type="text" placeholder="USE AT OWN RISK">
-          </div>
+          <div class="fld"><label for="cfgP1Name">Nom produit 1</label><input id="cfgP1Name" type="text" placeholder="Vyse X Menu"></div>
+          <div class="fld"><label for="cfgP1Status">Statut produit 1</label><input id="cfgP1Status" type="text" placeholder="Working / Undetected"></div>
+          <div class="fld"><label for="cfgP2Name">Nom produit 2</label><input id="cfgP2Name" type="text" placeholder="Vyse X Spoofer"></div>
+          <div class="fld"><label for="cfgP2Status">Statut produit 2</label><input id="cfgP2Status" type="text" placeholder="USE AT OWN RISK"></div>
         </div>
 
         <div class="foot" style="justify-content:flex-start;gap:12px;margin-top:24px">
@@ -1092,10 +716,7 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
         <h2 style="font-size:20px;font-weight:800;letter-spacing:-.03em;margin-bottom:8px;color:#fff">📢 Message au démarrage</h2>
         <p style="color:#7a7f8a;font-size:13.5px;margin-bottom:26px;font-weight:500">Ce message s'affichera dans une popup Windows quand l'utilisateur ouvre son loader.</p>
 
-        <div class="fld">
-          <label for="noticeMsg">Message</label>
-          <input id="noticeMsg" type="text" placeholder="Update V3">
-        </div>
+        <div class="fld"><label for="noticeMsg">Message</label><input id="noticeMsg" type="text" placeholder="Update V3"></div>
 
         <div class="fld" style="flex-direction:row;align-items:center;gap:12px">
           <input type="checkbox" id="noticeEnabled" style="width:auto;transform:scale(1.3);accent-color:#e6e8ec">
@@ -1138,7 +759,6 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
 <script>
 /* ---------- Configuration ---------- */
 const API_URL = "https://keyauth-api.cacamoussa70.workers.dev";
-
 let adminKey = sessionStorage.getItem('ka_admin') || '';
 
 const $ = id => document.getElementById(id);
@@ -1165,10 +785,80 @@ function toast(msg, type){
   setTimeout(() => el.remove(), 2800);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   CONFIRM MODAL — remplace window.confirm()
-   Retourne une Promise<boolean>
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══════════════ MODAL HEADER avec logo Vyse X ═══════════════ */
+function modalHeader(subtitle){
+  return `
+    <div class="modal-header">
+      <div class="modal-logo">
+        <img src="logo.png" alt="Vyse X" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="fallback" style="display:none">V</span>
+      </div>
+      <div class="modal-title">
+        <b>Vyse X</b>
+        <span>${esc(subtitle)}</span>
+      </div>
+    </div>`;
+}
+
+/* ═══════════════ DROPDOWN CUSTOM ═══════════════ */
+function initDropdown(el){
+  const trigger = el.querySelector('[data-dropdown-trigger]');
+  const menu = el.querySelector('[data-dropdown-menu]');
+  const label = el.querySelector('[data-dropdown-label]');
+  if (!trigger || !menu || !label) return;
+
+  let value = '';
+
+  trigger.onclick = (e) => {
+    e.stopPropagation();
+    // Ferme tous les autres
+    document.querySelectorAll('.dropdown.open').forEach(d => {
+      if (d !== el) { d.classList.remove('open'); d.querySelector('[data-dropdown-menu]').hidden = true; }
+    });
+    const isOpen = el.classList.toggle('open');
+    menu.hidden = !isOpen;
+  };
+
+  el.querySelectorAll('.dropdown-item').forEach(item => {
+    item.onclick = (e) => {
+      e.stopPropagation();
+      value = item.dataset.value || '';
+      label.textContent = item.querySelector('span').textContent;
+      el.querySelectorAll('.dropdown-item').forEach(i => i.classList.toggle('active', i === item));
+      el.classList.remove('open');
+      menu.hidden = true;
+      // Dispatch custom event
+      el.dispatchEvent(new CustomEvent('change', { detail: { value } }));
+    };
+  });
+
+  el.getValue = () => value;
+  el.setValue = (v) => {
+    const item = el.querySelector(`.dropdown-item[data-value="${v}"]`);
+    if (item) item.click();
+  };
+}
+
+// Init tous les dropdowns
+document.querySelectorAll('.dropdown').forEach(initDropdown);
+
+// Close on outside click
+document.addEventListener('click', () => {
+  document.querySelectorAll('.dropdown.open').forEach(d => {
+    d.classList.remove('open');
+    d.querySelector('[data-dropdown-menu]').hidden = true;
+  });
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.dropdown.open').forEach(d => {
+      d.classList.remove('open');
+      d.querySelector('[data-dropdown-menu]').hidden = true;
+    });
+  }
+});
+
+/* ═══════════════ CONFIRM MODAL ═══════════════ */
 function confirmDialog(opts){
   return new Promise(resolve => {
     const title = typeof opts === 'string' ? 'Confirmation' : (opts.title || 'Confirmation');
@@ -1192,27 +882,20 @@ function confirmDialog(opts){
         <p>${message}</p>
         <div class="confirm-foot">
           <button class="btn ghost" data-cancel>${esc(cancelText)}</button>
-          <button class="btn ${danger ? 'red' : 'red'}" data-ok>${esc(okText)}</button>
+          <button class="btn red" data-ok>${esc(okText)}</button>
         </div>
       </div>`;
 
-    const close = (val) => {
-      m.remove();
-      document.removeEventListener('keydown', onKey);
-      resolve(val);
-    };
+    const close = (val) => { m.remove(); document.removeEventListener('keydown', onKey); resolve(val); };
     const onKey = (e) => {
       if (e.key === 'Escape') close(false);
       if (e.key === 'Enter') close(true);
     };
-
     m.querySelector('[data-ok]').onclick = () => close(true);
     m.querySelector('[data-cancel]').onclick = () => close(false);
     m.addEventListener('mousedown', e => { if (e.target === m) close(false); });
     document.addEventListener('keydown', onKey);
     document.body.appendChild(m);
-
-    // Focus auto sur OK
     setTimeout(() => m.querySelector('[data-ok]').focus(), 30);
   });
 }
@@ -1379,7 +1062,8 @@ function renderStats(list){
 
 function renderRows(list, anim){
   $('nKeys').textContent = list.length;
-  const q = $('q').value.trim().toUpperCase(), fs = $('st').value;
+  const q = $('q').value.trim().toUpperCase();
+  const fs = document.getElementById('ddStatus').getValue();
   const rows = (!q && !fs) ? list : list.filter(k =>
     (!fs || status(k) === fs) && (!q || k.key.includes(q) || (k.hwid || '').includes(q)));
 
@@ -1444,21 +1128,17 @@ function insertKeysOptimistic(created, days, hwid){
   renderRows(allKeys, true);
 }
 
-/* ═══════════════ CLIC TABLE — avec modale custom ═══════════════ */
 $('keysBody').addEventListener('click', async e => {
   const cp = e.target.closest('[data-copy]');
   if (cp) return navigator.clipboard.writeText(cp.dataset.copy).then(() => toast('Clé copiée', 'success'), () => toast('Copie impossible', 'error'));
   const b = e.target.closest('[data-act]'); if (!b) return;
   const key = b.dataset.key, a = b.dataset.act;
 
-  // ═══ MODALES CUSTOM (au lieu de confirm) ═══
   if (a === 'ban') {
     const ok = await confirmDialog({
       title: 'Bannir cette clé ?',
       message: `La clé <b>${esc(key)}</b> ne pourra plus être utilisée par son porteur. Tu peux la débannir à tout moment.`,
-      okText: 'Bannir',
-      cancelText: 'Annuler',
-      danger: true
+      okText: 'Bannir', cancelText: 'Annuler', danger: true
     });
     if (!ok) return;
   }
@@ -1466,9 +1146,7 @@ $('keysBody').addEventListener('click', async e => {
     const ok = await confirmDialog({
       title: 'Supprimer cette clé ?',
       message: `La clé <b>${esc(key)}</b> sera définitivement supprimée. Cette action est irréversible.`,
-      okText: 'Supprimer',
-      cancelText: 'Annuler',
-      danger: true
+      okText: 'Supprimer', cancelText: 'Annuler', danger: true
     });
     if (!ok) return;
   }
@@ -1491,40 +1169,71 @@ $('keysBody').addEventListener('click', async e => {
 
 let searchTimer;
 $('q').oninput = () => { clearTimeout(searchTimer); searchTimer = setTimeout(() => renderRows(allKeys, false), 120); };
-$('st').onchange = () => renderRows(allKeys, false);
+document.getElementById('ddStatus').addEventListener('change', () => renderRows(allKeys, false));
 $('refresh').onclick = () => { syncLocked = 0; loadKeys(false); loadHwids(); loadAccounts(); loadLogs(); };
 
-document.querySelectorAll('[data-quick]').forEach(btn => {
-  btn.onclick = async () => {
-    const days = parseInt(btn.dataset.quick, 10);
-    const {m, close} = modal(`
-      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Nouvelle clé — ${days} jour${days > 1 ? 's' : ''}</h2>
+/* ═══════════════ MODAL NOUVELLE CLÉ (avec logo + dropdown custom) ═══════════════ */
+function openNewKeyModal(days){
+  const preselect = days || 30;
+  const {m, close} = modal(`
+    ${modalHeader('Créer une nouvelle clé')}
+    <div class="two">
+      <div class="fld">
+        <label>Durée</label>
+        <div class="dropdown" id="ddDays">
+          <button type="button" class="dropdown-trigger" data-dropdown-trigger>
+            <span data-dropdown-label>30 jours</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="dropdown-menu" data-dropdown-menu hidden>
+            <div class="dropdown-item" data-value="1"><span>1 jour</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="dropdown-item" data-value="3"><span>3 jours</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="dropdown-item" data-value="7"><span>7 jours</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="dropdown-item active" data-value="30"><span>30 jours</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="dropdown-item" data-value="90"><span>90 jours</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="dropdown-item" data-value="365"><span>1 an</span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          </div>
+        </div>
+      </div>
       <div class="fld"><label for="nq">Quantité</label><input id="nq" type="number" min="1" max="100" value="1"></div>
-      <div class="fld"><label for="nh">HWID (facultatif)</label><input id="nh" placeholder="Laisser vide pour une clé libre"></div>
-      <div class="foot"><button class="btn ghost" id="c1">Annuler</button><button class="btn red" id="c2">Créer</button></div>`);
-    m.querySelector('#c1').onclick = close;
-    m.querySelector('#nq').focus();
-    m.querySelector('#nq').select();
-    m.querySelector('#c2').onclick = async () => {
-      const quantity = Math.max(1, Math.min(100, parseInt(m.querySelector('#nq').value, 10) || 1));
-      const hwid = m.querySelector('#nh').value.trim().toUpperCase() || null;
-      const r = await api('/admin/keys', 'POST', {days, quantity, hwid, level:'basic'});
-      if (!r.ok) return toast(r.error || 'Erreur', 'error');
-      close();
-      insertKeysOptimistic(r.created, days, hwid);
-      lockSync(2500);
-      const made = (r.created || []).map(x => typeof x === 'string' ? x : (x.key || x.Key || x.token || x.license)).filter(Boolean);
-      loadLogs();
-      if (!made.length) return toast(quantity + ' clé(s) ' + days + 'j créée(s)', 'success');
-      toast(made.length + ' clé(s) ' + days + 'j créée(s)', 'success');
-      const res = modal(`<h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>${made.length} clé(s) créée(s)</h2>
-        <div class="out"></div>
-        <div class="foot"><button class="btn ghost" id="r1">Fermer</button><button class="btn red" id="r2">Copier tout</button></div>`);
-      res.m.querySelector('.out').textContent = made.join('\n');
-      res.m.querySelector('#r1').onclick = res.close;
-      res.m.querySelector('#r2').onclick = () => navigator.clipboard.writeText(made.join('\n')).then(() => toast('Copié', 'success'));
-    };
+    </div>
+    <div class="fld"><label for="nh">HWID (facultatif)</label><input id="nh" placeholder="Laisser vide pour une clé libre"></div>
+    <div class="foot"><button class="btn ghost" id="c1">Annuler</button><button class="btn red" id="c2">Créer</button></div>`);
+
+  // Init dropdowns de la modale
+  m.querySelectorAll('.dropdown').forEach(initDropdown);
+  const ddDays = m.querySelector('#ddDays');
+  if (preselect !== 30) ddDays.setValue(String(preselect));
+
+  m.querySelector('#c1').onclick = close;
+  m.querySelector('#nq').focus();
+  m.querySelector('#nq').select();
+
+  m.querySelector('#c2').onclick = async () => {
+    const daysVal = parseInt(ddDays.getValue() || '30', 10);
+    const quantity = Math.max(1, Math.min(100, parseInt(m.querySelector('#nq').value, 10) || 1));
+    const hwid = m.querySelector('#nh').value.trim().toUpperCase() || null;
+    const r = await api('/admin/keys', 'POST', {days: daysVal, quantity, hwid, level:'basic'});
+    if (!r.ok) return toast(r.error || 'Erreur', 'error');
+    close();
+    insertKeysOptimistic(r.created, daysVal, hwid);
+    lockSync(2500);
+    const made = (r.created || []).map(x => typeof x === 'string' ? x : (x.key || x.Key || x.token || x.license)).filter(Boolean);
+    loadLogs();
+    if (!made.length) return toast(quantity + ' clé(s) ' + daysVal + 'j créée(s)', 'success');
+    toast(made.length + ' clé(s) ' + daysVal + 'j créée(s)', 'success');
+    const res = modal(`
+      ${modalHeader('Clés générées')}
+      <div class="out"></div>
+      <div class="foot"><button class="btn ghost" id="r1">Fermer</button><button class="btn red" id="r2">Copier tout</button></div>`);
+    res.m.querySelector('.out').textContent = made.join('\n');
+    res.m.querySelector('#r1').onclick = res.close;
+    res.m.querySelector('#r2').onclick = () => navigator.clipboard.writeText(made.join('\n')).then(() => toast('Copié', 'success'));
   };
+}
+
+document.querySelectorAll('[data-quick]').forEach(btn => {
+  btn.onclick = () => openNewKeyModal(parseInt(btn.dataset.quick, 10));
 });
 
 function modal(html){
@@ -1536,41 +1245,7 @@ function modal(html){
   m.addEventListener('mousedown', e => e.target === m && close());
   document.body.appendChild(m); return {m, close};
 }
-$('newKey').onclick = () => {
-  const {m, close} = modal(`
-    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3"/></svg>Nouvelle clé</h2>
-    <div class="two">
-      <div class="fld"><label for="nd">Durée</label><select id="nd">
-        <option value="1">1 jour</option>
-        <option value="3">3 jours</option><option value="7">7 jours</option>
-        <option value="30" selected>30 jours</option><option value="90">90 jours</option>
-        <option value="365">1 an</option></select></div>
-      <div class="fld"><label for="nq">Quantité</label><input id="nq" type="number" min="1" max="100" value="1"></div>
-    </div>
-    <div class="fld"><label for="nh">HWID (facultatif)</label><input id="nh" placeholder="Laisser vide pour une clé libre"></div>
-    <div class="foot"><button class="btn ghost" id="c1">Annuler</button><button class="btn red" id="c2">Créer</button></div>`);
-  m.querySelector('#c1').onclick = close;
-  m.querySelector('#c2').onclick = async () => {
-    const days = +m.querySelector('#nd').value;
-    const quantity = Math.max(1, Math.min(100, parseInt(m.querySelector('#nq').value, 10) || 1));
-    const hwid = m.querySelector('#nh').value.trim().toUpperCase() || null;
-    const r = await api('/admin/keys', 'POST', {days, quantity, hwid, level:'basic'});
-    if (!r.ok) return toast(r.error || 'Erreur', 'error');
-    close();
-    insertKeysOptimistic(r.created, days, hwid);
-    lockSync(2500);
-    const made = (r.created || []).map(x => typeof x === 'string' ? x : (x.key || x.Key || x.token || x.license)).filter(Boolean);
-    loadLogs();
-    if (!made.length) return toast(quantity + ' clé(s) créée(s)', 'success');
-    const res = modal(`<h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>${made.length} clé(s) créée(s)</h2>
-      <div class="out"></div>
-      <div class="foot"><button class="btn ghost" id="r1">Fermer</button><button class="btn red" id="r2">Copier tout</button></div>`);
-    res.m.querySelector('.out').textContent = made.join('\n');
-    res.m.querySelector('#r1').onclick = res.close;
-    res.m.querySelector('#r2').onclick = () => navigator.clipboard.writeText(made.join('\n')).then(() => toast('Copié', 'success'));
-  };
-  m.querySelector('#nq').focus();
-};
+$('newKey').onclick = () => openNewKeyModal(30);
 
 let allHwids = [];
 function renderHwids(list){
@@ -1628,20 +1303,15 @@ function removeHwidOptimistic(hwid){
   renderHwids(allHwids);
 }
 
-/* ═══════════════ HWID UNBAN — avec modale custom ═══════════════ */
 $('hwidBody').addEventListener('click', async e => {
   const b = e.target.closest('[data-h]'); if (!b) return;
   const hwid = b.dataset.h;
-
   const ok = await confirmDialog({
     title: 'Retirer ce HWID ?',
     message: `Le HWID <b>${esc(hwid)}</b> pourra à nouveau être utilisé pour activer des clés.`,
-    okText: 'Retirer',
-    cancelText: 'Annuler',
-    danger: true
+    okText: 'Retirer', cancelText: 'Annuler', danger: true
   });
   if (!ok) return;
-
   const prev = allHwids.slice();
   removeHwidOptimistic(hwid);
   try {
@@ -1716,22 +1386,17 @@ function renderAccounts(){
   void tbody.offsetWidth; tbody.classList.add('fresh');
 }
 
-/* ═══════════════ ACCOUNTS DELETE — avec modale custom ═══════════════ */
 $('accBody').addEventListener('click', async e => {
   const b = e.target.closest('[data-act]'); if (!b) return;
   const id = b.dataset.id, a = b.dataset.act;
-
   if (a === 'del') {
     const ok = await confirmDialog({
       title: 'Supprimer ce compte ?',
       message: `Ce compte Rockstar sera définitivement supprimé du stock. Cette action est irréversible.`,
-      okText: 'Supprimer',
-      cancelText: 'Annuler',
-      danger: true
+      okText: 'Supprimer', cancelText: 'Annuler', danger: true
     });
     if (!ok) return;
   }
-
   const prev = allAccounts.slice();
   if (a === 'del') allAccounts = allAccounts.filter(x => x.id !== id);
   else if (a === 'reset') allAccounts = allAccounts.map(x => x.id === id ? {...x, used:false, usedAt:null, usedBy:null} : x);
@@ -1890,15 +1555,11 @@ async function loadKill(){
     else { el.className = 'badge active'; el.textContent = '✓ Loaders opérationnels'; }
   } catch(e){ toast('Impossible de charger le kill switch : ' + (e.message || ''), 'error'); }
 }
-
-/* ═══════════════ KILL SWITCH — avec modale custom ═══════════════ */
 $('killOn').onclick = async () => {
   const ok = await confirmDialog({
     title: 'Désactiver TOUS les loaders ?',
     message: `Tous les utilisateurs de ton loader verront un <b>message d'erreur</b> au prochain démarrage et le loader se fermera automatiquement. À utiliser uniquement en cas d'urgence.`,
-    okText: 'Désactiver',
-    cancelText: 'Annuler',
-    danger: true
+    okText: 'Désactiver', cancelText: 'Annuler', danger: true
   });
   if (!ok) return;
   try {
