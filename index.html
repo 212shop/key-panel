@@ -82,6 +82,7 @@ input,select,textarea{font-weight:600}
 @keyframes logoGlow{0%,100%{filter:drop-shadow(0 0 20px rgba(220,225,235,.5))}50%{filter:drop-shadow(0 0 40px rgba(220,225,235,.85))}}
 @keyframes borderFlow{0%{background-position:0% 50%}100%{background-position:200% 50%}}
 @keyframes dropIn{from{opacity:0;transform:translateY(-8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes dropUpIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 
 /* ═══ LOGIN ═══ */
 #login{
@@ -251,7 +252,7 @@ h1.t{font-size:34px;font-weight:800;letter-spacing:-.04em;line-height:1.15;backg
 }
 .dropdown.open .dropdown-trigger svg{transform:rotate(180deg);color:#e6e8ec}
 
-/* ⬇️ max-height augmenté de 260px à 420px — toutes les options visibles */
+/* ⬇️ Menu — ouvre vers le bas par défaut */
 .dropdown-menu{
   position:absolute;top:calc(100% + 6px);left:0;right:0;
   background:linear-gradient(180deg,rgba(38,40,47,.99),rgba(24,26,31,.99));
@@ -259,7 +260,7 @@ h1.t{font-size:34px;font-weight:800;letter-spacing:-.04em;line-height:1.15;backg
   border:1px solid rgba(255,255,255,.12);
   border-radius:12px;
   padding:6px;
-  z-index:500;
+  z-index:1000;
   box-shadow:
     0 20px 50px -10px rgba(0,0,0,.9),
     0 0 0 1px rgba(255,255,255,.03) inset,
@@ -268,6 +269,14 @@ h1.t{font-size:34px;font-weight:800;letter-spacing:-.04em;line-height:1.15;backg
   max-height:420px;
   overflow-y:auto;
 }
+
+/* ⬆️ Version qui ouvre vers le HAUT (ajoutée automatiquement par JS si pas de place en bas) */
+.dropdown-menu.drop-up{
+  top:auto;
+  bottom:calc(100% + 6px);
+  animation:dropUpIn .18s cubic-bezier(.2,.9,.3,1.1) both;
+}
+
 .dropdown-menu::-webkit-scrollbar{width:6px}
 .dropdown-menu::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
 
@@ -334,8 +343,24 @@ tr.skeleton td{padding:18px 20px}
 
 /* ═══ MODAL ═══ */
 .modal{position:fixed;inset:0;background:rgba(4,5,8,.75);display:grid;place-items:center;padding:20px;z-index:200;animation:fadeIn .3s ease both;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
-.box{background:linear-gradient(180deg,rgba(255,255,255,.035),transparent 120px),linear-gradient(180deg,rgba(30,32,38,.98),rgba(18,19,23,.98));border:1px solid rgba(255,255,255,.10);border-radius:var(--r-xl);width:100%;max-width:480px;padding:32px;box-shadow:0 60px 140px -30px #000,0 0 0 1px rgba(255,255,255,.03) inset,0 1px 0 rgba(255,255,255,.10) inset,0 0 80px -20px var(--red-glow);animation:popIn .45s cubic-bezier(.2,.9,.3,1.15) both;position:relative;overflow:hidden}
-.box::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#e6e8ec,transparent);background-size:200% 100%;animation:borderFlow 3s linear infinite}
+.box{
+  background:linear-gradient(180deg,rgba(255,255,255,.035),transparent 120px),linear-gradient(180deg,rgba(30,32,38,.98),rgba(18,19,23,.98));
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:var(--r-xl);
+  width:100%;max-width:480px;padding:32px;
+  box-shadow:0 60px 140px -30px #000,0 0 0 1px rgba(255,255,255,.03) inset,0 1px 0 rgba(255,255,255,.10) inset,0 0 80px -20px var(--red-glow);
+  animation:popIn .45s cubic-bezier(.2,.9,.3,1.15) both;
+  position:relative;
+  overflow:visible;   /* ⬅️ CHANGÉ : était hidden — pour laisser le dropdown dépasser */
+}
+.box::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,#e6e8ec,transparent);
+  background-size:200% 100%;
+  animation:borderFlow 3s linear infinite;
+  border-radius:var(--r-xl) var(--r-xl) 0 0;
+  clip-path:inset(0 round var(--r-xl) var(--r-xl) 0 0);   /* ⬅️ garde les coins arrondis propres */
+}
 
 .modal-header{
   display:flex;align-items:center;gap:14px;
@@ -456,7 +481,7 @@ tr.skeleton td{padding:18px 20px}
   td:last-child{border-top:1px solid rgba(255,255,255,.06);padding-top:14px;margin-top:8px}
   .key,.hw{word-break:break-all;white-space:normal;text-align:right}
   .modal{padding:0;place-items:end center;backdrop-filter:blur(6px)}
-  .box{max-width:100%;width:100%;border-radius:28px 28px 0 0;padding:26px 20px calc(26px + var(--safe-b));animation:riseIn .4s cubic-bezier(.2,.9,.3,1.05) both;max-height:92dvh;overflow-y:auto}
+  .box{max-width:100%;width:100%;border-radius:28px 28px 0 0;padding:26px 20px calc(26px + var(--safe-b));animation:riseIn .4s cubic-bezier(.2,.9,.3,1.05) both;max-height:92dvh;overflow-y:auto;overflow-x:visible}
   .box::before{display:none}
   .two{grid-template-columns:1fr}
   .foot .btn{flex:1;padding:14px 16px}
@@ -794,7 +819,7 @@ function modalHeader(subtitle){
     </div>`;
 }
 
-/* ═══ DROPDOWN CUSTOM (avec auto-scroll vers l'actif) ═══ */
+/* ═══ DROPDOWN CUSTOM (avec détection ouverture vers le haut) ═══ */
 function initDropdown(el){
   const trigger = el.querySelector('[data-dropdown-trigger]');
   const menu = el.querySelector('[data-dropdown-menu]');
@@ -805,14 +830,30 @@ function initDropdown(el){
 
   trigger.onclick = (e) => {
     e.stopPropagation();
+    // Ferme les autres dropdowns ouverts
     document.querySelectorAll('.dropdown.open').forEach(d => {
       if (d !== el) { d.classList.remove('open'); d.querySelector('[data-dropdown-menu]').hidden = true; }
     });
+
     const isOpen = el.classList.toggle('open');
     menu.hidden = !isOpen;
 
-    // ⭐ Auto-scroll vers l'option active quand on ouvre
     if (isOpen) {
+      // Reset orientation
+      menu.classList.remove('drop-up');
+
+      // Calcule l'espace disponible
+      const rect = trigger.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      const menuHeight = Math.min(menu.scrollHeight || 300, 420);
+
+      // Si pas assez de place en dessous et plus de place au dessus → ouvre vers le haut
+      if (spaceBelow < menuHeight + 30 && spaceAbove > spaceBelow) {
+        menu.classList.add('drop-up');
+      }
+
+      // Auto-scroll vers l'option active
       const active = menu.querySelector('.dropdown-item.active');
       if (active) {
         setTimeout(() => active.scrollIntoView({ block: 'nearest' }), 30);
