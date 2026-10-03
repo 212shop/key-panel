@@ -668,6 +668,57 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
 .fresh tr:nth-child(9){animation-delay:160ms}
 .fresh tr:nth-child(10){animation-delay:180ms}
 
+/* ═══ CONFIRM DIALOG (remplace window.confirm) ═══ */
+.confirm-modal{
+  position:fixed;inset:0;background:rgba(4,5,8,.75);
+  display:grid;place-items:center;padding:20px;z-index:400;
+  animation:fadeIn .25s ease both;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+}
+.confirm-box{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.035),transparent 120px),
+    linear-gradient(180deg,rgba(30,32,38,.98),rgba(18,19,23,.98));
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:var(--r-xl);
+  width:100%;max-width:400px;padding:28px;
+  box-shadow:
+    0 60px 140px -30px #000,
+    0 0 0 1px rgba(255,255,255,.03) inset,
+    0 1px 0 rgba(255,255,255,.10) inset,
+    0 0 80px -20px var(--red-glow);
+  animation:popIn .35s cubic-bezier(.2,.9,.3,1.15) both;
+  position:relative;
+  overflow:hidden;
+}
+.confirm-box::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,#e6e8ec,transparent);
+  background-size:200% 100%;
+  animation:borderFlow 3s linear infinite;
+}
+.confirm-box h2{
+  font-size:18px;font-weight:800;letter-spacing:-.03em;margin-bottom:12px;
+  display:flex;align-items:center;gap:11px;color:#f6f7f9;
+}
+.confirm-box h2 svg{
+  width:22px;height:22px;flex:0 0 auto;
+  color:#e6e8ec;filter:drop-shadow(0 0 12px var(--red-glow));
+}
+.confirm-box p{
+  color:var(--mute);font-size:13.5px;font-weight:500;
+  margin-bottom:22px;line-height:1.65;word-break:break-word;
+}
+.confirm-box p b{
+  color:#e6e8ec;font-family:var(--mono);font-size:12.5px;
+  background:rgba(230,232,236,.10);padding:2px 8px;border-radius:6px;
+  border:1px solid rgba(230,232,236,.15);
+  word-break:break-all;
+}
+.confirm-foot{
+  display:flex;justify-content:flex-end;gap:10px;
+}
+
 @media(max-width:960px){
   #app{grid-template-columns:1fr}
   aside{
@@ -775,6 +826,18 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
   .two{grid-template-columns:1fr}
   .foot .btn{flex:1;padding:14px 16px}
   .fld input,.fld select{padding:14px 15px;font-size:16px}
+
+  /* Confirm modal mobile */
+  .confirm-modal{padding:0;place-items:end center}
+  .confirm-box{
+    max-width:100%;width:100%;
+    border-radius:28px 28px 0 0;
+    padding:26px 20px calc(26px + var(--safe-b));
+    animation:riseIn .4s cubic-bezier(.2,.9,.3,1.05) both;
+  }
+  .confirm-box::before{display:none}
+  .confirm-foot{flex-direction:column-reverse;gap:10px}
+  .confirm-foot .btn{width:100%;padding:14px 16px;font-size:14px}
 
   #toasts{left:14px;right:14px;bottom:calc(14px + var(--safe-b));gap:10px}
   .toast{min-width:0;width:100%;padding:14px 16px;font-size:13px}
@@ -1101,6 +1164,59 @@ function toast(msg, type){
   setTimeout(() => el.classList.add('out'), 2500);
   setTimeout(() => el.remove(), 2800);
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   CONFIRM MODAL — remplace window.confirm()
+   Retourne une Promise<boolean>
+   ═══════════════════════════════════════════════════════════════ */
+function confirmDialog(opts){
+  return new Promise(resolve => {
+    const title = typeof opts === 'string' ? 'Confirmation' : (opts.title || 'Confirmation');
+    const message = typeof opts === 'string' ? opts : (opts.message || '');
+    const okText = (opts && opts.okText) || 'Confirmer';
+    const cancelText = (opts && opts.cancelText) || 'Annuler';
+    const danger = !!(opts && opts.danger);
+
+    const m = document.createElement('div');
+    m.className = 'confirm-modal';
+    m.innerHTML = `
+      <div class="confirm-box" role="alertdialog" aria-modal="true">
+        <h2>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+            ${danger
+              ? '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'
+              : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>'}
+          </svg>
+          ${esc(title)}
+        </h2>
+        <p>${message}</p>
+        <div class="confirm-foot">
+          <button class="btn ghost" data-cancel>${esc(cancelText)}</button>
+          <button class="btn ${danger ? 'red' : 'red'}" data-ok>${esc(okText)}</button>
+        </div>
+      </div>`;
+
+    const close = (val) => {
+      m.remove();
+      document.removeEventListener('keydown', onKey);
+      resolve(val);
+    };
+    const onKey = (e) => {
+      if (e.key === 'Escape') close(false);
+      if (e.key === 'Enter') close(true);
+    };
+
+    m.querySelector('[data-ok]').onclick = () => close(true);
+    m.querySelector('[data-cancel]').onclick = () => close(false);
+    m.addEventListener('mousedown', e => { if (e.target === m) close(false); });
+    document.addEventListener('keydown', onKey);
+    document.body.appendChild(m);
+
+    // Focus auto sur OK
+    setTimeout(() => m.querySelector('[data-ok]').focus(), 30);
+  });
+}
+
 async function api(path, method = 'GET', body){
   const r = await fetch(API_URL + path, {
     method, headers: {'Content-Type':'application/json','X-Admin-Key':adminKey},
@@ -1328,13 +1444,35 @@ function insertKeysOptimistic(created, days, hwid){
   renderRows(allKeys, true);
 }
 
+/* ═══════════════ CLIC TABLE — avec modale custom ═══════════════ */
 $('keysBody').addEventListener('click', async e => {
   const cp = e.target.closest('[data-copy]');
   if (cp) return navigator.clipboard.writeText(cp.dataset.copy).then(() => toast('Clé copiée', 'success'), () => toast('Copie impossible', 'error'));
   const b = e.target.closest('[data-act]'); if (!b) return;
   const key = b.dataset.key, a = b.dataset.act;
-  if (a === 'ban' && !confirm('Bannir ' + key + ' ?')) return;
-  if (a === 'del' && !confirm('Supprimer ' + key + ' ?')) return;
+
+  // ═══ MODALES CUSTOM (au lieu de confirm) ═══
+  if (a === 'ban') {
+    const ok = await confirmDialog({
+      title: 'Bannir cette clé ?',
+      message: `La clé <b>${esc(key)}</b> ne pourra plus être utilisée par son porteur. Tu peux la débannir à tout moment.`,
+      okText: 'Bannir',
+      cancelText: 'Annuler',
+      danger: true
+    });
+    if (!ok) return;
+  }
+  if (a === 'del') {
+    const ok = await confirmDialog({
+      title: 'Supprimer cette clé ?',
+      message: `La clé <b>${esc(key)}</b> sera définitivement supprimée. Cette action est irréversible.`,
+      okText: 'Supprimer',
+      cancelText: 'Annuler',
+      danger: true
+    });
+    if (!ok) return;
+  }
+
   const prevKeys = allKeys.slice();
   if (a === 'del') allKeys = allKeys.filter(k => k.key !== key);
   else if (a === 'ban') allKeys = allKeys.map(k => k.key === key ? {...k, banned: true} : k);
@@ -1490,10 +1628,20 @@ function removeHwidOptimistic(hwid){
   renderHwids(allHwids);
 }
 
+/* ═══════════════ HWID UNBAN — avec modale custom ═══════════════ */
 $('hwidBody').addEventListener('click', async e => {
   const b = e.target.closest('[data-h]'); if (!b) return;
   const hwid = b.dataset.h;
-  if (!confirm('Retirer ce HWID ?\n' + hwid)) return;
+
+  const ok = await confirmDialog({
+    title: 'Retirer ce HWID ?',
+    message: `Le HWID <b>${esc(hwid)}</b> pourra à nouveau être utilisé pour activer des clés.`,
+    okText: 'Retirer',
+    cancelText: 'Annuler',
+    danger: true
+  });
+  if (!ok) return;
+
   const prev = allHwids.slice();
   removeHwidOptimistic(hwid);
   try {
@@ -1567,10 +1715,23 @@ function renderAccounts(){
   tbody.replaceChildren(frag);
   void tbody.offsetWidth; tbody.classList.add('fresh');
 }
+
+/* ═══════════════ ACCOUNTS DELETE — avec modale custom ═══════════════ */
 $('accBody').addEventListener('click', async e => {
   const b = e.target.closest('[data-act]'); if (!b) return;
   const id = b.dataset.id, a = b.dataset.act;
-  if (a === 'del' && !confirm('Supprimer ce compte ?')) return;
+
+  if (a === 'del') {
+    const ok = await confirmDialog({
+      title: 'Supprimer ce compte ?',
+      message: `Ce compte Rockstar sera définitivement supprimé du stock. Cette action est irréversible.`,
+      okText: 'Supprimer',
+      cancelText: 'Annuler',
+      danger: true
+    });
+    if (!ok) return;
+  }
+
   const prev = allAccounts.slice();
   if (a === 'del') allAccounts = allAccounts.filter(x => x.id !== id);
   else if (a === 'reset') allAccounts = allAccounts.map(x => x.id === id ? {...x, used:false, usedAt:null, usedBy:null} : x);
@@ -1582,6 +1743,7 @@ $('accBody').addEventListener('click', async e => {
     else { allAccounts = prev; saveCache(ACCS_CACHE, allAccounts); renderAccounts(); toast(r.error || 'Erreur', 'error'); }
   } catch { allAccounts = prev; saveCache(ACCS_CACHE, allAccounts); renderAccounts(); toast('Erreur réseau', 'error'); }
 });
+
 $('addAcc').onclick = async () => {
   const email = $('newAccEmail').value.trim();
   const password = $('newAccPass').value.trim();
@@ -1728,8 +1890,17 @@ async function loadKill(){
     else { el.className = 'badge active'; el.textContent = '✓ Loaders opérationnels'; }
   } catch(e){ toast('Impossible de charger le kill switch : ' + (e.message || ''), 'error'); }
 }
+
+/* ═══════════════ KILL SWITCH — avec modale custom ═══════════════ */
 $('killOn').onclick = async () => {
-  if (!confirm('Désactiver TOUS les loaders ? Les utilisateurs verront un message d\'erreur au démarrage.')) return;
+  const ok = await confirmDialog({
+    title: 'Désactiver TOUS les loaders ?',
+    message: `Tous les utilisateurs de ton loader verront un <b>message d'erreur</b> au prochain démarrage et le loader se fermera automatiquement. À utiliser uniquement en cas d'urgence.`,
+    okText: 'Désactiver',
+    cancelText: 'Annuler',
+    danger: true
+  });
+  if (!ok) return;
   try {
     const r = await api('/admin/kill', 'POST', {kill: true});
     if (r.ok){ toast('Kill switch activé', 'success'); loadKill(); loadLogs(); }
