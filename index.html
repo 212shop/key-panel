@@ -5,34 +5,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#08090d">
 <title>KeyAuth — Panel d'administration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#08090d;
-  --bg-2:#0b0d13;
-  --side:rgba(14,16,22,.85);
-  --panel:#101319;
-  --panel-2:#161a22;
-  --panel-3:#1d222c;
-  --line:rgba(255,255,255,.055);
+  --bg:#06070a;
+  --bg-2:#0a0c11;
+  --side:rgba(12,14,20,.72);
+  --panel:rgba(18,20,27,.85);
+  --panel-2:rgba(22,25,33,.85);
+  --panel-3:rgba(28,32,42,.9);
+  --glass:rgba(255,255,255,.02);
+  --line:rgba(255,255,255,.06);
   --line-2:rgba(255,255,255,.10);
-  --line-3:rgba(255,255,255,.16);
-  --text:#eef1f6;
-  --text-2:#aab2c0;
-  --mute:#6f7889;
-  --dim:#4a5262;
+  --line-3:rgba(255,255,255,.18);
+  --text:#f4f6fb;
+  --text-2:#a8b0c0;
+  --mute:#6b7382;
+  --dim:#454b58;
   --red:#ff4d5a;
   --red-2:#e63946;
-  --red-glow:rgba(255,77,90,.35);
+  --red-3:#b8273a;
+  --red-glow:rgba(255,77,90,.45);
   --ok:#3ddc84;
-  --ok-glow:rgba(61,220,132,.3);
+  --ok-glow:rgba(61,220,132,.4);
   --warn:#ffb545;
-  --warn-glow:rgba(255,181,69,.3);
+  --warn-glow:rgba(255,181,69,.4);
   --blue:#5b8def;
-  --sans:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,Arial,sans-serif;
-  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --blue-glow:rgba(91,141,239,.4);
+  --purple:#a855f7;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   --safe-b:env(safe-area-inset-bottom,0px);
   --safe-t:env(safe-area-inset-top,0px);
-  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:20px;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:22px; --r-2xl:28px;
+  --shadow-1:0 2px 8px rgba(0,0,0,.4);
+  --shadow-2:0 12px 40px -12px rgba(0,0,0,.85);
+  --shadow-glow:0 0 60px -15px var(--red-glow);
 }
 
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -40,353 +50,457 @@ html,body{overflow-x:hidden}
 body{
   background:var(--bg);
   color:var(--text);
-  font:14px/1.55 var(--sans);
+  font:14px/1.6 var(--sans);
+  font-weight:500;
   min-height:100vh;min-height:100dvh;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
-  letter-spacing:-.005em;
+  letter-spacing:-.01em;
 }
-button,input,select{font:inherit;color:inherit}
-:focus-visible{outline:2px solid var(--red);outline-offset:2px;border-radius:6px}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(1200px 600px at 15% -10%, rgba(255,77,90,.10), transparent 55%),
+    radial-gradient(900px 500px at 90% 110%, rgba(91,141,239,.09), transparent 55%),
+    radial-gradient(700px 400px at 50% 50%, rgba(168,85,247,.05), transparent 60%);
+}
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.35;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.15 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  mix-blend-mode:overlay;
+}
+button,input,select,textarea{font:inherit;color:inherit;font-weight:500}
+input,select,textarea{font-weight:600}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px;border-radius:8px}
 [hidden]{display:none!important}
 ::selection{background:var(--red-glow);color:#fff}
 
-::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar{width:12px;height:12px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,.06);border-radius:10px;border:2px solid transparent;background-clip:padding-box}
-::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.12);background-clip:padding-box}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,rgba(255,77,90,.35),rgba(255,77,90,.15));border-radius:12px;border:3px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,rgba(255,77,90,.65),rgba(255,77,90,.35));background-clip:padding-box}
 
-/* ========== LOGIN ========== */
+/* ═══════════════ ANIMATIONS ═══════════════ */
+@keyframes fadeIn{from{opacity:0}}
+@keyframes riseIn{from{opacity:0;transform:translateY(28px) scale(.96);filter:blur(6px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+@keyframes popIn{from{opacity:0;transform:scale(.92) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes slideRight{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideLeft{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(.85)}}
+@keyframes pulseRing{0%{box-shadow:0 0 0 0 currentColor;opacity:.7}70%{box-shadow:0 0 0 8px transparent;opacity:0}100%{box-shadow:0 0 0 0 transparent;opacity:0}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes logoGlow{0%,100%{filter:drop-shadow(0 0 20px rgba(255,77,90,.5))}50%{filter:drop-shadow(0 0 40px rgba(255,77,90,.85))}}
+@keyframes gradientShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes badgeBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes borderFlow{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+@keyframes scanline{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
+@keyframes countUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══════════════ LOGIN ═══════════════ */
 #login{
-  position:fixed;inset:0;display:grid;place-items:center;padding:20px;z-index:50;
+  position:fixed;inset:0;display:grid;place-items:center;padding:20px;z-index:100;
   background:
-    radial-gradient(1000px 600px at 50% -10%,rgba(255,77,90,.12),transparent 60%),
-    radial-gradient(800px 500px at 80% 100%,rgba(91,141,239,.08),transparent 60%),
+    radial-gradient(1000px 700px at 50% -10%,rgba(255,77,90,.18),transparent 60%),
+    radial-gradient(900px 600px at 85% 110%,rgba(91,141,239,.12),transparent 60%),
+    radial-gradient(700px 500px at 10% 90%,rgba(168,85,247,.08),transparent 60%),
     var(--bg);
   overflow:hidden;
 }
 #login::before{
   content:"";position:absolute;inset:0;
   background-image:
-    linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
-  background-size:44px 44px;
-  mask-image:radial-gradient(circle at 50% 50%,black,transparent 70%);
-  -webkit-mask-image:radial-gradient(circle at 50% 50%,black,transparent 70%);
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:52px 52px;
+  mask-image:radial-gradient(circle at 50% 50%,black,transparent 75%);
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,black,transparent 75%);
   pointer-events:none;
+  animation:fadeIn 1.2s ease both;
 }
 .lbox{
-  position:relative;z-index:1;width:100%;max-width:400px;
-  background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01)),var(--panel);
-  border:1px solid var(--line-2);
-  border-radius:var(--r-xl);
-  padding:34px 30px;
-  box-shadow:0 40px 100px -30px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.02) inset,0 1px 0 rgba(255,255,255,.06) inset;
-  animation:rise .7s cubic-bezier(.16,1,.3,1) both;
+  position:relative;z-index:2;width:100%;max-width:440px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.01)),
+    linear-gradient(180deg,rgba(18,20,27,.95),rgba(12,14,20,.92));
+  backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:var(--r-2xl);
+  padding:44px 36px;
+  box-shadow:
+    0 60px 140px -40px rgba(0,0,0,1),
+    0 0 0 1px rgba(255,255,255,.03) inset,
+    0 1px 0 rgba(255,255,255,.09) inset,
+    0 0 80px -20px rgba(255,77,90,.25);
+  animation:riseIn .9s cubic-bezier(.16,1,.3,1) both;
+  overflow:hidden;
 }
-.lbox .logo{
-  width:52px;height:52px;border-radius:14px;
-  background:linear-gradient(135deg,var(--red),var(--red-2));
+.lbox::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--red),var(--blue),var(--purple),transparent);
+  background-size:200% 100%;
+  animation:borderFlow 4s linear infinite;
+}
+.lbox .logo-wrap{
+  width:76px;height:76px;border-radius:20px;
+  background:linear-gradient(135deg,rgba(255,77,90,.15),rgba(255,77,90,.03));
+  border:1px solid rgba(255,77,90,.3);
   display:grid;place-items:center;
-  margin-bottom:20px;
-  box-shadow:0 12px 30px -8px var(--red-glow),0 0 0 1px rgba(255,255,255,.1) inset;
+  margin:0 auto 24px;
+  box-shadow:
+    0 15px 40px -10px var(--red-glow),
+    0 0 0 1px rgba(255,255,255,.08) inset;
+  animation:float 4s ease-in-out infinite, logoGlow 3s ease-in-out infinite;
 }
-.lbox .logo svg{width:26px;height:26px}
-.lbox h1{font-size:22px;font-weight:700;letter-spacing:-.03em;margin-bottom:6px}
-.lbox p{color:var(--mute);margin-bottom:26px;font-size:13.5px}
+.lbox .logo-wrap img{
+  width:52px;height:52px;object-fit:contain;
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,.5));
+}
+.lbox .logo-wrap .fallback{
+  font-size:38px;font-weight:900;color:var(--red);
+  letter-spacing:-.05em;
+  text-shadow:0 0 24px var(--red-glow);
+}
+.lbox h1{
+  font-size:28px;font-weight:800;letter-spacing:-.035em;
+  margin-bottom:8px;text-align:center;
+  background:linear-gradient(180deg,#fff,#a8b0c0);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.lbox p{color:var(--mute);margin-bottom:32px;font-size:14px;text-align:center;font-weight:500}
 .lbox input{
-  width:100%;padding:13px 15px;
-  background-color:rgba(0,0,0,.35);
-  border:1px solid var(--line-2);
-  border-radius:var(--r-md);
-  margin-bottom:14px;outline:none;
-  transition:border-color .2s,box-shadow .2s,background-color .2s;
-  font-size:14px;
+  width:100%;padding:16px 18px;
+  background:rgba(0,0,0,.45);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:14px;
+  margin-bottom:16px;outline:none;
+  transition:all .25s cubic-bezier(.2,.8,.2,1);
+  font-size:15px;font-weight:600;
+  color:#fff;
 }
-.lbox input:focus{border-color:var(--red);box-shadow:0 0 0 4px var(--red-glow);background-color:rgba(0,0,0,.5)}
-.err{color:var(--red);font-size:13px;margin-top:14px;padding:10px 12px;background:rgba(255,77,90,.08);border-radius:var(--r-sm);border-left:2px solid var(--red)}
+.lbox input::placeholder{color:rgba(168,176,192,.4);font-weight:500}
+.lbox input:focus{
+  border-color:var(--red);
+  box-shadow:0 0 0 4px var(--red-glow), 0 0 30px -8px var(--red-glow);
+  background:rgba(0,0,0,.6);
+  transform:translateY(-1px);
+}
+.err{
+  color:var(--red);font-size:13px;margin-top:16px;padding:14px 16px;
+  background:linear-gradient(180deg,rgba(255,77,90,.12),rgba(255,77,90,.04));
+  border-radius:12px;
+  border-left:3px solid var(--red);
+  font-weight:600;
+  animation:slideRight .35s ease both;
+}
 
-/* ========== LAYOUT ========== */
-#app{display:grid;grid-template-columns:240px 1fr;min-height:100vh;min-height:100dvh}
+/* ═══════════════ LAYOUT ═══════════════ */
+#app{display:grid;grid-template-columns:270px 1fr;min-height:100vh;min-height:100dvh;position:relative;z-index:2}
+#app:not([hidden]){animation:fadeIn .6s ease both}
 
 aside{
-  background:linear-gradient(180deg,rgba(255,255,255,.02),transparent 40%),var(--side);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
-  border-right:1px solid var(--line);
-  padding:20px 14px;
-  display:flex;flex-direction:column;gap:4px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.025),transparent 40%),
+    var(--side);
+  backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+  border-right:1px solid rgba(255,255,255,.05);
+  padding:24px 16px;
+  display:flex;flex-direction:column;gap:5px;
   position:sticky;top:0;height:100vh;height:100dvh;
   z-index:30;
+  overflow-y:auto;
 }
-.brand{
-  display:flex;align-items:center;gap:11px;
-  font-weight:700;font-size:15.5px;letter-spacing:-.02em;
-  padding:6px 10px 22px;
-}
-.brand .logo{
-  width:32px;height:32px;border-radius:9px;
-  background:linear-gradient(135deg,var(--red),var(--red-2));
-  display:grid;place-items:center;flex:0 0 auto;
-  box-shadow:0 6px 18px -4px var(--red-glow),0 0 0 1px rgba(255,255,255,.1) inset;
-}
-.brand .logo svg{width:17px;height:17px;color:#fff}
-.brand .name{font-size:15px}
-.brand .name b{color:var(--text)}
-.brand .name small{display:block;font-size:10.5px;font-weight:500;color:var(--mute);letter-spacing:.5px;text-transform:uppercase;margin-top:-1px}
+aside::-webkit-scrollbar{width:6px}
+aside::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border:0;background-clip:padding-box}
 
-.nav{
-  display:flex;align-items:center;gap:11px;
-  padding:10px 12px;border-radius:10px;
-  color:var(--mute);font-weight:600;font-size:13.5px;
-  cursor:pointer;background:none;border:0;text-align:left;width:100%;
-  transition:background .2s,color .2s,transform .15s;
+.brand{
+  display:flex;align-items:center;gap:14px;
+  font-weight:800;font-size:17px;letter-spacing:-.03em;
+  padding:8px 12px 26px;
   position:relative;
 }
-.nav:hover{background:rgba(255,255,255,.04);color:var(--text-2)}
-.nav.on{background:linear-gradient(90deg,rgba(255,77,90,.12),rgba(255,77,90,.02));color:var(--text)}
-.nav.on::before{
-  content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;
-  background:linear-gradient(180deg,var(--red),var(--red-2));
-  border-radius:0 3px 3px 0;
-  box-shadow:0 0 12px var(--red-glow);
+.brand::after{
+  content:"";position:absolute;bottom:12px;left:12px;right:12px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);
 }
-.nav svg{width:16px;height:16px;flex:0 0 auto;opacity:.85}
-.nav.on svg{color:var(--red);opacity:1}
-.nav small{
-  margin-left:auto;font-size:11.5px;font-weight:700;
-  color:var(--dim);font-variant-numeric:tabular-nums;
-  background:rgba(255,255,255,.05);padding:2px 7px;border-radius:6px;
-  min-width:22px;text-align:center;
+.brand .logo{
+  width:42px;height:42px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(255,77,90,.18),rgba(255,77,90,.03));
+  border:1px solid rgba(255,77,90,.3);
+  display:grid;place-items:center;flex:0 0 auto;
+  box-shadow:0 8px 24px -6px var(--red-glow),0 0 0 1px rgba(255,255,255,.06) inset;
+  transition:all .3s cubic-bezier(.2,.8,.2,1);
 }
-.nav.on small{color:var(--red);background:rgba(255,77,90,.15)}
-.bottom{margin-top:auto;padding-top:14px;border-top:1px solid var(--line)}
+.brand .logo:hover{transform:scale(1.08) rotate(-3deg);box-shadow:0 12px 32px -6px var(--red-glow)}
+.brand .logo img{width:28px;height:28px;object-fit:contain}
+.brand .logo .fallback{font-size:22px;font-weight:900;color:var(--red);letter-spacing:-.05em;text-shadow:0 0 16px var(--red-glow)}
+.brand .name b{color:var(--text);display:block;font-weight:800;letter-spacing:-.03em}
+.brand .name small{
+  display:block;font-size:10.5px;font-weight:700;color:var(--mute);
+  letter-spacing:1.2px;text-transform:uppercase;margin-top:2px;
+}
 
-main{padding:28px 32px 60px;min-width:0;background:var(--bg-2);position:relative}
-main::before{
-  content:"";position:fixed;top:0;left:240px;right:0;height:400px;
-  background:radial-gradient(600px 200px at 70% 0,rgba(255,77,90,.06),transparent 70%);
-  pointer-events:none;z-index:0;
-}
-main>*{position:relative;z-index:1}
-
-.top{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:16px;flex-wrap:wrap;margin-bottom:24px;
-}
-.page-head{display:flex;flex-direction:column;gap:2px}
-h1.t{font-size:24px;font-weight:700;letter-spacing:-.03em;line-height:1.2}
-.t-sub{font-size:13px;color:var(--mute)}
-.acts{display:flex;gap:8px;flex-wrap:wrap}
-
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:7px;
-  padding:9px 15px;border-radius:9px;
-  border:1px solid var(--line-2);
-  background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));
-  font-weight:600;font-size:13.5px;cursor:pointer;
-  transition:transform .15s,background .2s,border-color .2s,box-shadow .25s,color .2s;
-  white-space:nowrap;
-  box-shadow:0 1px 0 rgba(255,255,255,.04) inset;
-}
-.btn svg{width:14px;height:14px;flex:0 0 auto}
-.btn:hover{border-color:var(--line-3);background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));transform:translateY(-1px)}
-.btn:active{transform:translateY(0) scale(.98)}
-.btn.red{
-  background:linear-gradient(180deg,#ff5b67,var(--red-2));
-  border-color:var(--red-2);color:#fff;
-  box-shadow:0 6px 18px -6px var(--red-glow),0 1px 0 rgba(255,255,255,.2) inset;
-}
-.btn.red:hover{box-shadow:0 10px 26px -8px var(--red-glow),0 1px 0 rgba(255,255,255,.25) inset;transform:translateY(-1px)}
-.btn.ghost{background:transparent}
-.btn.sm{padding:5px 11px;font-size:12px;border-radius:7px}
-.btn.sm svg{width:12px;height:12px}
-.btn.danger:hover{color:var(--red);border-color:var(--red);background:rgba(255,77,90,.06)}
-.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
-
-/* ========== STATS ========== */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
-.stat{
-  position:relative;overflow:hidden;
-  background:linear-gradient(180deg,rgba(255,255,255,.025),transparent 60%),var(--panel);
-  border:1px solid var(--line);
-  border-radius:var(--r-lg);
-  padding:18px 20px;
-  transition:transform .3s cubic-bezier(.2,.8,.2,1),border-color .3s,box-shadow .3s;
-  box-shadow:0 1px 0 rgba(255,255,255,.03) inset;
-}
-.stat:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:0 20px 40px -20px rgba(0,0,0,.9)}
-.stat .ico{
-  width:32px;height:32px;border-radius:9px;
-  background:var(--accent-bg,rgba(255,255,255,.05));
-  color:var(--accent,var(--text-2));
-  display:grid;place-items:center;margin-bottom:12px;
-  border:1px solid var(--accent-border,rgba(255,255,255,.05));
-}
-.stat .ico svg{width:15px;height:15px}
-.stat span{display:block;font-size:12px;color:var(--mute);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.stat b{display:block;font-size:30px;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;line-height:1}
-.stat[data-tone="ok"]{--accent:var(--ok);--accent-bg:rgba(61,220,132,.1);--accent-border:rgba(61,220,132,.2)}
-.stat[data-tone="ok"] b{color:var(--ok)}
-.stat[data-tone="warn"]{--accent:var(--warn);--accent-bg:rgba(255,181,69,.1);--accent-border:rgba(255,181,69,.2)}
-.stat[data-tone="warn"] b{color:var(--warn)}
-.stat[data-tone="bad"]{--accent:var(--red);--accent-bg:rgba(255,77,90,.1);--accent-border:rgba(255,77,90,.2)}
-.stat[data-tone="bad"] b{color:var(--red)}
-.stat[data-tone="total"]{--accent:var(--blue);--accent-bg:rgba(91,141,239,.1);--accent-border:rgba(91,141,239,.2)}
-.stat[data-tone="total"] b{color:var(--text)}
-
-/* ========== CARDS ========== */
-.card{
-  background:linear-gradient(180deg,rgba(255,255,255,.015),transparent 200px),var(--panel);
-  border:1px solid var(--line);
-  border-radius:var(--r-lg);
+.nav{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;border-radius:12px;
+  color:var(--mute);font-weight:600;font-size:14px;
+  cursor:pointer;background:none;border:0;text-align:left;width:100%;
+  transition:all .22s cubic-bezier(.2,.8,.2,1);
+  position:relative;
   overflow:hidden;
-  box-shadow:0 24px 60px -40px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.03) inset;
+}
+.nav::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(255,77,90,.14),rgba(255,77,90,.03) 60%,transparent);
+  opacity:0;transition:opacity .22s ease;
+}
+.nav:hover{
+  color:var(--text-2);
+  transform:translateX(3px);
+}
+.nav:hover::before{opacity:1}
+.nav.on{
+  color:var(--text);
+  transform:translateX(4px);
+}
+.nav.on::before{opacity:1}
+.nav.on::after{
+  content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;
+  background:linear-gradient(180deg,var(--red),var(--red-3));
+  border-radius:0 3px 3px 0;
+  box-shadow:0 0 14px var(--red-glow);
+  animation:slideRight .3s ease both;
+}
+.nav > *{position:relative;z-index:1}
+.nav svg{width:18px;height:18px;flex:0 0 auto;opacity:.9;transition:all .22s ease}
+.nav.on svg{color:var(--red);opacity:1;transform:scale(1.05)}
+.nav:hover svg{opacity:1;color:var(--red)}
+.nav small{
+  margin-left:auto;font-size:11.5px;font-weight:800;
+  color:var(--dim);font-variant-numeric:tabular-nums;
+  background:rgba(255,255,255,.06);padding:3px 9px;border-radius:7px;
+  min-width:26px;text-align:center;
+  transition:all .22s ease;
+}
+.nav.on small{color:#fff;background:linear-gradient(180deg,var(--red),var(--red-2));box-shadow:0 4px 12px -2px var(--red-glow)}
+.bottom{margin-top:auto;padding-top:18px;border-top:1px solid rgba(255,255,255,.05)}
+
+main{padding:32px 40px 80px;min-width:0;position:relative}
+
+/* ═══════════════ HEADER ═══════════════ */
+.top{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  gap:16px;flex-wrap:wrap;margin-bottom:32px;
+  animation:riseIn .6s cubic-bezier(.2,.8,.2,1) both;
+}
+.page-head{display:flex;flex-direction:column;gap:6px;position:relative}
+h1.t{
+  font-size:34px;font-weight:800;letter-spacing:-.04em;line-height:1.15;
+  background:linear-gradient(180deg,#fff 20%,#a8b0c0);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  position:relative;
+}
+.t-sub{font-size:14px;color:var(--mute);font-weight:500}
+.acts{display:flex;gap:10px;flex-wrap:wrap}
+
+/* ═══════════════ BUTTONS ═══════════════ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 18px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.10);
+  background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
+  font-weight:700;font-size:13.5px;letter-spacing:-.01em;cursor:pointer;
+  transition:all .22s cubic-bezier(.2,.8,.2,1);
+  white-space:nowrap;
+  box-shadow:0 1px 0 rgba(255,255,255,.05) inset, 0 2px 6px rgba(0,0,0,.3);
+  position:relative;
+  overflow:hidden;
+}
+.btn::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.15) 50%,transparent 70%);
+  background-size:200% 100%;
+  opacity:0;transition:opacity .3s ease;
+}
+.btn:hover::before{opacity:1;animation:shimmer 1.2s linear infinite}
+.btn:hover{
+  border-color:rgba(255,255,255,.20);
+  background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));
+  transform:translateY(-2px);
+  box-shadow:0 1px 0 rgba(255,255,255,.08) inset, 0 8px 24px -6px rgba(0,0,0,.6);
+}
+.btn:active{transform:translateY(0) scale(.97)}
+.btn svg{width:15px;height:15px;flex:0 0 auto;transition:transform .22s ease}
+.btn:hover svg{transform:scale(1.08)}
+.btn.red{
+  background:linear-gradient(135deg,#ff6b76,var(--red-2) 60%,var(--red-3));
+  border-color:rgba(255,120,130,.35);color:#fff;
+  box-shadow:0 8px 24px -8px var(--red-glow), 0 1px 0 rgba(255,255,255,.25) inset;
+  font-weight:800;
+}
+.btn.red:hover{
+  box-shadow:0 14px 34px -8px var(--red-glow), 0 1px 0 rgba(255,255,255,.3) inset;
+  transform:translateY(-2px);
+  filter:brightness(1.08);
+}
+.btn.ghost{background:transparent;border-color:rgba(255,255,255,.08)}
+.btn.ghost:hover{background:rgba(255,255,255,.04)}
+.btn.sm{padding:6px 12px;font-size:12px;border-radius:9px;font-weight:700}
+.btn.sm svg{width:13px;height:13px}
+.btn.danger:hover{color:var(--red);border-color:rgba(255,77,90,.5);background:rgba(255,77,90,.08)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;filter:none}
+
+/* ═══════════════ CARDS ═══════════════ */
+.card{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.03),transparent 250px),
+    var(--panel);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--r-xl);
+  overflow:hidden;
+  box-shadow:
+    0 40px 100px -50px rgba(0,0,0,1),
+    0 0 0 1px rgba(255,255,255,.02) inset,
+    0 1px 0 rgba(255,255,255,.05) inset;
+  animation:riseIn .55s cubic-bezier(.2,.8,.2,1) both;
+  position:relative;
+}
+.card::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,77,90,.4),rgba(91,141,239,.3),transparent);
+  opacity:.7;
 }
 
-.quick{
-  padding:12px 16px;border-bottom:1px solid var(--line);
-  display:flex;gap:6px;flex-wrap:wrap;align-items:center;
-  background:linear-gradient(180deg,rgba(255,255,255,.02),transparent);
-}
-.quick .lbl{
-  display:flex;align-items:center;gap:6px;
-  font-size:11.5px;color:var(--dim);text-transform:uppercase;
-  letter-spacing:.6px;font-weight:700;margin-right:8px;
-}
-.quick .lbl svg{width:12px;height:12px;color:var(--red)}
-.quick button{
-  padding:6px 13px;font-size:12.5px;border-radius:8px;
-  border:1px solid var(--line-2);
-  background:linear-gradient(180deg,rgba(255,255,255,.03),transparent);
-  color:var(--text-2);font-weight:600;cursor:pointer;
-  transition:all .18s;font-variant-numeric:tabular-nums;
-}
-.quick button:hover{
-  border-color:var(--red);color:var(--text);
-  background:linear-gradient(180deg,rgba(255,77,90,.12),rgba(255,77,90,.04));
-  transform:translateY(-1px);
-  box-shadow:0 6px 16px -8px var(--red-glow);
-}
-.quick button:active{transform:translateY(0)}
-
+/* ═══════════════ TOOLBAR ═══════════════ */
 .tb{
-  display:flex;gap:10px;padding:14px 16px;
-  border-bottom:1px solid var(--line);
+  display:flex;gap:12px;padding:18px 20px;
+  border-bottom:1px solid rgba(255,255,255,.05);
   flex-wrap:wrap;align-items:center;
+  background:linear-gradient(180deg,rgba(255,255,255,.02),transparent);
 }
 
 .tb input,.tb select,.fld input,.fld select{
-  background-color:rgba(0,0,0,.3);
-  border:1px solid var(--line-2);
-  border-radius:9px;
-  padding:9px 13px;
+  background:rgba(0,0,0,.4);
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:12px;
+  padding:12px 16px;
   outline:none;
-  transition:border-color .2s,box-shadow .2s,background-color .2s;
-  font-size:13.5px;
-  pointer-events:auto;
-  user-select:text;
-  -webkit-user-select:text;
-  cursor:text;
-  touch-action:manipulation;
-  -webkit-appearance:none;
-  appearance:none;
+  transition:all .22s cubic-bezier(.2,.8,.2,1);
+  font-size:14px;font-weight:600;
+  color:#fff;
 }
+.tb input::placeholder,.fld input::placeholder{color:rgba(168,176,192,.4);font-weight:500}
 .tb input:focus,.tb select:focus,.fld input:focus,.fld select:focus{
   border-color:var(--red);
-  box-shadow:0 0 0 4px var(--red-glow);
-  background-color:rgba(0,0,0,.5);
+  box-shadow:0 0 0 4px var(--red-glow), 0 0 30px -8px var(--red-glow);
+  background:rgba(0,0,0,.6);
 }
-.tb select{cursor:pointer;padding-right:32px;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236f7889' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+.tb select{cursor:pointer;padding-right:38px;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236f7889' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat:no-repeat;
-  background-position:right 11px center;
+  background-position:right 14px center;
+  -webkit-appearance:none;appearance:none;
 }
 
-.search-wrap{position:relative;flex:1;min-width:220px}
-.search-wrap input{
-  width:100%;
-  padding-left:38px;
-  background-repeat:no-repeat;
-  background-position:13px center;
-  background-size:15px 15px;
+.search-wrap{position:relative;flex:1;min-width:240px}
+.search-wrap input{width:100%;padding-left:44px}
+.search-wrap::before{
+  content:"";position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  width:16px;height:16px;pointer-events:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236f7889' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.35-4.35'/></svg>");
+  background-size:contain;background-repeat:no-repeat;
+  transition:all .22s ease;
+  opacity:.7;
 }
-#q{
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236f7889' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.35-4.35'/></svg>");
-}
-#newHwid{
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236f7889' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><line x1='4.93' y1='4.93' x2='19.07' y2='19.07'/></svg>");
-}
+.search-wrap:focus-within::before{opacity:1;filter:drop-shadow(0 0 8px var(--red-glow))}
 
+/* ═══════════════ TABLE ═══════════════ */
 .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;min-width:760px}
 th{
-  text-align:left;padding:11px 16px;
-  font-size:11.5px;color:var(--mute);font-weight:700;
-  background:rgba(0,0,0,.25);
-  border-bottom:1px solid var(--line);
-  white-space:nowrap;text-transform:uppercase;letter-spacing:.5px;
+  text-align:left;padding:14px 20px;
+  font-size:11.5px;color:var(--mute);font-weight:800;
+  background:rgba(0,0,0,.35);
+  border-bottom:1px solid rgba(255,255,255,.06);
+  white-space:nowrap;text-transform:uppercase;letter-spacing:1px;
 }
-td{padding:13px 16px;border-bottom:1px solid var(--line);white-space:nowrap;font-size:13.5px}
+td{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.04);white-space:nowrap;font-size:13.5px;font-weight:500}
 tr:last-child td{border-bottom:0}
-tbody tr{transition:background .18s}
-tbody tr:hover{background:rgba(255,255,255,.02)}
-
-tbody tr{content-visibility:auto;contain-intrinsic-size:auto 52px}
-
-.key,.hw{font-family:var(--mono);font-size:12.5px;font-weight:500}
-.key{
-  color:#ff8b95;cursor:pointer;padding:3px 8px;border-radius:6px;
-  background:rgba(255,77,90,.06);
-  border:1px solid rgba(255,77,90,.1);
-  transition:all .2s;
-  display:inline-block;
-  letter-spacing:.02em;
+tbody tr{transition:all .22s cubic-bezier(.2,.8,.2,1);position:relative}
+tbody tr:hover{
+  background:linear-gradient(90deg,rgba(255,77,90,.045),rgba(255,77,90,.015) 40%,transparent);
 }
-.key:hover{background:rgba(255,77,90,.15);border-color:rgba(255,77,90,.3);color:#ffa0a8}
+tbody tr:hover td:first-child{box-shadow:inset 3px 0 0 var(--red)}
+
+.key,.hw{font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.02em}
+.key{
+  color:#ff8b95;cursor:pointer;padding:5px 10px;border-radius:8px;
+  background:linear-gradient(180deg,rgba(255,77,90,.10),rgba(255,77,90,.04));
+  border:1px solid rgba(255,77,90,.15);
+  transition:all .22s cubic-bezier(.2,.8,.2,1);
+  display:inline-block;
+}
+.key:hover{
+  background:linear-gradient(180deg,rgba(255,77,90,.22),rgba(255,77,90,.10));
+  border-color:rgba(255,77,90,.4);color:#ffb0b8;
+  transform:translateY(-1px);
+  box-shadow:0 6px 16px -6px var(--red-glow);
+}
 .hw{color:var(--text-2)}
 .mut{color:var(--mute);font-size:13px}
 
+/* ═══════════════ BADGES ═══════════════ */
 .badge{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:4px 10px;border-radius:99px;
-  font-size:11.5px;font-weight:700;letter-spacing:.02em;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:5px 12px;border-radius:99px;
+  font-size:11.5px;font-weight:800;letter-spacing:.02em;
   border:1px solid transparent;
+  transition:all .22s ease;
 }
-.badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:0 0 auto}
-.badge.active{color:var(--ok);background:rgba(61,220,132,.1);border-color:rgba(61,220,132,.2)}
-.badge.expired{color:var(--warn);background:rgba(255,181,69,.1);border-color:rgba(255,181,69,.2)}
-.badge.banned{color:var(--red);background:rgba(255,77,90,.1);border-color:rgba(255,77,90,.2)}
-.badge.warn{color:var(--warn);background:rgba(255,181,69,.1);border-color:rgba(255,181,69,.2)}
-.badge.active::before{animation:pulse 2.2s infinite}
+.badge::before{
+  content:"";width:7px;height:7px;border-radius:50%;background:currentColor;
+  flex:0 0 auto;
+  box-shadow:0 0 10px currentColor;
+}
+.badge.active{color:var(--ok);background:linear-gradient(180deg,rgba(61,220,132,.14),rgba(61,220,132,.05));border-color:rgba(61,220,132,.25)}
+.badge.expired{color:var(--warn);background:linear-gradient(180deg,rgba(255,181,69,.14),rgba(255,181,69,.05));border-color:rgba(255,181,69,.25)}
+.badge.banned{color:var(--red);background:linear-gradient(180deg,rgba(255,77,90,.14),rgba(255,77,90,.05));border-color:rgba(255,77,90,.25)}
+.badge.warn{color:var(--warn);background:linear-gradient(180deg,rgba(255,181,69,.14),rgba(255,181,69,.05));border-color:rgba(255,181,69,.25)}
+.badge.active::before{animation:pulse 2.4s ease-in-out infinite}
 
-.row{display:flex;gap:6px}
+.row{display:flex;gap:8px}
 
+/* ═══════════════ VIEWS ═══════════════ */
 .view{display:none}
-.view.on{display:block;animation:viewIn .4s cubic-bezier(.2,.8,.2,1)}
+.view.on{display:block;animation:riseIn .5s cubic-bezier(.2,.8,.2,1)}
 
 .empty{
-  padding:48px 24px;text-align:center;color:var(--dim);
-  display:flex;flex-direction:column;align-items:center;gap:10px;
-  font-size:13.5px;
+  padding:60px 24px;text-align:center;color:var(--dim);
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+  font-size:14px;font-weight:500;
+  animation:fadeIn .6s ease both;
 }
 .empty::before{
-  content:"";width:44px;height:44px;
-  background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.01));
-  border:1px solid var(--line-2);
-  border-radius:12px;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234a5262' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.35-4.35'/></svg>");
-  background-repeat:no-repeat;background-position:center;background-size:20px;
+  content:"";width:60px;height:60px;
+  background:linear-gradient(135deg,rgba(255,77,90,.08),rgba(255,77,90,.02));
+  border:1px solid rgba(255,77,90,.15);
+  border-radius:18px;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234a5262' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.35-4.35'/></svg>");
+  background-repeat:no-repeat;background-position:center;background-size:26px;
+  box-shadow:0 0 30px -10px var(--red-glow);
 }
 
+/* ═══════════════ SKELETON ═══════════════ */
 .sk{
-  height:12px;border-radius:6px;
-  background:linear-gradient(90deg,rgba(255,255,255,.03) 0%,rgba(255,255,255,.09) 50%,rgba(255,255,255,.03) 100%);
+  height:14px;border-radius:7px;
+  background:linear-gradient(90deg,rgba(255,255,255,.03) 0%,rgba(255,255,255,.10) 50%,rgba(255,255,255,.03) 100%);
   background-size:200% 100%;
   animation:shimmer 1.4s linear infinite;
   width:80%;
 }
-tr.skeleton td{padding:14px 16px}
+tr.skeleton td{padding:18px 20px}
 tr.skeleton td:nth-child(1) .sk{width:70%}
 tr.skeleton td:nth-child(2) .sk{width:50%}
 tr.skeleton td:nth-child(3) .sk{width:40%}
@@ -396,136 +510,240 @@ tr.skeleton td:nth-child(6) .sk{width:45%}
 tr.skeleton td:nth-child(7) .sk{width:30%}
 tr.skeleton td:nth-child(3):last-child .sk{width:20%}
 
+/* ═══════════════ MODAL ═══════════════ */
 .modal{
-  position:fixed;inset:0;background:rgba(4,5,8,.7);
-  display:grid;place-items:center;padding:20px;z-index:60;
-  animation:fade .2s ease;
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  position:fixed;inset:0;background:rgba(4,5,8,.75);
+  display:grid;place-items:center;padding:20px;z-index:200;
+  animation:fadeIn .3s ease both;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
 }
 .box{
-  background:linear-gradient(180deg,rgba(255,255,255,.02),transparent 100px),var(--panel);
-  border:1px solid var(--line-2);
-  border-radius:var(--r-lg);
-  width:100%;max-width:440px;padding:24px;
-  box-shadow:0 40px 100px -30px #000,0 1px 0 rgba(255,255,255,.06) inset;
-  animation:pop .35s cubic-bezier(.2,.9,.3,1.1);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.03),transparent 120px),
+    linear-gradient(180deg,rgba(22,25,33,.98),rgba(14,16,22,.98));
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:var(--r-xl);
+  width:100%;max-width:480px;padding:32px;
+  box-shadow:
+    0 60px 140px -30px #000,
+    0 0 0 1px rgba(255,255,255,.03) inset,
+    0 1px 0 rgba(255,255,255,.10) inset,
+    0 0 80px -20px var(--red-glow);
+  animation:popIn .45s cubic-bezier(.2,.9,.3,1.15) both;
+  position:relative;
+  overflow:hidden;
 }
-.box h2{font-size:17px;font-weight:700;letter-spacing:-.02em;margin-bottom:18px;display:flex;align-items:center;gap:9px}
-.box h2 svg{width:18px;height:18px;color:var(--red)}
-.fld{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
-.fld label{font-size:12px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.4px}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.foot{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.box::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--red),transparent);
+  background-size:200% 100%;
+  animation:borderFlow 3s linear infinite;
+}
+.box h2{
+  font-size:20px;font-weight:800;letter-spacing:-.03em;margin-bottom:22px;
+  display:flex;align-items:center;gap:11px;
+}
+.box h2 svg{width:22px;height:22px;color:var(--red);filter:drop-shadow(0 0 12px var(--red-glow))}
+.fld{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.fld label{font-size:11.5px;font-weight:800;color:var(--mute);text-transform:uppercase;letter-spacing:1px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.foot{display:flex;justify-content:flex-end;gap:10px;margin-top:12px}
 .out{
-  background:rgba(0,0,0,.4);border:1px solid var(--line-2);
-  border-radius:10px;padding:12px 14px;
-  font-family:var(--mono);font-size:12.5px;color:#ff8b95;
-  max-height:220px;overflow:auto;white-space:pre;
-  margin-bottom:14px;line-height:1.7;
+  background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.09);
+  border-radius:12px;padding:16px 18px;
+  font-family:var(--mono);font-size:12.5px;color:#ff8b95;font-weight:600;
+  max-height:240px;overflow:auto;white-space:pre;
+  margin-bottom:16px;line-height:1.8;
   letter-spacing:.02em;
 }
 
+/* ═══════════════ TOASTS ═══════════════ */
 #toasts{
-  position:fixed;right:20px;bottom:calc(20px + var(--safe-b));
-  display:flex;flex-direction:column;gap:10px;z-index:100;
+  position:fixed;right:24px;bottom:calc(24px + var(--safe-b));
+  display:flex;flex-direction:column;gap:12px;z-index:300;
   pointer-events:none;
 }
 .toast{
-  display:flex;align-items:center;gap:11px;
-  background:linear-gradient(180deg,rgba(255,255,255,.04),transparent),var(--panel-3);
-  border:1px solid var(--line-2);
+  display:flex;align-items:center;gap:13px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.04),transparent),
+    linear-gradient(180deg,rgba(28,32,42,.98),rgba(20,23,30,.98));
+  border:1px solid rgba(255,255,255,.12);
   border-left:3px solid var(--mute);
-  border-radius:10px;padding:12px 16px;min-width:220px;
-  font-weight:600;font-size:13.5px;
-  box-shadow:0 20px 50px -20px rgba(0,0,0,.9);
-  animation:toastIn .35s cubic-bezier(.2,.9,.3,1.1);
-  backdrop-filter:blur(8px);
+  border-radius:14px;padding:15px 20px;min-width:260px;
+  font-weight:700;font-size:13.5px;
+  box-shadow:
+    0 30px 70px -20px rgba(0,0,0,.95),
+    0 0 0 1px rgba(255,255,255,.03) inset;
+  animation:slideLeft .4s cubic-bezier(.2,.9,.3,1.1) both;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   pointer-events:auto;
+  position:relative;
+  overflow:hidden;
 }
-.toast svg{width:16px;height:16px;flex:0 0 auto}
-.toast.success{border-left-color:var(--ok)}
-.toast.success svg{color:var(--ok)}
-.toast.error{border-left-color:var(--red)}
-.toast.error svg{color:var(--red)}
-.toast.out{animation:toastOut .25s ease forwards}
+.toast svg{width:18px;height:18px;flex:0 0 auto}
+.toast.success{border-left-color:var(--ok);box-shadow:0 30px 70px -20px rgba(0,0,0,.95),0 0 30px -10px var(--ok-glow)}
+.toast.success svg{color:var(--ok);filter:drop-shadow(0 0 10px var(--ok-glow))}
+.toast.error{border-left-color:var(--red);box-shadow:0 30px 70px -20px rgba(0,0,0,.95),0 0 30px -10px var(--red-glow)}
+.toast.error svg{color:var(--red);filter:drop-shadow(0 0 10px var(--red-glow))}
+.toast.out{animation:slideLeft .3s ease reverse forwards}
 
-@keyframes fade{from{opacity:0}}
-@keyframes rise{from{opacity:0;transform:translateY(20px) scale(.97)}}
-@keyframes pop{from{opacity:0;transform:scale(.94) translateY(8px)}}
-@keyframes viewIn{from{opacity:0;transform:translateY(10px)}}
-@keyframes rowIn{from{opacity:0;transform:translateY(6px)}}
-@keyframes pulse{0%{box-shadow:0 0 0 0 currentColor}70%,100%{box-shadow:0 0 0 5px transparent}}
-@keyframes toastIn{from{opacity:0;transform:translateX(40px)}}
-@keyframes toastOut{to{opacity:0;transform:translateX(40px)}}
-@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+/* ═══════════════ STATS ═══════════════ */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat{
+  position:relative;overflow:hidden;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.04),transparent 60%),
+    var(--panel);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--r-lg);
+  padding:22px 24px;
+  transition:all .35s cubic-bezier(.2,.8,.2,1);
+  box-shadow:0 1px 0 rgba(255,255,255,.04) inset;
+  animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both;
+}
+.stat:nth-child(1){animation-delay:.05s}
+.stat:nth-child(2){animation-delay:.10s}
+.stat:nth-child(3){animation-delay:.15s}
+.stat:nth-child(4){animation-delay:.20s}
+.stat::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent,var(--red)),transparent);
+  opacity:.6;
+}
+.stat:hover{
+  transform:translateY(-4px);
+  border-color:rgba(255,255,255,.14);
+  box-shadow:
+    0 25px 50px -20px rgba(0,0,0,.95),
+    0 0 0 1px rgba(255,255,255,.05) inset,
+    0 0 40px -15px var(--accent,var(--red-glow));
+}
+.stat .ico{
+  width:38px;height:38px;border-radius:11px;
+  background:var(--accent-bg,rgba(255,255,255,.06));
+  color:var(--accent,var(--text-2));
+  display:grid;place-items:center;margin-bottom:14px;
+  border:1px solid var(--accent-border,rgba(255,255,255,.06));
+  box-shadow:0 8px 20px -8px var(--accent,transparent);
+  transition:all .3s cubic-bezier(.2,.8,.2,1);
+}
+.stat:hover .ico{transform:scale(1.10) rotate(-4deg)}
+.stat .ico svg{width:18px;height:18px}
+.stat span{display:block;font-size:11.5px;color:var(--mute);font-weight:800;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px}
+.stat b{
+  display:block;font-size:36px;font-weight:800;letter-spacing:-.05em;
+  font-variant-numeric:tabular-nums;line-height:1;
+  color:var(--accent,var(--text));
+}
+.stat[data-tone="ok"]{--accent:var(--ok);--accent-bg:rgba(61,220,132,.12);--accent-border:rgba(61,220,132,.25)}
+.stat[data-tone="warn"]{--accent:var(--warn);--accent-bg:rgba(255,181,69,.12);--accent-border:rgba(255,181,69,.25)}
+.stat[data-tone="bad"]{--accent:var(--red);--accent-bg:rgba(255,77,90,.12);--accent-border:rgba(255,77,90,.25)}
+.stat[data-tone="total"]{--accent:var(--blue);--accent-bg:rgba(91,141,239,.12);--accent-border:rgba(91,141,239,.25)}
 
-#app:not([hidden]){animation:fade .5s ease}
+/* ═══════════════ QUICK BUTTONS ═══════════════ */
+.quick{
+  padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.05);
+  display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+  background:linear-gradient(180deg,rgba(255,255,255,.02),transparent);
+}
+.quick .lbl{
+  display:flex;align-items:center;gap:8px;
+  font-size:11.5px;color:var(--dim);text-transform:uppercase;
+  letter-spacing:1.2px;font-weight:800;margin-right:10px;
+}
+.quick .lbl svg{width:14px;height:14px;color:var(--red);filter:drop-shadow(0 0 8px var(--red-glow))}
+.quick button{
+  padding:8px 15px;font-size:12.5px;border-radius:10px;
+  border:1px solid rgba(255,255,255,.09);
+  background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));
+  color:var(--text-2);font-weight:700;cursor:pointer;
+  transition:all .22s cubic-bezier(.2,.8,.2,1);font-variant-numeric:tabular-nums;
+  position:relative;
+  overflow:hidden;
+}
+.quick button::before{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.20) 50%,transparent 70%);
+  background-size:200% 100%;opacity:0;transition:opacity .3s;
+}
+.quick button:hover::before{opacity:1;animation:shimmer 1.2s linear infinite}
+.quick button:hover{
+  border-color:var(--red);color:var(--text);
+  background:linear-gradient(180deg,rgba(255,77,90,.14),rgba(255,77,90,.04));
+  transform:translateY(-2px);
+  box-shadow:0 10px 24px -10px var(--red-glow);
+}
+.quick button:active{transform:translateY(0)}
 
-.fresh tr{animation:rowIn .3s cubic-bezier(.2,.8,.2,1) both}
+/* ═══════════════ ROW ANIMATIONS ═══════════════ */
+.fresh tr{animation:riseIn .4s cubic-bezier(.2,.8,.2,1) both}
 .fresh tr:nth-child(1){animation-delay:0ms}
-.fresh tr:nth-child(2){animation-delay:15ms}
-.fresh tr:nth-child(3){animation-delay:30ms}
-.fresh tr:nth-child(4){animation-delay:45ms}
-.fresh tr:nth-child(5){animation-delay:60ms}
-.fresh tr:nth-child(6){animation-delay:75ms}
-.fresh tr:nth-child(7){animation-delay:90ms}
-.fresh tr:nth-child(8){animation-delay:105ms}
+.fresh tr:nth-child(2){animation-delay:20ms}
+.fresh tr:nth-child(3){animation-delay:40ms}
+.fresh tr:nth-child(4){animation-delay:60ms}
+.fresh tr:nth-child(5){animation-delay:80ms}
+.fresh tr:nth-child(6){animation-delay:100ms}
+.fresh tr:nth-child(7){animation-delay:120ms}
+.fresh tr:nth-child(8){animation-delay:140ms}
+.fresh tr:nth-child(9){animation-delay:160ms}
+.fresh tr:nth-child(10){animation-delay:180ms}
 
+/* ═══════════════ MOBILE ═══════════════ */
 @media(max-width:960px){
   #app{grid-template-columns:1fr}
   aside{
     position:sticky;top:0;z-index:40;height:auto;width:100%;
-    flex-direction:row;align-items:center;gap:6px;
-    padding:10px 12px;
-    padding-top:calc(10px + var(--safe-t));
-    border-right:0;border-bottom:1px solid var(--line);
+    flex-direction:row;align-items:center;gap:8px;
+    padding:12px 14px;
+    padding-top:calc(12px + var(--safe-t));
+    border-right:0;border-bottom:1px solid rgba(255,255,255,.05);
     overflow-x:auto;overflow-y:hidden;
     -webkit-overflow-scrolling:touch;scrollbar-width:none;
   }
   aside::-webkit-scrollbar{display:none}
-  .brand{padding:0 10px 0 0;flex:0 0 auto}
-  .brand .logo{width:28px;height:28px}
+  .brand{padding:0 12px 0 0;flex:0 0 auto}
+  .brand::after{display:none}
+  .brand .logo{width:34px;height:34px}
+  .brand .logo img{width:22px;height:22px}
   .brand .name{display:none}
   .nav{
     width:auto;flex:0 0 auto;white-space:nowrap;
-    padding:8px 12px;font-size:13px;gap:8px;border-radius:8px;
+    padding:10px 14px;font-size:13px;gap:9px;border-radius:10px;
   }
-  .nav.on::before{display:none}
-  .nav.on{background:rgba(255,77,90,.15);box-shadow:0 0 0 1px rgba(255,77,90,.25) inset}
-  .nav svg{width:15px;height:15px}
-  .nav small{margin-left:6px;padding:1px 6px;font-size:11px}
+  .nav.on::after{display:none}
+  .nav.on{background:rgba(255,77,90,.18);box-shadow:0 0 0 1px rgba(255,77,90,.35) inset}
+  .nav svg{width:16px;height:16px}
+  .nav small{margin-left:8px;padding:2px 7px;font-size:11px}
   .bottom{margin:0 0 0 auto;padding:0;border:0;flex:0 0 auto}
-  .bottom .btn{padding:8px 12px;font-size:13px}
+  .bottom .btn{padding:9px 13px;font-size:13px}
   .bottom .btn .txt{display:none}
-  .bottom .btn svg{margin:0}
 
-  main{padding:16px 14px calc(40px + var(--safe-b))}
-  main::before{left:0}
-
-  .top{margin-bottom:16px;gap:10px}
+  main{padding:20px 18px calc(60px + var(--safe-b))}
+  h1.t{font-size:26px}
+  .top{margin-bottom:22px;gap:14px}
   .page-head{width:100%}
-  h1.t{font-size:20px}
-  .t-sub{font-size:12.5px}
+  .t-sub{font-size:13px}
   .acts{width:100%;gap:8px}
-  .acts .btn{flex:1;min-width:0;padding:10px 12px}
+  .acts .btn{flex:1;min-width:0;padding:12px 14px}
 
-  .stats{grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
-  .stat{padding:14px 16px;border-radius:var(--r-md)}
-  .stat .ico{width:28px;height:28px;margin-bottom:10px}
-  .stat .ico svg{width:13px;height:13px}
-  .stat b{font-size:24px}
-  .stat span{font-size:11px}
+  .stats{grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}
+  .stat{padding:16px 18px}
+  .stat .ico{width:32px;height:32px;margin-bottom:10px}
+  .stat .ico svg{width:15px;height:15px}
+  .stat b{font-size:26px}
+  .stat span{font-size:10.5px}
 
-  .quick{padding:10px 12px;gap:6px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .quick{padding:14px 16px;gap:8px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .quick::-webkit-scrollbar{display:none}
   .quick .lbl{flex:0 0 auto}
-  .quick button{flex:0 0 auto;padding:7px 12px;font-size:12.5px}
+  .quick button{flex:0 0 auto;padding:9px 14px;font-size:12.5px}
 
-  .tb{padding:12px;gap:8px}
+  .tb{padding:14px;gap:10px}
   .search-wrap{min-width:0;width:100%;flex:1 1 100%}
   .search-wrap input{width:100%}
-  .tb select{width:100%;flex:1 1 100%;padding:10px 12px}
-  .tb .btn{width:100%;flex:1 1 100%;padding:11px 12px}
+  .tb select{width:100%;flex:1 1 100%;padding:12px 15px}
+  .tb .btn{width:100%;flex:1 1 100%;padding:13px 15px}
   #v-accounts .tb input{width:100%;flex:1 1 100%}
   #v-accounts .tb .btn{width:100%}
 
@@ -534,64 +752,75 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
   thead{display:none}
   table,tbody,tr,td{display:block;width:100%}
   tbody tr{
-    background:linear-gradient(180deg,rgba(255,255,255,.02),transparent),var(--panel-2);
-    border:1px solid var(--line);
-    border-radius:var(--r-md);
-    padding:14px 16px;
-    margin:10px;
-    margin-bottom:10px;
+    background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--panel-2);
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:var(--r-lg);
+    padding:18px 20px;
+    margin:12px;
+    margin-bottom:12px;
     content-visibility:visible;
     contain-intrinsic-size:auto;
+    box-shadow:0 12px 30px -15px rgba(0,0,0,.7);
   }
-  tbody tr:hover{background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--panel-2)}
+  tbody tr:hover{
+    background:linear-gradient(180deg,rgba(255,255,255,.045),transparent),var(--panel-2);
+    transform:translateY(-2px);
+  }
   td{
-    border:0;padding:7px 0;white-space:normal;
-    display:flex;justify-content:space-between;align-items:center;gap:12px;
+    border:0;padding:9px 0;white-space:normal;
+    display:flex;justify-content:space-between;align-items:center;gap:14px;
     font-size:13.5px;
   }
   td::before{
     content:attr(data-l);
-    color:var(--mute);font-size:11px;font-weight:700;
-    text-transform:uppercase;letter-spacing:.5px;
+    color:var(--mute);font-size:11px;font-weight:800;
+    text-transform:uppercase;letter-spacing:1px;
     flex:0 0 auto;
   }
   td:empty{display:none}
   td[data-l=""]::before{display:none}
-  td .row{justify-content:stretch;width:100%;gap:6px}
-  td .row .btn{flex:1;text-align:center;padding:9px 10px;font-size:12.5px;justify-content:center}
-  td:last-child{border-top:1px solid var(--line);padding-top:12px;margin-top:6px}
+  td .row{justify-content:stretch;width:100%;gap:8px}
+  td .row .btn{flex:1;text-align:center;padding:10px 12px;font-size:12.5px;justify-content:center}
+  td:last-child{border-top:1px solid rgba(255,255,255,.06);padding-top:14px;margin-top:8px}
 
   .key,.hw{word-break:break-all;white-space:normal;text-align:right}
 
-  .modal{padding:0;place-items:end center;backdrop-filter:blur(4px)}
+  .modal{padding:0;place-items:end center;backdrop-filter:blur(6px)}
   .box{
     max-width:100%;width:100%;
-    border-radius:20px 20px 0 0;
-    padding:22px 18px calc(22px + var(--safe-b));
-    animation:rise .35s cubic-bezier(.2,.9,.3,1.05);
+    border-radius:28px 28px 0 0;
+    padding:26px 20px calc(26px + var(--safe-b));
+    animation:riseIn .4s cubic-bezier(.2,.9,.3,1.05) both;
     max-height:92dvh;overflow-y:auto;
   }
-  .box::before{
-    content:"";display:block;width:38px;height:4px;
-    background:var(--line-3);border-radius:99px;
-    margin:-6px auto 14px;
+  .box::before{display:none}
+  .box::after{
+    content:"";display:block;width:44px;height:4px;
+    background:rgba(255,255,255,.15);border-radius:99px;
+    margin:-8px auto 18px;
+    position:absolute;left:50%;top:14px;transform:translateX(-50%);
   }
   .two{grid-template-columns:1fr}
-  .foot .btn{flex:1;padding:12px 14px}
-  .fld input,.fld select{padding:12px 13px;font-size:16px}
+  .foot .btn{flex:1;padding:14px 16px}
+  .fld input,.fld select{padding:14px 15px;font-size:16px}
 
-  #toasts{left:12px;right:12px;bottom:calc(12px + var(--safe-b));gap:8px}
-  .toast{min-width:0;width:100%;padding:12px 14px;font-size:13px}
+  #toasts{left:14px;right:14px;bottom:calc(14px + var(--safe-b));gap:10px}
+  .toast{min-width:0;width:100%;padding:14px 16px;font-size:13px}
 
-  .lbox input,.tb input,.tb select,.fld input,.fld select,#newHwid,#newAccEmail,#newAccPass{font-size:16px}
+  .lbox{padding:36px 26px}
+  .lbox input,.tb input,.tb select,.fld input,.fld select{font-size:16px}
+  .lbox h1{font-size:24px}
+  .lbox .logo-wrap{width:64px;height:64px}
+  .lbox .logo-wrap img{width:44px;height:44px}
 }
 
 @media(max-width:420px){
   .stats{grid-template-columns:1fr 1fr}
   .stat b{font-size:22px}
-  .acts .btn{padding:9px 10px;font-size:12.5px}
+  .acts .btn{padding:11px 12px;font-size:12.5px}
   .acts .btn .txt{display:none}
   .acts .btn svg{margin:0}
+  h1.t{font-size:22px}
 }
 
 @media(prefers-reduced-motion:reduce){*,::before,::after{animation:none!important;transition:none!important}}
@@ -599,63 +828,67 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
 </head>
 <body>
 
+<!-- ════════════ LOGIN ════════════ -->
 <div id="login">
   <form class="lbox" id="loginForm">
-    <div class="logo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3"/></svg>
+    <div class="logo-wrap">
+      <img src="logo.png" alt="Logo" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <span class="fallback" style="display:none">V</span>
     </div>
     <h1>Bienvenue</h1>
     <p>Connecte-toi au panneau d'administration KeyAuth.</p>
     <input type="password" id="adminKey" placeholder="Clé d'administration" autocomplete="off" aria-label="Clé d'administration">
-    <button class="btn red" style="width:100%;padding:13px 15px;font-size:14.5px" id="loginBtn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+    <button class="btn red" style="width:100%;padding:16px 18px;font-size:15px" id="loginBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
       Se connecter
     </button>
     <div class="err" id="loginErr" hidden></div>
   </form>
 </div>
 
+<!-- ════════════ APP ════════════ -->
 <div id="app" hidden>
   <aside>
     <div class="brand">
       <div class="logo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3"/></svg>
+        <img src="logo.png" alt="Logo" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <span class="fallback" style="display:none">V</span>
       </div>
       <div class="name"><b>KeyAuth</b><small>Admin Panel</small></div>
     </div>
 
     <button class="nav on" data-view="keys">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
       Licences <small id="nKeys">0</small>
     </button>
     <button class="nav" data-view="hwid">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
       HWID bannis <small id="nHwid">0</small>
     </button>
     <button class="nav" data-view="accounts">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       Comptes Rockstar <small id="nAcc">0</small>
     </button>
     <button class="nav" data-view="logs">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       Logs
     </button>
     <button class="nav" data-view="config">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       Config
     </button>
     <button class="nav" data-view="notice">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       Notice
     </button>
     <button class="nav" data-view="kill">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
       Kill switch
     </button>
 
     <div class="bottom">
       <button class="btn ghost" id="logout" style="width:100%">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
         <span class="txt">Déconnexion</span>
       </button>
     </div>
@@ -669,15 +902,15 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
       </div>
       <div class="acts">
         <button class="btn ghost" id="refresh">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
           <span class="txt">Rafraîchir</span>
         </button>
         <button class="btn ghost" id="export">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
           <span class="txt">Exporter</span>
         </button>
         <button class="btn red" id="newKey">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           <span class="txt">Nouvelle clé</span>
         </button>
       </div>
@@ -686,10 +919,9 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
     <section class="view on" id="v-keys">
       <div class="stats" id="stats"></div>
       <div class="card">
-
         <div class="quick">
           <span class="lbl">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
             Génération rapide
           </span>
           <button type="button" data-quick="1">1 jour</button>
@@ -726,7 +958,7 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
             <input id="newHwid" type="text" inputmode="text" placeholder="HWID à bannir" aria-label="HWID à bannir" autocomplete="off" spellcheck="false" autocapitalize="characters">
           </div>
           <button class="btn red" id="banHwid">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
             Bannir ce HWID
           </button>
         </div>
@@ -744,7 +976,7 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
           <input id="newAccEmail" type="text" placeholder="Email Rockstar" autocomplete="off" style="flex:1;min-width:180px">
           <input id="newAccPass" type="text" placeholder="Mot de passe" autocomplete="off" style="flex:1;min-width:150px">
           <button class="btn red" id="addAcc" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Ajouter
           </button>
         </div>
@@ -769,11 +1001,10 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
       </div>
     </section>
 
-    <!-- ═══════════ CONFIG ═══════════ -->
     <section class="view" id="v-config">
-      <div class="card" style="padding:24px">
-        <h2 style="font-size:16px;font-weight:700;margin-bottom:18px;color:#fff">🎨 Configuration dynamique du loader</h2>
-        <p style="color:#6f7889;font-size:13px;margin-bottom:20px">Ces valeurs sont envoyées à tous les loaders au démarrage. Modifie-les puis clique "Sauvegarder".</p>
+      <div class="card" style="padding:32px">
+        <h2 style="font-size:20px;font-weight:800;letter-spacing:-.03em;margin-bottom:8px;color:#fff">🎨 Configuration dynamique du loader</h2>
+        <p style="color:#6f7889;font-size:13.5px;margin-bottom:26px;font-weight:500">Ces valeurs sont envoyées à tous les loaders au démarrage. Modifie-les puis clique "Sauvegarder".</p>
 
         <div class="two">
           <div class="fld">
@@ -810,59 +1041,57 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
           </div>
         </div>
 
-        <div class="foot" style="justify-content:flex-start;gap:10px;margin-top:20px">
+        <div class="foot" style="justify-content:flex-start;gap:12px;margin-top:24px">
           <button class="btn red" id="cfgSave">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
             Sauvegarder la config
           </button>
           <button class="btn ghost" id="cfgReload">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/></svg>
             Recharger
           </button>
         </div>
       </div>
     </section>
 
-    <!-- ═══════════ NOTICE ═══════════ -->
     <section class="view" id="v-notice">
-      <div class="card" style="padding:24px">
-        <h2 style="font-size:16px;font-weight:700;margin-bottom:18px;color:#fff">📢 Message au démarrage</h2>
-        <p style="color:#6f7889;font-size:13px;margin-bottom:20px">Ce message s'affichera dans une popup Windows quand l'utilisateur ouvre son loader.</p>
+      <div class="card" style="padding:32px">
+        <h2 style="font-size:20px;font-weight:800;letter-spacing:-.03em;margin-bottom:8px;color:#fff">📢 Message au démarrage</h2>
+        <p style="color:#6f7889;font-size:13.5px;margin-bottom:26px;font-weight:500">Ce message s'affichera dans une popup Windows quand l'utilisateur ouvre son loader.</p>
 
         <div class="fld">
           <label for="noticeMsg">Message</label>
           <input id="noticeMsg" type="text" placeholder="Update V3">
         </div>
 
-        <div class="fld" style="flex-direction:row;align-items:center;gap:10px">
-          <input type="checkbox" id="noticeEnabled" style="width:auto">
-          <label for="noticeEnabled" style="text-transform:none;font-size:13px;color:#eef1f6">Activer l'affichage du message</label>
+        <div class="fld" style="flex-direction:row;align-items:center;gap:12px">
+          <input type="checkbox" id="noticeEnabled" style="width:auto;transform:scale(1.3);accent-color:var(--red)">
+          <label for="noticeEnabled" style="text-transform:none;font-size:14px;color:#eef1f6;font-weight:600">Activer l'affichage du message</label>
         </div>
 
-        <div class="foot" style="justify-content:flex-start;gap:10px;margin-top:20px">
+        <div class="foot" style="justify-content:flex-start;gap:12px;margin-top:24px">
           <button class="btn red" id="noticeSave">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
             Envoyer le message
           </button>
         </div>
       </div>
     </section>
 
-    <!-- ═══════════ KILL SWITCH ═══════════ -->
     <section class="view" id="v-kill">
-      <div class="card" style="padding:24px">
-        <h2 style="font-size:16px;font-weight:700;margin-bottom:18px;color:#fff">☠️ Kill Switch</h2>
-        <p style="color:#6f7889;font-size:13px;margin-bottom:20px">Quand activé, tous les loaders afficheront un message d'erreur et se fermeront au prochain démarrage. À utiliser en cas d'urgence (fuite, mise à jour critique…).</p>
+      <div class="card" style="padding:32px">
+        <h2 style="font-size:20px;font-weight:800;letter-spacing:-.03em;margin-bottom:8px;color:#fff">☠️ Kill Switch</h2>
+        <p style="color:#6f7889;font-size:13.5px;margin-bottom:26px;font-weight:500">Quand activé, tous les loaders afficheront un message d'erreur et se fermeront au prochain démarrage. À utiliser en cas d'urgence (fuite, mise à jour critique…).</p>
 
-        <div id="killStatus" class="badge active" style="margin-bottom:20px">Chargement…</div>
+        <div id="killStatus" class="badge active" style="margin-bottom:24px;font-size:12.5px;padding:8px 16px">Chargement…</div>
 
-        <div class="foot" style="justify-content:flex-start;gap:10px">
+        <div class="foot" style="justify-content:flex-start;gap:12px">
           <button class="btn red" id="killOn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
             Désactiver tous les loaders
           </button>
           <button class="btn" id="killOff">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             Réactiver tous les loaders
           </button>
         </div>
@@ -890,8 +1119,8 @@ const status = k => k.banned ? 'banned' : Date.now() > k.expiresAt ? 'expired' :
 const names = {active:'Active', expired:'Expirée', banned:'Bannie'};
 
 const TOAST_ICONS = {
-  success:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
-  error:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+  success:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  error:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
 };
 
 function toast(msg, type){
@@ -922,7 +1151,7 @@ $('loginForm').addEventListener('submit', async e => {
     let r = null;
     try { r = await res.json(); } catch {}
     if (res.ok && r && r.ok) { sessionStorage.setItem('ka_admin', v); start(r); }
-    else if (res.status === 401 || res.status === 403) msg = 'Clé refusée par l\'API (erreur ' + res.status + '). Utilise la clé admin du Worker.';
+    else if (res.status === 401 || res.status === 403) msg = 'Clé refusée par l\'API (erreur ' + res.status + ').';
     else msg = 'Réponse inattendue de l\'API (erreur ' + res.status + (r && r.error ? ' : ' + r.error : '') + ').';
   } catch {
     msg = 'API injoignable. Vérifie l\'adresse du Worker et le CORS.';
@@ -939,7 +1168,7 @@ $('logout').onclick = () => {
   location.reload();
 };
 
-/* ---------- Caches génériques ---------- */
+/* ---------- Caches ---------- */
 const KEYS_CACHE  = 'ka_keys_cache';
 const HWIDS_CACHE = 'ka_hwids_cache';
 const ACCS_CACHE  = 'ka_accs_cache';
@@ -947,7 +1176,6 @@ const LOGS_CACHE  = 'ka_logs_cache';
 
 function saveCache(key, data){ try{ sessionStorage.setItem(key, JSON.stringify({ts:Date.now(), data})); }catch{} }
 function loadCache(key){ try{ const c = JSON.parse(sessionStorage.getItem(key)); return c && c.data ? c.data : null; }catch{ return null; } }
-
 function saveKeysCache(list){ saveCache(KEYS_CACHE, list); }
 function loadKeysCache(){ return loadCache(KEYS_CACHE); }
 
@@ -962,7 +1190,6 @@ function lockSync(ms = 2500){ syncLocked = Date.now() + ms; }
 
 function start(first){
   $('login').hidden = true; $('app').hidden = false;
-
   const cached = loadKeysCache();
   if (cached && cached.length){
     renderKeys(cached, false);
@@ -970,7 +1197,6 @@ function start(first){
     $('keysEmpty').hidden = true;
     $('keysBody').innerHTML = skeletonRows(6, 7);
   }
-
   if (first && first.keys){
     renderKeys(first.keys || [], true);
   } else {
@@ -1014,30 +1240,28 @@ function countUp(){
     if (from === to) return;
     const t0 = performance.now();
     (function f(t){
-      const p = Math.min(1, (t - t0) / 800);
-      el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3)));
+      const p = Math.min(1, (t - t0) / 900);
+      el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - p, 4)));
       if (p < 1) requestAnimationFrame(f);
     })(t0);
   });
 }
 
 const STAT_ICONS = {
-  total:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3"/></svg>',
-  active:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
-  expired:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-  banned:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>'
+  total:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3"/></svg>',
+  active:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+  expired:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  banned:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>'
 };
 
 let allKeys = [];
 
 async function loadKeys(anim = true){
   if (Date.now() < syncLocked) return;
-
   if (!allKeys.length){
     const cached = loadKeysCache();
-    if (cached && cached.length){
-      renderKeys(cached, false);
-    } else {
+    if (cached && cached.length) renderKeys(cached, false);
+    else {
       $('keysEmpty').hidden = true;
       $('keysBody').innerHTML = skeletonRows(6, 7);
     }
@@ -1076,11 +1300,9 @@ function renderStats(list){
 
 function renderRows(list, anim){
   $('nKeys').textContent = list.length;
-
   const q = $('q').value.trim().toUpperCase(), fs = $('st').value;
   const rows = (!q && !fs) ? list : list.filter(k =>
-    (!fs || status(k) === fs) && (!q || k.key.includes(q) || (k.hwid || '').includes(q))
-  );
+    (!fs || status(k) === fs) && (!q || k.key.includes(q) || (k.hwid || '').includes(q)));
 
   $('keysEmpty').hidden = rows.length > 0;
   $('keysEmpty').textContent = list.length
@@ -1136,9 +1358,7 @@ function insertKeysOptimistic(created, days, hwid){
       createdAt: obj.createdAt || now
     };
   }).filter(Boolean);
-
-  if (!newKeys.length){ console.warn('Rien à insérer — format inattendu :', created); return; }
-
+  if (!newKeys.length) return;
   allKeys = [...newKeys, ...allKeys];
   saveKeysCache(allKeys);
   renderStats(allKeys);
@@ -1148,65 +1368,36 @@ function insertKeysOptimistic(created, days, hwid){
 $('keysBody').addEventListener('click', async e => {
   const cp = e.target.closest('[data-copy]');
   if (cp) return navigator.clipboard.writeText(cp.dataset.copy).then(() => toast('Clé copiée', 'success'), () => toast('Copie impossible', 'error'));
-
   const b = e.target.closest('[data-act]'); if (!b) return;
   const key = b.dataset.key, a = b.dataset.act;
   if (a === 'ban' && !confirm('Bannir ' + key + ' ?')) return;
   if (a === 'del' && !confirm('Supprimer ' + key + ' ?')) return;
-
   const prevKeys = allKeys.slice();
-
-  if (a === 'del'){
-    allKeys = allKeys.filter(k => k.key !== key);
-  } else if (a === 'ban'){
-    allKeys = allKeys.map(k => k.key === key ? {...k, banned: true} : k);
-  } else if (a === 'unban'){
-    allKeys = allKeys.map(k => k.key === key ? {...k, banned: false} : k);
-  }
-  saveKeysCache(allKeys);
-  renderStats(allKeys);
-  renderRows(allKeys, false);
-  lockSync(2500);
-
+  if (a === 'del') allKeys = allKeys.filter(k => k.key !== key);
+  else if (a === 'ban') allKeys = allKeys.map(k => k.key === key ? {...k, banned: true} : k);
+  else if (a === 'unban') allKeys = allKeys.map(k => k.key === key ? {...k, banned: false} : k);
+  saveKeysCache(allKeys); renderStats(allKeys); renderRows(allKeys, false); lockSync(2500);
   const endpoint = {ban:'/admin/ban', unban:'/admin/unban', del:'/admin/delete'}[a];
   try {
     const r = await api(endpoint, 'POST', {key});
-    if (r.ok){
-      toast({ban:'Clé bannie', unban:'Clé réactivée', del:'Clé supprimée'}[a], 'success');
-      loadLogs();
-    } else {
-      allKeys = prevKeys;
-      saveKeysCache(allKeys);
-      renderStats(allKeys);
-      renderRows(allKeys, false);
-      toast(r.error || 'Erreur', 'error');
-    }
+    if (r.ok){ toast({ban:'Clé bannie', unban:'Clé réactivée', del:'Clé supprimée'}[a], 'success'); loadLogs(); }
+    else { allKeys = prevKeys; saveKeysCache(allKeys); renderStats(allKeys); renderRows(allKeys, false); toast(r.error || 'Erreur', 'error'); }
   } catch(err){
-    allKeys = prevKeys;
-    saveKeysCache(allKeys);
-    renderStats(allKeys);
-    renderRows(allKeys, false);
+    allKeys = prevKeys; saveKeysCache(allKeys); renderStats(allKeys); renderRows(allKeys, false);
     toast('Erreur réseau', 'error');
   }
 });
 
 let searchTimer;
-$('q').oninput = () => {
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => renderRows(allKeys, false), 120);
-};
+$('q').oninput = () => { clearTimeout(searchTimer); searchTimer = setTimeout(() => renderRows(allKeys, false), 120); };
 $('st').onchange = () => renderRows(allKeys, false);
-$('refresh').onclick = () => {
-  syncLocked = 0;
-  loadKeys(false); loadHwids(); loadAccounts(); loadLogs();
-};
+$('refresh').onclick = () => { syncLocked = 0; loadKeys(false); loadHwids(); loadAccounts(); loadLogs(); };
 
-/* ---------- GÉNÉRATION RAPIDE ---------- */
 document.querySelectorAll('[data-quick]').forEach(btn => {
   btn.onclick = async () => {
     const days = parseInt(btn.dataset.quick, 10);
     const {m, close} = modal(`
-      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Nouvelle clé — ${days} jour${days > 1 ? 's' : ''}</h2>
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Nouvelle clé — ${days} jour${days > 1 ? 's' : ''}</h2>
       <div class="fld"><label for="nq">Quantité</label><input id="nq" type="number" min="1" max="100" value="1"></div>
       <div class="fld"><label for="nh">HWID (facultatif)</label><input id="nh" placeholder="Laisser vide pour une clé libre"></div>
       <div class="foot"><button class="btn ghost" id="c1">Annuler</button><button class="btn red" id="c2">Créer</button></div>`);
@@ -1225,7 +1416,7 @@ document.querySelectorAll('[data-quick]').forEach(btn => {
       loadLogs();
       if (!made.length) return toast(quantity + ' clé(s) ' + days + 'j créée(s)', 'success');
       toast(made.length + ' clé(s) ' + days + 'j créée(s)', 'success');
-      const res = modal(`<h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>${made.length} clé(s) créée(s)</h2>
+      const res = modal(`<h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>${made.length} clé(s) créée(s)</h2>
         <div class="out"></div>
         <div class="foot"><button class="btn ghost" id="r1">Fermer</button><button class="btn red" id="r2">Copier tout</button></div>`);
       res.m.querySelector('.out').textContent = made.join('\n');
@@ -1235,7 +1426,6 @@ document.querySelectorAll('[data-quick]').forEach(btn => {
   };
 });
 
-/* ---------- MODAL ---------- */
 function modal(html){
   const m = document.createElement('div'); m.className = 'modal';
   m.innerHTML = `<div class="box" role="dialog" aria-modal="true">${html}</div>`;
@@ -1247,7 +1437,7 @@ function modal(html){
 }
 $('newKey').onclick = () => {
   const {m, close} = modal(`
-    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3"/></svg>Nouvelle clé</h2>
+    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3"/></svg>Nouvelle clé</h2>
     <div class="two">
       <div class="fld"><label for="nd">Durée</label><select id="nd">
         <option value="1">1 jour</option>
@@ -1271,7 +1461,7 @@ $('newKey').onclick = () => {
     const made = (r.created || []).map(x => typeof x === 'string' ? x : (x.key || x.Key || x.token || x.license)).filter(Boolean);
     loadLogs();
     if (!made.length) return toast(quantity + ' clé(s) créée(s)', 'success');
-    const res = modal(`<h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>${made.length} clé(s) créée(s)</h2>
+    const res = modal(`<h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>${made.length} clé(s) créée(s)</h2>
       <div class="out"></div>
       <div class="foot"><button class="btn ghost" id="r1">Fermer</button><button class="btn red" id="r2">Copier tout</button></div>`);
     res.m.querySelector('.out').textContent = made.join('\n');
@@ -1281,9 +1471,7 @@ $('newKey').onclick = () => {
   m.querySelector('#nq').focus();
 };
 
-/* ---------- HWID (avec cache + insert optimiste) ---------- */
 let allHwids = [];
-
 function renderHwids(list){
   allHwids = list;
   $('nHwid').textContent = list.length;
@@ -1305,15 +1493,12 @@ function renderHwids(list){
 }
 
 async function loadHwids(){
-  // 1) Affichage instantané du cache
   const cached = loadCache(HWIDS_CACHE);
-  if (cached && cached.length){
-    renderHwids(cached);
-  } else if (!allHwids.length){
+  if (cached && cached.length) renderHwids(cached);
+  else if (!allHwids.length){
     $('hwidEmpty').hidden = true;
     $('hwidBody').innerHTML = skeletonRows(4, 3);
   }
-  // 2) Refresh en arrière-plan
   try {
     const r = await api('/admin/hwids');
     if (!r.ok) throw new Error();
@@ -1328,18 +1513,14 @@ async function loadHwids(){
   }
 }
 
-/* Insertion optimiste HWID */
 function insertHwidOptimistic(hwid){
   if (!hwid) return;
   const now = Date.now();
-  // Évite les doublons
   if (allHwids.some(h => h.hwid === hwid)) return;
   allHwids = [{hwid, ts: now}, ...allHwids];
   saveCache(HWIDS_CACHE, allHwids);
   renderHwids(allHwids);
 }
-
-/* Suppression optimiste HWID */
 function removeHwidOptimistic(hwid){
   allHwids = allHwids.filter(h => h.hwid !== hwid);
   saveCache(HWIDS_CACHE, allHwids);
@@ -1350,64 +1531,33 @@ $('hwidBody').addEventListener('click', async e => {
   const b = e.target.closest('[data-h]'); if (!b) return;
   const hwid = b.dataset.h;
   if (!confirm('Retirer ce HWID ?\n' + hwid)) return;
-
   const prev = allHwids.slice();
-  removeHwidOptimistic(hwid); // suppression locale immédiate
-
+  removeHwidOptimistic(hwid);
   try {
     const r = await api('/admin/hwid/unban', 'POST', {hwid});
-    if (r.ok){
-      toast('HWID retiré', 'success');
-      loadLogs();
-    } else {
-      // rollback
-      allHwids = prev;
-      saveCache(HWIDS_CACHE, allHwids);
-      renderHwids(allHwids);
-      toast(r.error || 'Erreur', 'error');
-    }
-  } catch {
-    allHwids = prev;
-    saveCache(HWIDS_CACHE, allHwids);
-    renderHwids(allHwids);
-    toast('Erreur réseau', 'error');
-  }
+    if (r.ok){ toast('HWID retiré', 'success'); loadLogs(); }
+    else { allHwids = prev; saveCache(HWIDS_CACHE, allHwids); renderHwids(allHwids); toast(r.error || 'Erreur', 'error'); }
+  } catch { allHwids = prev; saveCache(HWIDS_CACHE, allHwids); renderHwids(allHwids); toast('Erreur réseau', 'error'); }
 });
 
 async function banHwid(){
   const v = $('newHwid').value.trim().toUpperCase();
   if (!v) return toast('Entre un HWID', 'error');
-
-  // Insertion locale immédiate
-  insertHwidOptimistic(v);
-  $('newHwid').value = '';
-
+  insertHwidOptimistic(v); $('newHwid').value = '';
   try {
     const r = await api('/admin/hwid/ban', 'POST', {hwid: v});
-    if (r.ok){
-      toast('HWID banni', 'success');
-      loadLogs();
-    } else {
-      // rollback
-      removeHwidOptimistic(v);
-      toast(r.error || 'Erreur', 'error');
-    }
-  } catch {
-    removeHwidOptimistic(v);
-    toast('Erreur réseau', 'error');
-  }
+    if (r.ok){ toast('HWID banni', 'success'); loadLogs(); }
+    else { removeHwidOptimistic(v); toast(r.error || 'Erreur', 'error'); }
+  } catch { removeHwidOptimistic(v); toast('Erreur réseau', 'error'); }
 }
 $('banHwid').onclick = banHwid;
 $('newHwid').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); banHwid(); } });
 
-/* ---------- COMPTES (avec cache) ---------- */
 let allAccounts = [];
 async function loadAccounts(){
   const cached = loadCache(ACCS_CACHE);
-  if (cached && cached.length){
-    allAccounts = cached;
-    renderAccounts();
-  } else if (!allAccounts.length){
+  if (cached && cached.length){ allAccounts = cached; renderAccounts(); }
+  else if (!allAccounts.length){
     $('accEmpty').hidden = true;
     $('accBody').innerHTML = skeletonRows(4, 6);
   }
@@ -1427,7 +1577,7 @@ async function loadAccounts(){
 function renderAccounts(){
   $('nAcc').textContent = allAccounts.length;
   const tbody = $('accBody');
-  if (!allAccounts.length) {
+  if (!allAccounts.length){
     tbody.innerHTML = '';
     $('accEmpty').hidden = false;
     $('accEmpty').textContent = 'Aucun compte pour le moment.';
@@ -1436,9 +1586,7 @@ function renderAccounts(){
   $('accEmpty').hidden = true;
   const frag = document.createDocumentFragment();
   allAccounts.forEach(a => {
-    const stat = a.used
-      ? '<span class="badge banned">Utilisé</span>'
-      : '<span class="badge active">Disponible</span>';
+    const stat = a.used ? '<span class="badge banned">Utilisé</span>' : '<span class="badge active">Disponible</span>';
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td data-l="Email"><span class="hw" style="color:#8ab4f8">${esc(a.email)}</span></td>
@@ -1460,59 +1608,33 @@ $('accBody').addEventListener('click', async e => {
   const b = e.target.closest('[data-act]'); if (!b) return;
   const id = b.dataset.id, a = b.dataset.act;
   if (a === 'del' && !confirm('Supprimer ce compte ?')) return;
-
   const prev = allAccounts.slice();
-
-  if (a === 'del'){
-    allAccounts = allAccounts.filter(x => x.id !== id);
-  } else if (a === 'reset'){
-    allAccounts = allAccounts.map(x => x.id === id ? {...x, used:false, usedAt:null, usedBy:null} : x);
-  }
+  if (a === 'del') allAccounts = allAccounts.filter(x => x.id !== id);
+  else if (a === 'reset') allAccounts = allAccounts.map(x => x.id === id ? {...x, used:false, usedAt:null, usedBy:null} : x);
   saveCache(ACCS_CACHE, allAccounts);
   renderAccounts();
-
   try {
     const r = await api({del:'/admin/accounts/delete', reset:'/admin/accounts/reset'}[a], 'POST', {id});
-    if (r.ok){
-      toast(a === 'del' ? 'Compte supprimé' : 'Compte libéré', 'success');
-      loadLogs();
-    } else {
-      allAccounts = prev;
-      saveCache(ACCS_CACHE, allAccounts);
-      renderAccounts();
-      toast(r.error || 'Erreur', 'error');
-    }
-  } catch {
-    allAccounts = prev;
-    saveCache(ACCS_CACHE, allAccounts);
-    renderAccounts();
-    toast('Erreur réseau', 'error');
-  }
+    if (r.ok){ toast(a === 'del' ? 'Compte supprimé' : 'Compte libéré', 'success'); loadLogs(); }
+    else { allAccounts = prev; saveCache(ACCS_CACHE, allAccounts); renderAccounts(); toast(r.error || 'Erreur', 'error'); }
+  } catch { allAccounts = prev; saveCache(ACCS_CACHE, allAccounts); renderAccounts(); toast('Erreur réseau', 'error'); }
 });
 $('addAcc').onclick = async () => {
   const email = $('newAccEmail').value.trim();
   const password = $('newAccPass').value.trim();
   if (!email || !password) return toast('Email et mot de passe requis', 'error');
-
   const tempId = 'tmp_' + Date.now();
   const newAcc = { id: tempId, email, password, used: false };
-
-  // Insertion locale immédiate
   allAccounts = [newAcc, ...allAccounts];
   saveCache(ACCS_CACHE, allAccounts);
   renderAccounts();
   $('newAccEmail').value = ''; $('newAccPass').value = '';
-
   try {
     const r = await api('/admin/accounts', 'POST', {email, password});
     if (r.ok){
       toast('Compte ajouté', 'success');
-      // Remplace le temp par le vrai compte si l'API en renvoie un
-      if (r.account){
-        allAccounts = allAccounts.map(x => x.id === tempId ? r.account : x);
-      } else {
-        allAccounts = allAccounts.map(x => x.id === tempId ? {...x, id: 'srv_' + Date.now()} : x);
-      }
+      if (r.account) allAccounts = allAccounts.map(x => x.id === tempId ? r.account : x);
+      else allAccounts = allAccounts.map(x => x.id === tempId ? {...x, id: 'srv_' + Date.now()} : x);
       saveCache(ACCS_CACHE, allAccounts);
       renderAccounts();
       loadLogs();
@@ -1529,11 +1651,8 @@ $('addAcc').onclick = async () => {
     toast('Erreur réseau', 'error');
   }
 };
-$('newAccPass').addEventListener('keydown', e => {
-  if (e.key === 'Enter'){ e.preventDefault(); $('addAcc').click(); }
-});
+$('newAccPass').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); $('addAcc').click(); } });
 
-/* ---------- LOGS (avec cache) ---------- */
 const L = {
   create:['Création','active'], ban:['Ban','banned'], unban:['Déban','active'], delete:['Suppression','expired'],
   'hwid-ban':['HWID banni','banned'], 'hwid-unban':['HWID retiré','active'], export:['Export','active'],
@@ -1565,9 +1684,8 @@ function renderLogs(list){
 
 async function loadLogs(){
   const cached = loadCache(LOGS_CACHE);
-  if (cached && cached.length){
-    renderLogs(cached);
-  } else {
+  if (cached && cached.length) renderLogs(cached);
+  else {
     $('logsEmpty').hidden = true;
     $('logsBody').innerHTML = skeletonRows(5, 3);
   }
@@ -1585,7 +1703,6 @@ async function loadLogs(){
   }
 }
 
-/* ---------- CONFIG DYNAMIQUE ---------- */
 async function loadConfig(){
   try {
     const r = await api('/admin/get-config');
@@ -1598,9 +1715,7 @@ async function loadConfig(){
     $('cfgP1Status').value = c.product1Status || 'Working / Undetected';
     $('cfgP2Name').value = c.product2Name || 'Vyse X Spoofer';
     $('cfgP2Status').value = c.product2Status || 'USE AT OWN RISK';
-  } catch(e){
-    toast('Impossible de charger la config : ' + (e.message || ''), 'error');
-  }
+  } catch(e){ toast('Impossible de charger la config : ' + (e.message || ''), 'error'); }
 }
 $('cfgReload').onclick = loadConfig;
 $('cfgSave').onclick = async () => {
@@ -1618,66 +1733,54 @@ $('cfgSave').onclick = async () => {
   };
   try {
     const r = await api('/admin/set-config', 'POST', {config});
-    if (r.ok) { toast('Config sauvegardée', 'success'); loadLogs(); }
+    if (r.ok){ toast('Config sauvegardée', 'success'); loadLogs(); }
     else toast(r.error || 'Erreur', 'error');
   } catch { toast('Erreur réseau', 'error'); }
 };
 
-/* ---------- NOTICE ---------- */
 async function loadNotice(){
   try {
     const r = await api('/admin/get-config');
     if (!r.ok) throw new Error(r.error);
     $('noticeMsg').value = r.notice || '';
     $('noticeEnabled').checked = !!r.noticeEnabled;
-  } catch(e){
-    toast('Impossible de charger la notice : ' + (e.message || ''), 'error');
-  }
+  } catch(e){ toast('Impossible de charger la notice : ' + (e.message || ''), 'error'); }
 }
 $('noticeSave').onclick = async () => {
   const message = $('noticeMsg').value.trim();
   const enabled = $('noticeEnabled').checked;
   try {
     const r = await api('/admin/set-notice', 'POST', {message, enabled});
-    if (r.ok) { toast('Notice envoyée', 'success'); loadLogs(); }
+    if (r.ok){ toast('Notice envoyée', 'success'); loadLogs(); }
     else toast(r.error || 'Erreur', 'error');
   } catch { toast('Erreur réseau', 'error'); }
 };
 
-/* ---------- KILL SWITCH ---------- */
 async function loadKill(){
   try {
     const r = await api('/admin/get-config');
     if (!r.ok) throw new Error(r.error);
     const el = $('killStatus');
-    if (r.kill){
-      el.className = 'badge banned';
-      el.textContent = '☠️ Tous les loaders sont désactivés';
-    } else {
-      el.className = 'badge active';
-      el.textContent = '✓ Loaders opérationnels';
-    }
-  } catch(e){
-    toast('Impossible de charger le kill switch : ' + (e.message || ''), 'error');
-  }
+    if (r.kill){ el.className = 'badge banned'; el.textContent = '☠️ Tous les loaders sont désactivés'; }
+    else { el.className = 'badge active'; el.textContent = '✓ Loaders opérationnels'; }
+  } catch(e){ toast('Impossible de charger le kill switch : ' + (e.message || ''), 'error'); }
 }
 $('killOn').onclick = async () => {
   if (!confirm('Désactiver TOUS les loaders ? Les utilisateurs verront un message d\'erreur au démarrage.')) return;
   try {
     const r = await api('/admin/kill', 'POST', {kill: true});
-    if (r.ok) { toast('Kill switch activé', 'success'); loadKill(); loadLogs(); }
+    if (r.ok){ toast('Kill switch activé', 'success'); loadKill(); loadLogs(); }
     else toast(r.error || 'Erreur', 'error');
   } catch { toast('Erreur réseau', 'error'); }
 };
 $('killOff').onclick = async () => {
   try {
     const r = await api('/admin/kill', 'POST', {kill: false});
-    if (r.ok) { toast('Kill switch désactivé', 'success'); loadKill(); loadLogs(); }
+    if (r.ok){ toast('Kill switch désactivé', 'success'); loadKill(); loadLogs(); }
     else toast(r.error || 'Erreur', 'error');
   } catch { toast('Erreur réseau', 'error'); }
 };
 
-/* ---------- EXPORT ---------- */
 $('export').onclick = () => {
   if (!allKeys.length) return toast('Aucune clé à exporter', 'error');
   const lines = allKeys.map(k => [k.key, status(k), (k.days || '?') + 'j', k.hwid || '-', new Date(k.expiresAt).toISOString()].join('|'));
