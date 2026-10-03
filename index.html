@@ -221,7 +221,7 @@ h1.t{font-size:34px;font-weight:800;letter-spacing:-.04em;line-height:1.15;backg
 .search-wrap::before{content:"";position:absolute;left:16px;top:50%;transform:translateY(-50%);width:16px;height:16px;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237a7f8a' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.35-4.35'/></svg>");background-size:contain;background-repeat:no-repeat;transition:all .22s ease;opacity:.7}
 .search-wrap:focus-within::before{opacity:1;filter:drop-shadow(0 0 8px var(--red-glow))}
 
-/* ═══ DROPDOWN CUSTOM (remplace les <select> natifs) ═══ */
+/* ═══ DROPDOWN CUSTOM ═══ */
 .dropdown{position:relative;user-select:none;min-width:180px}
 .dropdown-trigger{
   display:flex;align-items:center;justify-content:space-between;gap:10px;
@@ -250,6 +250,8 @@ h1.t{font-size:34px;font-weight:800;letter-spacing:-.04em;line-height:1.15;backg
   transition:transform .22s cubic-bezier(.2,.8,.2,1);
 }
 .dropdown.open .dropdown-trigger svg{transform:rotate(180deg);color:#e6e8ec}
+
+/* ⬇️ max-height augmenté de 260px à 420px — toutes les options visibles */
 .dropdown-menu{
   position:absolute;top:calc(100% + 6px);left:0;right:0;
   background:linear-gradient(180deg,rgba(38,40,47,.99),rgba(24,26,31,.99));
@@ -263,11 +265,12 @@ h1.t{font-size:34px;font-weight:800;letter-spacing:-.04em;line-height:1.15;backg
     0 0 0 1px rgba(255,255,255,.03) inset,
     0 0 40px -15px var(--red-glow);
   animation:dropIn .18s cubic-bezier(.2,.9,.3,1.1) both;
-  max-height:260px;
+  max-height:420px;
   overflow-y:auto;
 }
 .dropdown-menu::-webkit-scrollbar{width:6px}
 .dropdown-menu::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px}
+
 .dropdown-item{
   display:flex;align-items:center;justify-content:space-between;gap:10px;
   padding:10px 12px;
@@ -334,7 +337,6 @@ tr.skeleton td{padding:18px 20px}
 .box{background:linear-gradient(180deg,rgba(255,255,255,.035),transparent 120px),linear-gradient(180deg,rgba(30,32,38,.98),rgba(18,19,23,.98));border:1px solid rgba(255,255,255,.10);border-radius:var(--r-xl);width:100%;max-width:480px;padding:32px;box-shadow:0 60px 140px -30px #000,0 0 0 1px rgba(255,255,255,.03) inset,0 1px 0 rgba(255,255,255,.10) inset,0 0 80px -20px var(--red-glow);animation:popIn .45s cubic-bezier(.2,.9,.3,1.15) both;position:relative;overflow:hidden}
 .box::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#e6e8ec,transparent);background-size:200% 100%;animation:borderFlow 3s linear infinite}
 
-/* ═══ MODAL HEADER avec logo ═══ */
 .modal-header{
   display:flex;align-items:center;gap:14px;
   margin-bottom:22px;
@@ -352,13 +354,8 @@ tr.skeleton td{padding:18px 20px}
 .modal-header .modal-logo img{width:32px;height:32px;object-fit:contain}
 .modal-header .modal-logo .fallback{font-size:24px;font-weight:900;color:#e6e8ec;letter-spacing:-.05em;text-shadow:0 0 18px var(--red-glow)}
 .modal-header .modal-title{display:flex;flex-direction:column;gap:2px;min-width:0}
-.modal-header .modal-title b{
-  font-size:18px;font-weight:800;letter-spacing:-.03em;color:#fff;line-height:1.2;
-}
-.modal-header .modal-title span{
-  font-size:11px;font-weight:800;color:var(--mute);
-  letter-spacing:1.2px;text-transform:uppercase;
-}
+.modal-header .modal-title b{font-size:18px;font-weight:800;letter-spacing:-.03em;color:#fff;line-height:1.2}
+.modal-header .modal-title span{font-size:11px;font-weight:800;color:var(--mute);letter-spacing:1.2px;text-transform:uppercase}
 
 .fld{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
 .fld label{font-size:11.5px;font-weight:800;color:var(--mute);text-transform:uppercase;letter-spacing:1px}
@@ -598,7 +595,6 @@ tr.skeleton td{padding:18px 20px}
           <div class="search-wrap">
             <input id="q" type="search" placeholder="Rechercher une clé ou un HWID…" aria-label="Rechercher">
           </div>
-          <!-- ═══ DROPDOWN CUSTOM (remplace <select>) ═══ -->
           <div class="dropdown" id="ddStatus">
             <button type="button" class="dropdown-trigger" data-dropdown-trigger>
               <span data-dropdown-label>Tous les statuts</span>
@@ -757,7 +753,6 @@ tr.skeleton td{padding:18px 20px}
 <div id="toasts"></div>
 
 <script>
-/* ---------- Configuration ---------- */
 const API_URL = "https://keyauth-api.cacamoussa70.workers.dev";
 let adminKey = sessionStorage.getItem('ka_admin') || '';
 
@@ -785,7 +780,6 @@ function toast(msg, type){
   setTimeout(() => el.remove(), 2800);
 }
 
-/* ═══════════════ MODAL HEADER avec logo Vyse X ═══════════════ */
 function modalHeader(subtitle){
   return `
     <div class="modal-header">
@@ -800,7 +794,7 @@ function modalHeader(subtitle){
     </div>`;
 }
 
-/* ═══════════════ DROPDOWN CUSTOM ═══════════════ */
+/* ═══ DROPDOWN CUSTOM (avec auto-scroll vers l'actif) ═══ */
 function initDropdown(el){
   const trigger = el.querySelector('[data-dropdown-trigger]');
   const menu = el.querySelector('[data-dropdown-menu]');
@@ -811,12 +805,19 @@ function initDropdown(el){
 
   trigger.onclick = (e) => {
     e.stopPropagation();
-    // Ferme tous les autres
     document.querySelectorAll('.dropdown.open').forEach(d => {
       if (d !== el) { d.classList.remove('open'); d.querySelector('[data-dropdown-menu]').hidden = true; }
     });
     const isOpen = el.classList.toggle('open');
     menu.hidden = !isOpen;
+
+    // ⭐ Auto-scroll vers l'option active quand on ouvre
+    if (isOpen) {
+      const active = menu.querySelector('.dropdown-item.active');
+      if (active) {
+        setTimeout(() => active.scrollIntoView({ block: 'nearest' }), 30);
+      }
+    }
   };
 
   el.querySelectorAll('.dropdown-item').forEach(item => {
@@ -827,7 +828,6 @@ function initDropdown(el){
       el.querySelectorAll('.dropdown-item').forEach(i => i.classList.toggle('active', i === item));
       el.classList.remove('open');
       menu.hidden = true;
-      // Dispatch custom event
       el.dispatchEvent(new CustomEvent('change', { detail: { value } }));
     };
   });
@@ -839,10 +839,8 @@ function initDropdown(el){
   };
 }
 
-// Init tous les dropdowns
 document.querySelectorAll('.dropdown').forEach(initDropdown);
 
-// Close on outside click
 document.addEventListener('click', () => {
   document.querySelectorAll('.dropdown.open').forEach(d => {
     d.classList.remove('open');
@@ -858,7 +856,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-/* ═══════════════ CONFIRM MODAL ═══════════════ */
+/* ═══ CONFIRM MODAL ═══ */
 function confirmDialog(opts){
   return new Promise(resolve => {
     const title = typeof opts === 'string' ? 'Confirmation' : (opts.title || 'Confirmation');
@@ -908,7 +906,6 @@ async function api(path, method = 'GET', body){
   return r.json();
 }
 
-/* ---------- Connexion ---------- */
 $('loginForm').addEventListener('submit', async e => {
   e.preventDefault();
   const v = $('adminKey').value.trim(); if (!v) return;
@@ -1172,7 +1169,7 @@ $('q').oninput = () => { clearTimeout(searchTimer); searchTimer = setTimeout(() 
 document.getElementById('ddStatus').addEventListener('change', () => renderRows(allKeys, false));
 $('refresh').onclick = () => { syncLocked = 0; loadKeys(false); loadHwids(); loadAccounts(); loadLogs(); };
 
-/* ═══════════════ MODAL NOUVELLE CLÉ (avec logo + dropdown custom) ═══════════════ */
+/* ═══ MODAL NOUVELLE CLÉ ═══ */
 function openNewKeyModal(days){
   const preselect = days || 30;
   const {m, close} = modal(`
@@ -1200,7 +1197,6 @@ function openNewKeyModal(days){
     <div class="fld"><label for="nh">HWID (facultatif)</label><input id="nh" placeholder="Laisser vide pour une clé libre"></div>
     <div class="foot"><button class="btn ghost" id="c1">Annuler</button><button class="btn red" id="c2">Créer</button></div>`);
 
-  // Init dropdowns de la modale
   m.querySelectorAll('.dropdown').forEach(initDropdown);
   const ddDays = m.querySelector('#ddDays');
   if (preselect !== 30) ddDays.setValue(String(preselect));
