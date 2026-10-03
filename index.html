@@ -7,865 +7,352 @@
 <title>KeyAuth — Panel d'administration</title>
 <style>
 :root{
-  --bg:#08090d;
-  --bg-2:#0b0d13;
-  --side:rgba(14,16,22,.85);
-  --panel:#101319;
-  --panel-2:#161a22;
-  --panel-3:#1d222c;
-  --line:rgba(255,255,255,.055);
-  --line-2:rgba(255,255,255,.10);
-  --line-3:rgba(255,255,255,.16);
-  --text:#eef1f6;
-  --text-2:#aab2c0;
-  --mute:#6f7889;
-  --dim:#4a5262;
-  --red:#ff4d5a;
-  --red-2:#e63946;
-  --red-glow:rgba(255,77,90,.35);
-  --ok:#3ddc84;
-  --ok-glow:rgba(61,220,132,.3);
-  --warn:#ffb545;
-  --warn-glow:rgba(255,181,69,.3);
-  --blue:#5b8def;
+  --bg:#08090d; --bg-2:#0b0d13; --side:rgba(14,16,22,.85);
+  --panel:#101319; --panel-2:#161a22; --panel-3:#1d222c;
+  --line:rgba(255,255,255,.055); --line-2:rgba(255,255,255,.10); --line-3:rgba(255,255,255,.16);
+  --text:#eef1f6; --text-2:#aab2c0; --mute:#6f7889; --dim:#4a5262;
+  --red:#ff4d5a; --red-2:#e63946; --red-glow:rgba(255,77,90,.35);
+  --ok:#3ddc84; --warn:#ffb545; --blue:#5b8def;
   --sans:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,Arial,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  --safe-b:env(safe-area-inset-bottom,0px);
-  --safe-t:env(safe-area-inset-top,0px);
+  --safe-b:env(safe-area-inset-bottom,0px); --safe-t:env(safe-area-inset-top,0px);
   --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:20px;
 }
-
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{overflow-x:hidden}
-body{
-  background:var(--bg);
-  color:var(--text);
-  font:14px/1.55 var(--sans);
-  min-height:100vh;min-height:100dvh;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  letter-spacing:-.005em;
-}
-button,input,select{font:inherit;color:inherit}
-:focus-visible{outline:2px solid var(--red);outline-offset:2px;border-radius:6px}
+body{background:var(--bg);color:var(--text);font:14px/1.55 var(--sans);min-height:100vh;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
 [hidden]{display:none!important}
-::selection{background:var(--red-glow);color:#fff}
-
 ::-webkit-scrollbar{width:10px;height:10px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.06);border-radius:10px;border:2px solid transparent;background-clip:padding-box}
 ::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.12);background-clip:padding-box}
 
-/* ========== LOGIN ========== */
-#login{
-  position:fixed;inset:0;display:grid;place-items:center;padding:20px;z-index:50;
-  background:
-    radial-gradient(1000px 600px at 50% -10%,rgba(255,77,90,.12),transparent 60%),
-    radial-gradient(800px 500px at 80% 100%,rgba(91,141,239,.08),transparent 60%),
-    var(--bg);
-  overflow:hidden;
-}
-#login::before{
-  content:"";position:absolute;inset:0;
-  background-image:
-    linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);
-  background-size:44px 44px;
-  mask-image:radial-gradient(circle at 50% 50%,black,transparent 70%);
-  -webkit-mask-image:radial-gradient(circle at 50% 50%,black,transparent 70%);
-  pointer-events:none;
-}
-.lbox{
-  position:relative;z-index:1;width:100%;max-width:400px;
-  background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01)),var(--panel);
-  border:1px solid var(--line-2);
-  border-radius:var(--r-xl);
-  padding:34px 30px;
-  box-shadow:0 40px 100px -30px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.02) inset,0 1px 0 rgba(255,255,255,.06) inset;
-  animation:rise .7s cubic-bezier(.16,1,.3,1) both;
-}
-.lbox .logo{
-  width:52px;height:52px;border-radius:14px;
-  background:linear-gradient(135deg,var(--red),var(--red-2));
-  display:grid;place-items:center;
-  margin-bottom:20px;
-  box-shadow:0 12px 30px -8px var(--red-glow),0 0 0 1px rgba(255,255,255,.1) inset;
-}
-.lbox .logo svg{width:26px;height:26px}
-.lbox h1{font-size:22px;font-weight:700;letter-spacing:-.03em;margin-bottom:6px}
+/* LOGIN */
+#login{position:fixed;inset:0;display:grid;place-items:center;padding:20px;z-index:50;
+  background:radial-gradient(1000px 600px at 50% -10%,rgba(255,77,90,.12),transparent 60%),radial-gradient(800px 500px at 80% 100%,rgba(91,141,239,.08),transparent 60%),var(--bg)}
+.lbox{width:100%;max-width:400px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01)),var(--panel);border:1px solid var(--line-2);border-radius:var(--r-xl);padding:34px 30px;box-shadow:0 40px 100px -30px rgba(0,0,0,.9);animation:rise .7s cubic-bezier(.16,1,.3,1) both}
+.lbox h1{font-size:22px;font-weight:700;margin-bottom:6px}
 .lbox p{color:var(--mute);margin-bottom:26px;font-size:13.5px}
-.lbox input{
-  width:100%;padding:13px 15px;
-  background-color:rgba(0,0,0,.35);
-  border:1px solid var(--line-2);
-  border-radius:var(--r-md);
-  margin-bottom:14px;outline:none;
-  transition:border-color .2s,box-shadow .2s,background-color .2s;
-  font-size:14px;
-}
-.lbox input:focus{border-color:var(--red);box-shadow:0 0 0 4px var(--red-glow);background-color:rgba(0,0,0,.5)}
+.lbox input{width:100%;padding:13px 15px;background-color:rgba(0,0,0,.35);border:1px solid var(--line-2);border-radius:var(--r-md);margin-bottom:14px;outline:none;font-size:14px;transition:border-color .2s,box-shadow .2s}
+.lbox input:focus{border-color:var(--red);box-shadow:0 0 0 4px var(--red-glow)}
 .err{color:var(--red);font-size:13px;margin-top:14px;padding:10px 12px;background:rgba(255,77,90,.08);border-radius:var(--r-sm);border-left:2px solid var(--red)}
 
-/* ========== LAYOUT ========== */
-#app{display:grid;grid-template-columns:240px 1fr;min-height:100vh;min-height:100dvh}
+/* LAYOUT */
+#app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+aside{background:var(--side);backdrop-filter:blur(20px);border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;z-index:30}
+.brand{display:flex;align-items:center;gap:11px;font-weight:700;font-size:15.5px;padding:6px 10px 22px}
+.brand .logo{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--red),var(--red-2));display:grid;place-items:center;color:#fff;font-weight:800}
+.brand small{display:block;font-size:10.5px;color:var(--mute);letter-spacing:.5px;text-transform:uppercase}
 
-aside{
-  background:linear-gradient(180deg,rgba(255,255,255,.02),transparent 40%),var(--side);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
-  border-right:1px solid var(--line);
-  padding:20px 14px;
-  display:flex;flex-direction:column;gap:4px;
-  position:sticky;top:0;height:100vh;height:100dvh;
-  z-index:30;
-}
-.brand{
-  display:flex;align-items:center;gap:11px;
-  font-weight:700;font-size:15.5px;letter-spacing:-.02em;
-  padding:6px 10px 22px;
-}
-.brand .logo{
-  width:32px;height:32px;border-radius:9px;
-  background:linear-gradient(135deg,var(--red),var(--red-2));
-  display:grid;place-items:center;flex:0 0 auto;
-  box-shadow:0 6px 18px -4px var(--red-glow),0 0 0 1px rgba(255,255,255,.1) inset;
-}
-.brand .logo svg{width:17px;height:17px;color:#fff}
-.brand .name{font-size:15px}
-.brand .name b{color:var(--text)}
-.brand .name small{display:block;font-size:10.5px;font-weight:500;color:var(--mute);letter-spacing:.5px;text-transform:uppercase;margin-top:-1px}
-
-.nav{
-  display:flex;align-items:center;gap:11px;
-  padding:10px 12px;border-radius:10px;
-  color:var(--mute);font-weight:600;font-size:13.5px;
-  cursor:pointer;background:none;border:0;text-align:left;width:100%;
-  transition:background .2s,color .2s,transform .15s;
-  position:relative;
-}
+.nav{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:var(--mute);font-weight:600;font-size:13.5px;cursor:pointer;background:none;border:0;text-align:left;width:100%;transition:background .2s,color .2s;position:relative}
 .nav:hover{background:rgba(255,255,255,.04);color:var(--text-2)}
 .nav.on{background:linear-gradient(90deg,rgba(255,77,90,.12),rgba(255,77,90,.02));color:var(--text)}
-.nav.on::before{
-  content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;
-  background:linear-gradient(180deg,var(--red),var(--red-2));
-  border-radius:0 3px 3px 0;
-  box-shadow:0 0 12px var(--red-glow);
-}
-.nav svg{width:16px;height:16px;flex:0 0 auto;opacity:.85}
-.nav.on svg{color:var(--red);opacity:1}
-.nav small{
-  margin-left:auto;font-size:11.5px;font-weight:700;
-  color:var(--dim);font-variant-numeric:tabular-nums;
-  background:rgba(255,255,255,.05);padding:2px 7px;border-radius:6px;
-  min-width:22px;text-align:center;
-}
+.nav.on::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;background:linear-gradient(180deg,var(--red),var(--red-2));border-radius:0 3px 3px 0;box-shadow:0 0 12px var(--red-glow)}
+.nav small{margin-left:auto;font-size:11.5px;font-weight:700;color:var(--dim);background:rgba(255,255,255,.05);padding:2px 7px;border-radius:6px;min-width:22px;text-align:center}
 .nav.on small{color:var(--red);background:rgba(255,77,90,.15)}
 .bottom{margin-top:auto;padding-top:14px;border-top:1px solid var(--line)}
 
-main{padding:28px 32px 60px;min-width:0;background:var(--bg-2);position:relative}
-main::before{
-  content:"";position:fixed;top:0;left:240px;right:0;height:400px;
-  background:radial-gradient(600px 200px at 70% 0,rgba(255,77,90,.06),transparent 70%);
-  pointer-events:none;z-index:0;
-}
-main>*{position:relative;z-index:1}
-
-.top{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:16px;flex-wrap:wrap;margin-bottom:24px;
-}
-.page-head{display:flex;flex-direction:column;gap:2px}
-h1.t{font-size:24px;font-weight:700;letter-spacing:-.03em;line-height:1.2}
+main{padding:28px 32px 60px;min-width:0;background:var(--bg-2)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+h1.t{font-size:24px;font-weight:700;line-height:1.2}
 .t-sub{font-size:13px;color:var(--mute)}
 .acts{display:flex;gap:8px;flex-wrap:wrap}
 
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:7px;
-  padding:9px 15px;border-radius:9px;
-  border:1px solid var(--line-2);
-  background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));
-  font-weight:600;font-size:13.5px;cursor:pointer;
-  transition:transform .15s,background .2s,border-color .2s,box-shadow .25s,color .2s;
-  white-space:nowrap;
-  box-shadow:0 1px 0 rgba(255,255,255,.04) inset;
-}
-.btn svg{width:14px;height:14px;flex:0 0 auto}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 15px;border-radius:9px;border:1px solid var(--line-2);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));font-weight:600;font-size:13.5px;cursor:pointer;transition:all .15s;white-space:nowrap}
 .btn:hover{border-color:var(--line-3);background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));transform:translateY(-1px)}
 .btn:active{transform:translateY(0) scale(.98)}
-.btn.red{
-  background:linear-gradient(180deg,#ff5b67,var(--red-2));
-  border-color:var(--red-2);color:#fff;
-  box-shadow:0 6px 18px -6px var(--red-glow),0 1px 0 rgba(255,255,255,.2) inset;
-}
-.btn.red:hover{box-shadow:0 10px 26px -8px var(--red-glow),0 1px 0 rgba(255,255,255,.25) inset;transform:translateY(-1px)}
+.btn.red{background:linear-gradient(180deg,#ff5b67,var(--red-2));border-color:var(--red-2);color:#fff;box-shadow:0 6px 18px -6px var(--red-glow)}
 .btn.ghost{background:transparent}
 .btn.sm{padding:5px 11px;font-size:12px;border-radius:7px}
-.btn.sm svg{width:12px;height:12px}
-.btn.danger:hover{color:var(--red);border-color:var(--red);background:rgba(255,77,90,.06)}
-.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 
-/* ========== STATS ========== */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
-.stat{
-  position:relative;overflow:hidden;
-  background:linear-gradient(180deg,rgba(255,255,255,.025),transparent 60%),var(--panel);
-  border:1px solid var(--line);
-  border-radius:var(--r-lg);
-  padding:18px 20px;
-  transition:transform .3s cubic-bezier(.2,.8,.2,1),border-color .3s,box-shadow .3s;
-  box-shadow:0 1px 0 rgba(255,255,255,.03) inset;
-}
-.stat:hover{transform:translateY(-3px);border-color:var(--line-2);box-shadow:0 20px 40px -20px rgba(0,0,0,.9)}
-.stat .ico{
-  width:32px;height:32px;border-radius:9px;
-  background:var(--accent-bg,rgba(255,255,255,.05));
-  color:var(--accent,var(--text-2));
-  display:grid;place-items:center;margin-bottom:12px;
-  border:1px solid var(--accent-border,rgba(255,255,255,.05));
-}
-.stat .ico svg{width:15px;height:15px}
-.stat span{display:block;font-size:12px;color:var(--mute);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.stat b{display:block;font-size:30px;font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums;line-height:1}
-.stat[data-tone="ok"]{--accent:var(--ok);--accent-bg:rgba(61,220,132,.1);--accent-border:rgba(61,220,132,.2)}
-.stat[data-tone="ok"] b{color:var(--ok)}
-.stat[data-tone="warn"]{--accent:var(--warn);--accent-bg:rgba(255,181,69,.1);--accent-border:rgba(255,181,69,.2)}
-.stat[data-tone="warn"] b{color:var(--warn)}
-.stat[data-tone="bad"]{--accent:var(--red);--accent-bg:rgba(255,77,90,.1);--accent-border:rgba(255,77,90,.2)}
-.stat[data-tone="bad"] b{color:var(--red)}
-.stat[data-tone="total"]{--accent:var(--blue);--accent-bg:rgba(91,141,239,.1);--accent-border:rgba(91,141,239,.2)}
-.stat[data-tone="total"] b{color:var(--text)}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.015),transparent 200px),var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;margin-bottom:20px}
+.card-pad{padding:24px}
+.card h2{font-size:16px;font-weight:700;margin-bottom:6px;color:#fff}
+.card .desc{font-size:13px;color:var(--mute);margin-bottom:20px}
 
-/* ========== CARDS ========== */
-.card{
-  background:linear-gradient(180deg,rgba(255,255,255,.015),transparent 200px),var(--panel);
-  border:1px solid var(--line);
-  border-radius:var(--r-lg);
-  overflow:hidden;
-  box-shadow:0 24px 60px -40px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.03) inset;
-}
+.tb{display:flex;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap;align-items:center}
+.tb input,.tb select,.fld input,.fld select,.fld textarea{background-color:rgba(0,0,0,.3);border:1px solid var(--line-2);border-radius:9px;padding:9px 13px;outline:none;font-size:13.5px;transition:border-color .2s,box-shadow .2s}
+.tb input:focus,.tb select:focus,.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--red);box-shadow:0 0 0 4px var(--red-glow)}
+.fld{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.fld label{font-size:12px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.4px}
+.fld input,.fld select,.fld textarea{width:100%}
+.fld input[type=color]{padding:4px;height:38px;cursor:pointer}
 
-.quick{
-  padding:12px 16px;border-bottom:1px solid var(--line);
-  display:flex;gap:6px;flex-wrap:wrap;align-items:center;
-  background:linear-gradient(180deg,rgba(255,255,255,.02),transparent);
-}
-.quick .lbl{
-  display:flex;align-items:center;gap:6px;
-  font-size:11.5px;color:var(--dim);text-transform:uppercase;
-  letter-spacing:.6px;font-weight:700;margin-right:8px;
-}
-.quick .lbl svg{width:12px;height:12px;color:var(--red)}
-.quick button{
-  padding:6px 13px;font-size:12.5px;border-radius:8px;
-  border:1px solid var(--line-2);
-  background:linear-gradient(180deg,rgba(255,255,255,.03),transparent);
-  color:var(--text-2);font-weight:600;cursor:pointer;
-  transition:all .18s;font-variant-numeric:tabular-nums;
-}
-.quick button:hover{
-  border-color:var(--red);color:var(--text);
-  background:linear-gradient(180deg,rgba(255,77,90,.12),rgba(255,77,90,.04));
-  transform:translateY(-1px);
-  box-shadow:0 6px 16px -8px var(--red-glow);
-}
-.quick button:active{transform:translateY(0)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px}
 
-.tb{
-  display:flex;gap:10px;padding:14px 16px;
-  border-bottom:1px solid var(--line);
-  flex-wrap:wrap;align-items:center;
-}
-
-.tb input,.tb select,.fld input,.fld select{
-  background-color:rgba(0,0,0,.3);
-  border:1px solid var(--line-2);
-  border-radius:9px;
-  padding:9px 13px;
-  outline:none;
-  transition:border-color .2s,box-shadow .2s,background-color .2s;
-  font-size:13.5px;
-  pointer-events:auto;
-  user-select:text;
-  -webkit-user-select:text;
-  cursor:text;
-  touch-action:manipulation;
-  -webkit-appearance:none;
-  appearance:none;
-}
-.tb input:focus,.tb select:focus,.fld input:focus,.fld select:focus{
-  border-color:var(--red);
-  box-shadow:0 0 0 4px var(--red-glow);
-  background-color:rgba(0,0,0,.5);
-}
-.tb select{cursor:pointer;padding-right:32px;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236f7889' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
-  background-repeat:no-repeat;
-  background-position:right 11px center;
-}
-
-.search-wrap{position:relative;flex:1;min-width:220px}
-.search-wrap input{
-  width:100%;
-  padding-left:38px;
-  background-repeat:no-repeat;
-  background-position:13px center;
-  background-size:15px 15px;
-}
-#q{
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236f7889' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.35-4.35'/></svg>");
-}
-#newHwid{
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236f7889' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><line x1='4.93' y1='4.93' x2='19.07' y2='19.07'/></svg>");
-}
-
-.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.scroll{overflow-x:auto}
 table{width:100%;border-collapse:collapse;min-width:760px}
-th{
-  text-align:left;padding:11px 16px;
-  font-size:11.5px;color:var(--mute);font-weight:700;
-  background:rgba(0,0,0,.25);
-  border-bottom:1px solid var(--line);
-  white-space:nowrap;text-transform:uppercase;letter-spacing:.5px;
-}
-td{padding:13px 16px;border-bottom:1px solid var(--line);white-space:nowrap;font-size:13.5px}
-tr:last-child td{border-bottom:0}
-tbody tr{transition:background .18s}
-tbody tr:hover{background:rgba(255,255,255,.02)}
-
-tbody tr{content-visibility:auto;contain-intrinsic-size:auto 52px}
-
-.key,.hw{font-family:var(--mono);font-size:12.5px;font-weight:500}
-.key{
-  color:#ff8b95;cursor:pointer;padding:3px 8px;border-radius:6px;
-  background:rgba(255,77,90,.06);
-  border:1px solid rgba(255,77,90,.1);
-  transition:all .2s;
-  display:inline-block;
-  letter-spacing:.02em;
-}
-.key:hover{background:rgba(255,77,90,.15);border-color:rgba(255,77,90,.3);color:#ffa0a8}
+th{text-align:left;padding:11px 16px;font-size:11.5px;color:var(--mute);font-weight:700;background:rgba(0,0,0,.25);border-bottom:1px solid var(--line);text-transform:uppercase;letter-spacing:.5px}
+td{padding:13px 16px;border-bottom:1px solid var(--line);font-size:13.5px}
+tr:hover{background:rgba(255,255,255,.02)}
+.key,.hw{font-family:var(--mono);font-size:12.5px}
+.key{color:#ff8b95;cursor:pointer;padding:3px 8px;border-radius:6px;background:rgba(255,77,90,.06);border:1px solid rgba(255,77,90,.1)}
+.key:hover{background:rgba(255,77,90,.15)}
 .hw{color:var(--text-2)}
 .mut{color:var(--mute);font-size:13px}
 
-.badge{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:4px 10px;border-radius:99px;
-  font-size:11.5px;font-weight:700;letter-spacing:.02em;
-  border:1px solid transparent;
-}
-.badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:0 0 auto}
-.badge.active{color:var(--ok);background:rgba(61,220,132,.1);border-color:rgba(61,220,132,.2)}
-.badge.expired{color:var(--warn);background:rgba(255,181,69,.1);border-color:rgba(255,181,69,.2)}
-.badge.banned{color:var(--red);background:rgba(255,77,90,.1);border-color:rgba(255,77,90,.2)}
-.badge.warn{color:var(--warn);background:rgba(255,181,69,.1);border-color:rgba(255,181,69,.2)}
-.badge.active::before{animation:pulse 2.2s infinite}
-
-.row{display:flex;gap:6px}
+.badge{display:inline-flex;align-items:center;gap:7px;padding:4px 10px;border-radius:99px;font-size:11.5px;font-weight:700}
+.badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.badge.active{color:var(--ok);background:rgba(61,220,132,.1)}
+.badge.expired{color:var(--warn);background:rgba(255,181,69,.1)}
+.badge.banned{color:var(--red);background:rgba(255,77,90,.1)}
 
 .view{display:none}
 .view.on{display:block;animation:viewIn .4s cubic-bezier(.2,.8,.2,1)}
 
-.empty{
-  padding:48px 24px;text-align:center;color:var(--dim);
-  display:flex;flex-direction:column;align-items:center;gap:10px;
-  font-size:13.5px;
-}
-.empty::before{
-  content:"";width:44px;height:44px;
-  background:linear-gradient(135deg,rgba(255,255,255,.05),rgba(255,255,255,.01));
-  border:1px solid var(--line-2);
-  border-radius:12px;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234a5262' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.35-4.35'/></svg>");
-  background-repeat:no-repeat;background-position:center;background-size:20px;
-}
+.empty{padding:48px 24px;text-align:center;color:var(--dim);font-size:13.5px}
 
-.sk{
-  height:12px;border-radius:6px;
-  background:linear-gradient(90deg,rgba(255,255,255,.03) 0%,rgba(255,255,255,.09) 50%,rgba(255,255,255,.03) 100%);
-  background-size:200% 100%;
-  animation:shimmer 1.4s linear infinite;
-  width:80%;
-}
-tr.skeleton td{padding:14px 16px}
-tr.skeleton td:nth-child(1) .sk{width:70%}
-tr.skeleton td:nth-child(2) .sk{width:50%}
-tr.skeleton td:nth-child(3) .sk{width:40%}
-tr.skeleton td:nth-child(4) .sk{width:60%}
-tr.skeleton td:nth-child(5) .sk{width:55%}
-tr.skeleton td:nth-child(6) .sk{width:45%}
-tr.skeleton td:nth-child(7) .sk{width:30%}
-tr.skeleton td:nth-child(3):last-child .sk{width:20%}
-
-.modal{
-  position:fixed;inset:0;background:rgba(4,5,8,.7);
-  display:grid;place-items:center;padding:20px;z-index:60;
-  animation:fade .2s ease;
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-}
-.box{
-  background:linear-gradient(180deg,rgba(255,255,255,.02),transparent 100px),var(--panel);
-  border:1px solid var(--line-2);
-  border-radius:var(--r-lg);
-  width:100%;max-width:440px;padding:24px;
-  box-shadow:0 40px 100px -30px #000,0 1px 0 rgba(255,255,255,.06) inset;
-  animation:pop .35s cubic-bezier(.2,.9,.3,1.1);
-}
-.box h2{font-size:17px;font-weight:700;letter-spacing:-.02em;margin-bottom:18px;display:flex;align-items:center;gap:9px}
-.box h2 svg{width:18px;height:18px;color:var(--red)}
-.fld{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
-.fld label{font-size:12px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.4px}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.foot{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
-.out{
-  background:rgba(0,0,0,.4);border:1px solid var(--line-2);
-  border-radius:10px;padding:12px 14px;
-  font-family:var(--mono);font-size:12.5px;color:#ff8b95;
-  max-height:220px;overflow:auto;white-space:pre;
-  margin-bottom:14px;line-height:1.7;
-  letter-spacing:.02em;
-}
-
-#toasts{
-  position:fixed;right:20px;bottom:calc(20px + var(--safe-b));
-  display:flex;flex-direction:column;gap:10px;z-index:100;
-  pointer-events:none;
-}
-.toast{
-  display:flex;align-items:center;gap:11px;
-  background:linear-gradient(180deg,rgba(255,255,255,.04),transparent),var(--panel-3);
-  border:1px solid var(--line-2);
-  border-left:3px solid var(--mute);
-  border-radius:10px;padding:12px 16px;min-width:220px;
-  font-weight:600;font-size:13.5px;
-  box-shadow:0 20px 50px -20px rgba(0,0,0,.9);
-  animation:toastIn .35s cubic-bezier(.2,.9,.3,1.1);
-  backdrop-filter:blur(8px);
-  pointer-events:auto;
-}
-.toast svg{width:16px;height:16px;flex:0 0 auto}
+#toasts{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:10px;z-index:100;pointer-events:none}
+.toast{display:flex;align-items:center;gap:11px;background:linear-gradient(180deg,rgba(255,255,255,.04),transparent),var(--panel-3);border:1px solid var(--line-2);border-left:3px solid var(--mute);border-radius:10px;padding:12px 16px;min-width:220px;font-weight:600;font-size:13.5px;box-shadow:0 20px 50px -20px rgba(0,0,0,.9);animation:toastIn .35s cubic-bezier(.2,.9,.3,1.1);pointer-events:auto}
 .toast.success{border-left-color:var(--ok)}
-.toast.success svg{color:var(--ok)}
 .toast.error{border-left-color:var(--red)}
-.toast.error svg{color:var(--red)}
 .toast.out{animation:toastOut .25s ease forwards}
 
-@keyframes fade{from{opacity:0}}
 @keyframes rise{from{opacity:0;transform:translateY(20px) scale(.97)}}
-@keyframes pop{from{opacity:0;transform:scale(.94) translateY(8px)}}
 @keyframes viewIn{from{opacity:0;transform:translateY(10px)}}
-@keyframes rowIn{from{opacity:0;transform:translateY(6px)}}
-@keyframes pulse{0%{box-shadow:0 0 0 0 currentColor}70%,100%{box-shadow:0 0 0 5px transparent}}
 @keyframes toastIn{from{opacity:0;transform:translateX(40px)}}
 @keyframes toastOut{to{opacity:0;transform:translateX(40px)}}
-@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 
-#app:not([hidden]){animation:fade .5s ease}
-
-.fresh tr{animation:rowIn .3s cubic-bezier(.2,.8,.2,1) both}
-.fresh tr:nth-child(1){animation-delay:0ms}
-.fresh tr:nth-child(2){animation-delay:15ms}
-.fresh tr:nth-child(3){animation-delay:30ms}
-.fresh tr:nth-child(4){animation-delay:45ms}
-.fresh tr:nth-child(5){animation-delay:60ms}
-.fresh tr:nth-child(6){animation-delay:75ms}
-.fresh tr:nth-child(7){animation-delay:90ms}
-.fresh tr:nth-child(8){animation-delay:105ms}
-
-@media(max-width:960px){
+@media(max-width:900px){
   #app{grid-template-columns:1fr}
-  aside{
-    position:sticky;top:0;z-index:40;height:auto;width:100%;
-    flex-direction:row;align-items:center;gap:6px;
-    padding:10px 12px;
-    padding-top:calc(10px + var(--safe-t));
-    border-right:0;border-bottom:1px solid var(--line);
-    overflow-x:auto;overflow-y:hidden;
-    -webkit-overflow-scrolling:touch;scrollbar-width:none;
-  }
-  aside::-webkit-scrollbar{display:none}
-  .brand{padding:0 10px 0 0;flex:0 0 auto}
-  .brand .logo{width:28px;height:28px}
+  aside{position:sticky;top:0;height:auto;flex-direction:row;padding:10px 12px;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .brand{padding:0 10px 0 0}
   .brand .name{display:none}
-  .nav{
-    width:auto;flex:0 0 auto;white-space:nowrap;
-    padding:8px 12px;font-size:13px;gap:8px;border-radius:8px;
-  }
+  .nav{width:auto;flex:0 0 auto;white-space:nowrap}
   .nav.on::before{display:none}
-  .nav.on{background:rgba(255,77,90,.15);box-shadow:0 0 0 1px rgba(255,77,90,.25) inset}
-  .nav svg{width:15px;height:15px}
-  .nav small{margin-left:6px;padding:1px 6px;font-size:11px}
-  .bottom{margin:0 0 0 auto;padding:0;border:0;flex:0 0 auto}
-  .bottom .btn{padding:8px 12px;font-size:13px}
+  .bottom{margin:0 0 0 auto;padding:0;border:0}
   .bottom .btn .txt{display:none}
-  .bottom .btn svg{margin:0}
-
-  main{padding:16px 14px calc(40px + var(--safe-b))}
-  main::before{left:0}
-
-  .top{margin-bottom:16px;gap:10px}
-  .page-head{width:100%}
-  h1.t{font-size:20px}
-  .t-sub{font-size:12.5px}
-  .acts{width:100%;gap:8px}
-  .acts .btn{flex:1;min-width:0;padding:10px 12px}
-
-  .stats{grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
-  .stat{padding:14px 16px;border-radius:var(--r-md)}
-  .stat .ico{width:28px;height:28px;margin-bottom:10px}
-  .stat .ico svg{width:13px;height:13px}
-  .stat b{font-size:24px}
-  .stat span{font-size:11px}
-
-  .quick{padding:10px 12px;gap:6px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-  .quick::-webkit-scrollbar{display:none}
-  .quick .lbl{flex:0 0 auto}
-  .quick button{flex:0 0 auto;padding:7px 12px;font-size:12.5px}
-
-  .tb{padding:12px;gap:8px}
-  .search-wrap{min-width:0;width:100%;flex:1 1 100%}
-  .search-wrap input{width:100%}
-  .tb select{width:100%;flex:1 1 100%;padding:10px 12px}
-  .tb .btn{width:100%;flex:1 1 100%;padding:11px 12px}
-  #v-accounts .tb input{width:100%;flex:1 1 100%}
-  #v-accounts .tb .btn{width:100%}
-
-  .scroll{overflow:visible}
-  table{min-width:0;width:100%;border:0}
-  thead{display:none}
-  table,tbody,tr,td{display:block;width:100%}
-  tbody tr{
-    background:linear-gradient(180deg,rgba(255,255,255,.02),transparent),var(--panel-2);
-    border:1px solid var(--line);
-    border-radius:var(--r-md);
-    padding:14px 16px;
-    margin:10px;
-    margin-bottom:10px;
-    content-visibility:visible;
-    contain-intrinsic-size:auto;
-  }
-  tbody tr:hover{background:linear-gradient(180deg,rgba(255,255,255,.03),transparent),var(--panel-2)}
-  td{
-    border:0;padding:7px 0;white-space:normal;
-    display:flex;justify-content:space-between;align-items:center;gap:12px;
-    font-size:13.5px;
-  }
-  td::before{
-    content:attr(data-l);
-    color:var(--mute);font-size:11px;font-weight:700;
-    text-transform:uppercase;letter-spacing:.5px;
-    flex:0 0 auto;
-  }
-  td:empty{display:none}
-  td[data-l=""]::before{display:none}
-  td .row{justify-content:stretch;width:100%;gap:6px}
-  td .row .btn{flex:1;text-align:center;padding:9px 10px;font-size:12.5px;justify-content:center}
-  td:last-child{border-top:1px solid var(--line);padding-top:12px;margin-top:6px}
-
-  .key,.hw{word-break:break-all;white-space:normal;text-align:right}
-
-  .modal{padding:0;place-items:end center;backdrop-filter:blur(4px)}
-  .box{
-    max-width:100%;width:100%;
-    border-radius:20px 20px 0 0;
-    padding:22px 18px calc(22px + var(--safe-b));
-    animation:rise .35s cubic-bezier(.2,.9,.3,1.05);
-    max-height:92dvh;overflow-y:auto;
-  }
-  .box::before{
-    content:"";display:block;width:38px;height:4px;
-    background:var(--line-3);border-radius:99px;
-    margin:-6px auto 14px;
-  }
-  .two{grid-template-columns:1fr}
-  .foot .btn{flex:1;padding:12px 14px}
-  .fld input,.fld select{padding:12px 13px;font-size:16px}
-
-  #toasts{left:12px;right:12px;bottom:calc(12px + var(--safe-b));gap:8px}
-  .toast{min-width:0;width:100%;padding:12px 14px;font-size:13px}
-
-  .lbox input,.tb input,.tb select,.fld input,.fld select,#newHwid,#newAccEmail,#newAccPass{font-size:16px}
+  main{padding:16px 14px 40px}
+  .two,.three{grid-template-columns:1fr}
 }
-
-@media(max-width:420px){
-  .stats{grid-template-columns:1fr 1fr}
-  .stat b{font-size:22px}
-  .acts .btn{padding:9px 10px;font-size:12.5px}
-  .acts .btn .txt{display:none}
-  .acts .btn svg{margin:0}
-}
-
-@media(prefers-reduced-motion:reduce){*,::before,::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 
+<!-- ═══════ LOGIN ═══════ -->
 <div id="login">
   <form class="lbox" id="loginForm">
-    <div class="logo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3"/></svg>
-    </div>
     <h1>Bienvenue</h1>
     <p>Connecte-toi au panneau d'administration KeyAuth.</p>
-    <input type="password" id="adminKey" placeholder="Clé d'administration" autocomplete="off" aria-label="Clé d'administration">
-    <button class="btn red" style="width:100%;padding:13px 15px;font-size:14.5px" id="loginBtn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
-      Se connecter
-    </button>
+    <input type="password" id="adminKey" placeholder="Clé d'administration" autocomplete="off">
+    <button class="btn red" style="width:100%;padding:13px 15px" id="loginBtn">Se connecter</button>
     <div class="err" id="loginErr" hidden></div>
   </form>
 </div>
 
+<!-- ═══════ APP ═══════ -->
 <div id="app" hidden>
   <aside>
     <div class="brand">
-      <div class="logo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3"/></svg>
-      </div>
+      <div class="logo">V</div>
       <div class="name"><b>KeyAuth</b><small>Admin Panel</small></div>
     </div>
 
-    <button class="nav on" data-view="keys">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      Licences <small id="nKeys">0</small>
-    </button>
-    <button class="nav" data-view="hwid">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-      HWID bannis <small id="nHwid">0</small>
-    </button>
-    <button class="nav" data-view="accounts">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      Comptes Rockstar <small id="nAcc">0</small>
-    </button>
-    <button class="nav" data-view="logs">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-      Logs
-    </button>
-    <button class="nav" data-view="config">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      Config
-    </button>
-    <button class="nav" data-view="notice">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      Notice
-    </button>
-    <button class="nav" data-view="kill">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-      Kill switch
-    </button>
+    <button class="nav on" data-view="keys">🔑 Licences <small id="nKeys">0</small></button>
+    <button class="nav" data-view="hwid">🚫 HWID bannis <small id="nHwid">0</small></button>
+    <button class="nav" data-view="accounts">👤 Comptes Rockstar <small id="nAcc">0</small></button>
+    <button class="nav" data-view="logs">📋 Logs</button>
+
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line);font-size:11px;color:var(--dim);padding-left:12px;letter-spacing:.6px;text-transform:uppercase;font-weight:700">Interface</div>
+    <button class="nav" data-view="cfg-login">🎨 Menu Login</button>
+    <button class="nav" data-view="cfg-loader">🎨 Menu Loader</button>
+    <button class="nav" data-view="cfg-ingame">🎮 Menu In-Game</button>
+
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line);font-size:11px;color:var(--dim);padding-left:12px;letter-spacing:.6px;text-transform:uppercase;font-weight:700">Contrôle</div>
+    <button class="nav" data-view="notice">📢 Notice</button>
+    <button class="nav" data-view="kill">☠️ Kill Switch</button>
 
     <div class="bottom">
-      <button class="btn ghost" id="logout" style="width:100%">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-        <span class="txt">Déconnexion</span>
-      </button>
+      <button class="btn ghost" id="logout" style="width:100%">🚪 <span class="txt">Déconnexion</span></button>
     </div>
   </aside>
 
   <main>
     <div class="top">
-      <div class="page-head">
+      <div>
         <h1 class="t" id="title">Licences</h1>
         <span class="t-sub" id="subtitle">Gère les clés d'accès de ton application</span>
       </div>
       <div class="acts">
-        <button class="btn ghost" id="refresh">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-          <span class="txt">Rafraîchir</span>
-        </button>
-        <button class="btn ghost" id="export">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-          <span class="txt">Exporter</span>
-        </button>
-        <button class="btn red" id="newKey">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          <span class="txt">Nouvelle clé</span>
-        </button>
+        <button class="btn ghost" id="refresh">🔄 <span class="txt">Rafraîchir</span></button>
+        <button class="btn ghost" id="export">📤 <span class="txt">Exporter</span></button>
+        <button class="btn red" id="newKey">➕ <span class="txt">Nouvelle clé</span></button>
       </div>
     </div>
 
+    <!-- LICENCES -->
     <section class="view on" id="v-keys">
-      <div class="stats" id="stats"></div>
-      <div class="card">
-
-        <div class="quick">
-          <span class="lbl">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            Génération rapide
-          </span>
-          <button type="button" data-quick="1">1 jour</button>
-          <button type="button" data-quick="3">3 jours</button>
-          <button type="button" data-quick="7">7 jours</button>
-          <button type="button" data-quick="30">30 jours</button>
-          <button type="button" data-quick="90">90 jours</button>
-          <button type="button" data-quick="365">1 an</button>
-        </div>
-
-        <div class="tb">
-          <div class="search-wrap">
-            <input id="q" type="search" placeholder="Rechercher une clé ou un HWID…" aria-label="Rechercher">
-          </div>
-          <select id="st" aria-label="Statut">
-            <option value="">Tous les statuts</option>
-            <option value="active">Actives</option>
-            <option value="expired">Expirées</option>
-            <option value="banned">Bannies</option>
-          </select>
-        </div>
-        <div class="scroll"><table>
-          <thead><tr><th>Clé</th><th>Statut</th><th>Durée</th><th>HWID</th><th>Expire le</th><th>Restant</th><th></th></tr></thead>
-          <tbody id="keysBody"></tbody>
-        </table></div>
-        <div class="empty" id="keysEmpty">Chargement…</div>
+      <div class="tb">
+        <input id="q" type="search" placeholder="Rechercher une clé ou un HWID…" style="flex:1;min-width:220px">
+        <select id="st">
+          <option value="">Tous les statuts</option>
+          <option value="active">Actives</option>
+          <option value="expired">Expirées</option>
+          <option value="banned">Bannies</option>
+        </select>
       </div>
+      <div class="card"><div class="scroll"><table>
+        <thead><tr><th>Clé</th><th>Statut</th><th>Durée</th><th>HWID</th><th>Expire le</th><th></th></tr></thead>
+        <tbody id="keysBody"></tbody>
+      </table></div><div class="empty" id="keysEmpty">Chargement…</div></div>
     </section>
 
+    <!-- HWID -->
     <section class="view" id="v-hwid">
-      <div class="card">
-        <div class="tb">
-          <div class="search-wrap">
-            <input id="newHwid" type="text" inputmode="text" placeholder="HWID à bannir" aria-label="HWID à bannir" autocomplete="off" spellcheck="false" autocapitalize="characters">
-          </div>
-          <button class="btn red" id="banHwid">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-            Bannir ce HWID
-          </button>
-        </div>
-        <div class="scroll"><table>
-          <thead><tr><th>HWID banni</th><th>Ajouté le</th><th></th></tr></thead>
-          <tbody id="hwidBody"></tbody>
-        </table></div>
-        <div class="empty" id="hwidEmpty">Chargement…</div>
-      </div>
+      <div class="card"><div class="tb">
+        <input id="newHwid" type="text" placeholder="HWID à bannir" style="flex:1;min-width:220px" autocapitalize="characters">
+        <button class="btn red" id="banHwid">🚫 Bannir ce HWID</button>
+      </div><div class="scroll"><table>
+        <thead><tr><th>HWID banni</th><th>Ajouté le</th><th></th></tr></thead>
+        <tbody id="hwidBody"></tbody>
+      </table></div><div class="empty" id="hwidEmpty">Chargement…</div></div>
     </section>
 
+    <!-- ACCOUNTS -->
     <section class="view" id="v-accounts">
-      <div class="card">
-        <div class="tb">
-          <input id="newAccEmail" type="text" placeholder="Email Rockstar" autocomplete="off" style="flex:1;min-width:180px">
-          <input id="newAccPass" type="text" placeholder="Mot de passe" autocomplete="off" style="flex:1;min-width:150px">
-          <button class="btn red" id="addAcc" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Ajouter
-          </button>
-        </div>
-        <div class="scroll"><table>
-          <thead><tr>
-            <th>Email</th><th>Mot de passe</th><th>Statut</th>
-            <th>Utilisé le</th><th>Utilisé par</th><th></th>
-          </tr></thead>
-          <tbody id="accBody"></tbody>
-        </table></div>
-        <div class="empty" id="accEmpty">Chargement…</div>
-      </div>
+      <div class="card"><div class="tb">
+        <input id="newAccEmail" type="text" placeholder="Email Rockstar" style="flex:1;min-width:180px">
+        <input id="newAccPass" type="text" placeholder="Mot de passe" style="flex:1;min-width:150px">
+        <button class="btn red" id="addAcc">➕ Ajouter</button>
+      </div><div class="scroll"><table>
+        <thead><tr><th>Email</th><th>Mot de passe</th><th>Statut</th><th>Utilisé le</th><th>Utilisé par</th><th></th></tr></thead>
+        <tbody id="accBody"></tbody>
+      </table></div><div class="empty" id="accEmpty">Chargement…</div></div>
     </section>
 
+    <!-- LOGS -->
     <section class="view" id="v-logs">
-      <div class="card">
-        <div class="scroll"><table>
-          <thead><tr><th>Date</th><th>Type</th><th>Détail</th></tr></thead>
-          <tbody id="logsBody"></tbody>
-        </table></div>
-        <div class="empty" id="logsEmpty">Chargement…</div>
+      <div class="card"><div class="scroll"><table>
+        <thead><tr><th>Date</th><th>Type</th><th>Détail</th></tr></thead>
+        <tbody id="logsBody"></tbody>
+      </table></div><div class="empty" id="logsEmpty">Chargement…</div></div>
+    </section>
+
+    <!-- CONFIG LOGIN -->
+    <section class="view" id="v-cfg-login">
+      <div class="card card-pad">
+        <h2>🎨 Configuration du menu Login</h2>
+        <p class="desc">Modifie ce que voient les utilisateurs au démarrage du loader, avant qu'ils se connectent.</p>
+
+        <div class="fld"><label>Titre principal</label><input id="lgTitle" type="text" placeholder="Authentication Portal"></div>
+        <div class="fld"><label>Sous-titre</label><input id="lgSubtitle" type="text" placeholder="Please sign in to continue"></div>
+
+        <div class="two">
+          <div class="fld"><label>Label champ Username</label><input id="lgUserLabel" type="text" placeholder="Username"></div>
+          <div class="fld"><label>Placeholder Username</label><input id="lgUserPH" type="text" placeholder="user123"></div>
+        </div>
+        <div class="two">
+          <div class="fld"><label>Label champ Password</label><input id="lgPassLabel" type="text" placeholder="License Key"></div>
+          <div class="fld"><label>Placeholder Password</label><input id="lgPassPH" type="text" placeholder="XXXX-XXXX-XXXX-XXXX"></div>
+        </div>
+
+        <div class="fld"><label>Texte du bouton</label><input id="lgBtn" type="text" placeholder="Sign In"></div>
+
+        <div class="three">
+          <div class="fld"><label>Couleur d'accent</label><input id="lgAccent" type="color" value="#64AAFF"></div>
+          <div class="fld"><label>Couleur du texte</label><input id="lgText" type="color" value="#F0F0F0"></div>
+          <div class="fld"><label>Couleur du fond</label><input id="lgBg" type="color" value="#000000"></div>
+        </div>
+
+        <button class="btn red" id="lgSave">💾 Sauvegarder</button>
+        <button class="btn ghost" id="lgReload" style="margin-left:8px">🔄 Recharger</button>
       </div>
     </section>
 
-    <!-- ═══════════ CONFIG ═══════════ -->
-    <section class="view" id="v-config">
-      <div class="card" style="padding:24px">
-        <h2 style="font-size:16px;font-weight:700;margin-bottom:18px;color:#fff">🎨 Configuration dynamique du loader</h2>
-        <p style="color:#6f7889;font-size:13px;margin-bottom:20px">Ces valeurs sont envoyées à tous les loaders au démarrage. Modifie-les puis clique "Sauvegarder".</p>
+    <!-- CONFIG LOADER -->
+    <section class="view" id="v-cfg-loader">
+      <div class="card card-pad">
+        <h2>🎨 Configuration du menu Loader</h2>
+        <p class="desc">Modifie ce que voient les utilisateurs après connexion dans le loader.</p>
+
+        <div class="fld"><label>Titre du menu (header)</label><input id="ldTitle" type="text" placeholder="Vyse X"></div>
 
         <div class="two">
-          <div class="fld">
-            <label for="cfgAccent">Couleur d'accent (hex)</label>
-            <input id="cfgAccent" type="text" placeholder="#64AAFF">
-          </div>
-          <div class="fld">
-            <label for="cfgText">Couleur du texte (hex)</label>
-            <input id="cfgText" type="text" placeholder="#F0F0F0">
-          </div>
-        </div>
-
-        <div class="fld">
-          <label for="cfgLoginTitle">Titre du login</label>
-          <input id="cfgLoginTitle" type="text" placeholder="Authentication Portal">
+          <div class="fld"><label>Sidebar — onglet 1</label><input id="ldSide1" type="text" placeholder="Products"></div>
+          <div class="fld"><label>Sidebar — onglet 2</label><input id="ldSide2" type="text" placeholder="Updates"></div>
         </div>
 
         <div class="two">
-          <div class="fld">
-            <label for="cfgP1Name">Nom produit 1</label>
-            <input id="cfgP1Name" type="text" placeholder="Vyse X Menu">
-          </div>
-          <div class="fld">
-            <label for="cfgP1Status">Statut produit 1</label>
-            <input id="cfgP1Status" type="text" placeholder="Working / Undetected">
-          </div>
-          <div class="fld">
-            <label for="cfgP2Name">Nom produit 2</label>
-            <input id="cfgP2Name" type="text" placeholder="Vyse X Spoofer">
-          </div>
-          <div class="fld">
-            <label for="cfgP2Status">Statut produit 2</label>
-            <input id="cfgP2Status" type="text" placeholder="USE AT OWN RISK">
-          </div>
+          <div class="fld"><label>Nom produit 1</label><input id="ldP1Name" type="text" placeholder="Vyse X Menu"></div>
+          <div class="fld"><label>Statut produit 1</label><input id="ldP1Status" type="text" placeholder="Working / Undetected"></div>
+        </div>
+        <div class="two">
+          <div class="fld"><label>Nom produit 2</label><input id="ldP2Name" type="text" placeholder="Vyse X Spoofer"></div>
+          <div class="fld"><label>Statut produit 2</label><input id="ldP2Status" type="text" placeholder="USE AT OWN RISK"></div>
         </div>
 
-        <div class="foot" style="justify-content:flex-start;gap:10px;margin-top:20px">
-          <button class="btn red" id="cfgSave">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            Sauvegarder la config
-          </button>
-          <button class="btn ghost" id="cfgReload">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/></svg>
-            Recharger
-          </button>
+        <div class="three">
+          <div class="fld"><label>Couleur d'accent</label><input id="ldAccent" type="color" value="#64AAFF"></div>
+          <div class="fld"><label>Couleur du texte</label><input id="ldText" type="color" value="#F0F0F0"></div>
+          <div class="fld"><label>Couleur du fond</label><input id="ldBg" type="color" value="#000000"></div>
         </div>
+
+        <button class="btn red" id="ldSave">💾 Sauvegarder</button>
+        <button class="btn ghost" id="ldReload" style="margin-left:8px">🔄 Recharger</button>
       </div>
     </section>
 
-    <!-- ═══════════ NOTICE ═══════════ -->
+    <!-- CONFIG IN-GAME -->
+    <section class="view" id="v-cfg-ingame">
+      <div class="card card-pad">
+        <h2>🎮 Configuration du menu In-Game</h2>
+        <p class="desc">Modifie le menu du cheat (celui qui s'affiche quand tu appuies sur INSERT dans FiveM).</p>
+
+        <div class="fld"><label>Titre de la fenêtre</label><input id="igTitle" type="text" placeholder="Vyse X"></div>
+
+        <h3 style="margin-top:24px;margin-bottom:12px;font-size:14px;color:#aab2c0;text-transform:uppercase;letter-spacing:.5px">🎨 Couleurs</h3>
+
+        <div class="two">
+          <div class="fld"><label>Couleur d'accent</label><input id="igAccent" type="color" value="#DCDCE1"></div>
+          <div class="fld"><label>Couleur du texte</label><input id="igText" type="color" value="#C6C6CA"></div>
+          <div class="fld"><label>Couleur texte (dim)</label><input id="igTextDim" type="color" value="#7B7B80"></div>
+          <div class="fld"><label>Couleur bordure</label><input id="igBorder" type="color" value="#2A2A2E"></div>
+          <div class="fld"><label>Fond principal</label><input id="igBgMain" type="color" value="#121214"></div>
+          <div class="fld"><label>Fond sidebar</label><input id="igBgSide" type="color" value="#161618"></div>
+          <div class="fld"><label>Fond header</label><input id="igBgHead" type="color" value="#0F0F11"></div>
+          <div class="fld"><label>Fond cartes</label><input id="igBgCard" type="color" value="#1C1C1E"></div>
+        </div>
+
+        <h3 style="margin-top:24px;margin-bottom:12px;font-size:14px;color:#aab2c0;text-transform:uppercase;letter-spacing:.5px">📐 Layout (pixels)</h3>
+
+        <div class="three">
+          <div class="fld"><label>Largeur menu</label><input id="igW" type="number" min="400" max="1200" value="800"></div>
+          <div class="fld"><label>Hauteur menu</label><input id="igH" type="number" min="300" max="900" value="520"></div>
+          <div class="fld"><label>Hauteur top bar</label><input id="igTop" type="number" min="20" max="60" value="30"></div>
+          <div class="fld"><label>Largeur sidebar</label><input id="igSide" type="number" min="80" max="300" value="150"></div>
+        </div>
+
+        <button class="btn red" id="igSave">💾 Sauvegarder</button>
+        <button class="btn ghost" id="igReload" style="margin-left:8px">🔄 Recharger</button>
+      </div>
+    </section>
+
+    <!-- NOTICE -->
     <section class="view" id="v-notice">
-      <div class="card" style="padding:24px">
-        <h2 style="font-size:16px;font-weight:700;margin-bottom:18px;color:#fff">📢 Message au démarrage</h2>
-        <p style="color:#6f7889;font-size:13px;margin-bottom:20px">Ce message s'affichera dans une popup Windows quand l'utilisateur ouvre son loader.</p>
+      <div class="card card-pad">
+        <h2>📢 Message au démarrage</h2>
+        <p class="desc">Ce message s'affichera dans une popup Windows quand l'utilisateur ouvre son loader.</p>
 
-        <div class="fld">
-          <label for="noticeMsg">Message</label>
-          <input id="noticeMsg" type="text" placeholder="Update V3">
-        </div>
-
+        <div class="fld"><label>Message</label><input id="noticeMsg" type="text" placeholder="Update V3"></div>
         <div class="fld" style="flex-direction:row;align-items:center;gap:10px">
           <input type="checkbox" id="noticeEnabled" style="width:auto">
           <label for="noticeEnabled" style="text-transform:none;font-size:13px;color:#eef1f6">Activer l'affichage du message</label>
         </div>
 
-        <div class="foot" style="justify-content:flex-start;gap:10px;margin-top:20px">
-          <button class="btn red" id="noticeSave">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            Envoyer le message
-          </button>
-        </div>
+        <button class="btn red" id="noticeSave">📤 Envoyer le message</button>
       </div>
     </section>
 
-    <!-- ═══════════ KILL SWITCH ═══════════ -->
+    <!-- KILL SWITCH -->
     <section class="view" id="v-kill">
-      <div class="card" style="padding:24px">
-        <h2 style="font-size:16px;font-weight:700;margin-bottom:18px;color:#fff">☠️ Kill Switch</h2>
-        <p style="color:#6f7889;font-size:13px;margin-bottom:20px">Quand activé, tous les loaders afficheront un message d'erreur et se fermeront au prochain démarrage. À utiliser en cas d'urgence (fuite, mise à jour critique…).</p>
-
+      <div class="card card-pad">
+        <h2>☠️ Kill Switch</h2>
+        <p class="desc">Quand activé, tous les loaders afficheront un message d'erreur et se fermeront au prochain démarrage.</p>
         <div id="killStatus" class="badge active" style="margin-bottom:20px">Chargement…</div>
-
-        <div class="foot" style="justify-content:flex-start;gap:10px">
-          <button class="btn red" id="killOn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-            Désactiver tous les loaders
-          </button>
-          <button class="btn" id="killOff">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            Réactiver tous les loaders
-          </button>
-        </div>
+        <button class="btn red" id="killOn">☠️ Désactiver tous les loaders</button>
+        <button class="btn" id="killOff" style="margin-left:8px">✓ Réactiver tous les loaders</button>
       </div>
     </section>
   </main>
@@ -874,34 +361,25 @@ tr.skeleton td:nth-child(3):last-child .sk{width:20%}
 <div id="toasts"></div>
 
 <script>
-/* ---------- Configuration ---------- */
+/* ═══════════════ CONFIG ═══════════════ */
 const API_URL = "https://keyauth-api.cacamoussa70.workers.dev";
-
 let adminKey = sessionStorage.getItem('ka_admin') || '';
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmtDate = ts => new Date(ts).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
-const fmtLeft = ms => {
-  const d = Math.floor(ms/864e5), h = Math.floor(ms%864e5/36e5), m = Math.floor(ms%36e5/6e4);
-  return d ? `${d}j ${h}h` : h ? `${h}h ${m}m` : `${m}m`;
-};
 const status = k => k.banned ? 'banned' : Date.now() > k.expiresAt ? 'expired' : 'active';
 const names = {active:'Active', expired:'Expirée', banned:'Bannie'};
-
-const TOAST_ICONS = {
-  success:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
-  error:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
-};
 
 function toast(msg, type){
   const el = document.createElement('div');
   el.className = 'toast ' + (type || '');
-  el.innerHTML = (TOAST_ICONS[type] || TOAST_ICONS.error) + '<span>' + esc(msg) + '</span>';
+  el.textContent = msg;
   $('toasts').appendChild(el);
   setTimeout(() => el.classList.add('out'), 2500);
   setTimeout(() => el.remove(), 2800);
 }
+
 async function api(path, method = 'GET', body){
   const r = await fetch(API_URL + path, {
     method, headers: {'Content-Type':'application/json','X-Admin-Key':adminKey},
@@ -910,771 +388,349 @@ async function api(path, method = 'GET', body){
   return r.json();
 }
 
-/* ---------- Connexion ---------- */
+/* ═══════════════ LOGIN ═══════════════ */
 $('loginForm').addEventListener('submit', async e => {
   e.preventDefault();
   const v = $('adminKey').value.trim(); if (!v) return;
   $('loginBtn').disabled = true; $('loginErr').hidden = true;
   adminKey = v;
-  let msg = '';
   try {
     const res = await fetch(API_URL + '/admin/keys', {headers: {'X-Admin-Key': v}});
-    let r = null;
-    try { r = await res.json(); } catch {}
-    if (res.ok && r && r.ok) { sessionStorage.setItem('ka_admin', v); start(r); }
-    else if (res.status === 401 || res.status === 403) msg = 'Clé refusée par l\'API (erreur ' + res.status + '). Utilise la clé admin du Worker.';
-    else msg = 'Réponse inattendue de l\'API (erreur ' + res.status + (r && r.error ? ' : ' + r.error : '') + ').';
+    const r = await res.json();
+    if (res.ok && r.ok) { sessionStorage.setItem('ka_admin', v); start(r); }
+    else { $('loginErr').textContent = 'Clé refusée'; $('loginErr').hidden = false; adminKey=''; }
   } catch {
-    msg = 'API injoignable. Vérifie l\'adresse du Worker et le CORS.';
+    $('loginErr').textContent = 'API injoignable'; $('loginErr').hidden = false; adminKey='';
   }
-  if (msg) { adminKey = ''; $('loginErr').textContent = msg; $('loginErr').hidden = false; }
   $('loginBtn').disabled = false; $('adminKey').value = '';
 });
-$('logout').onclick = () => {
-  sessionStorage.removeItem('ka_admin');
-  sessionStorage.removeItem('ka_keys_cache');
-  sessionStorage.removeItem('ka_hwids_cache');
-  sessionStorage.removeItem('ka_accs_cache');
-  sessionStorage.removeItem('ka_logs_cache');
-  location.reload();
-};
 
-/* ---------- Caches génériques ---------- */
-const KEYS_CACHE  = 'ka_keys_cache';
-const HWIDS_CACHE = 'ka_hwids_cache';
-const ACCS_CACHE  = 'ka_accs_cache';
-const LOGS_CACHE  = 'ka_logs_cache';
+$('logout').onclick = () => { sessionStorage.clear(); location.reload(); };
 
-function saveCache(key, data){ try{ sessionStorage.setItem(key, JSON.stringify({ts:Date.now(), data})); }catch{} }
-function loadCache(key){ try{ const c = JSON.parse(sessionStorage.getItem(key)); return c && c.data ? c.data : null; }catch{ return null; } }
-
-function saveKeysCache(list){ saveCache(KEYS_CACHE, list); }
-function loadKeysCache(){ return loadCache(KEYS_CACHE); }
-
-function skeletonRows(n = 6, cols = 7){
-  return Array.from({length:n}, () =>
-    `<tr class="skeleton">${Array.from({length:cols}, () => '<td><div class="sk"></div></td>').join('')}</tr>`
-  ).join('');
-}
-
-let syncLocked = 0;
-function lockSync(ms = 2500){ syncLocked = Date.now() + ms; }
-
+/* ═══════════════ START ═══════════════ */
 function start(first){
   $('login').hidden = true; $('app').hidden = false;
-
-  const cached = loadKeysCache();
-  if (cached && cached.length){
-    renderKeys(cached, false);
-  } else {
-    $('keysEmpty').hidden = true;
-    $('keysBody').innerHTML = skeletonRows(6, 7);
-  }
-
-  if (first && first.keys){
-    renderKeys(first.keys || [], true);
-  } else {
-    loadKeys(false);
-  }
-  loadHwids(); loadLogs();
+  if (first && first.keys) renderKeys(first.keys);
+  loadKeys(); loadHwids(); loadLogs();
 }
 if (adminKey) api('/admin/keys').then(r => r.ok ? start(r) : sessionStorage.removeItem('ka_admin')).catch(() => {});
 
-/* ---------- Navigation ---------- */
+/* ═══════════════ NAVIGATION ═══════════════ */
 const titles = {
-  keys:['Licences','Gère les clés d\'accès de ton application'],
-  hwid:['HWID bannis','Liste noire des identifiants matériels'],
-  accounts:['Comptes Rockstar','Gère le stock de comptes à distribuer'],
-  logs:['Journal d\'activité','Historique des événements du panel'],
-  config:['Configuration','Modifie les couleurs et les textes du loader à distance'],
-  notice:['Notice','Envoie un message Windows au démarrage du loader'],
-  kill:['Kill Switch','Désactive tous les loaders d\'un seul clic']
+  keys:['Licences','Gère les clés d\'accès'],
+  hwid:['HWID bannis','Liste noire des identifiants'],
+  accounts:['Comptes Rockstar','Stock de comptes à distribuer'],
+  logs:['Journal d\'activité','Historique du panel'],
+  'cfg-login':['Menu Login','Modifie l\'apparence de la page de connexion'],
+  'cfg-loader':['Menu Loader','Modifie l\'apparence du loader connecté'],
+  'cfg-ingame':['Menu In-Game','Modifie l\'apparence du menu du cheat'],
+  notice:['Notice','Message affiché au démarrage'],
+  kill:['Kill Switch','Désactive tous les loaders d\'un clic']
 };
 document.querySelectorAll('.nav').forEach(b => b.onclick = () => {
   document.querySelectorAll('.nav').forEach(n => n.classList.toggle('on', n === b));
   document.querySelectorAll('.view').forEach(s => s.classList.toggle('on', s.id === 'v-' + b.dataset.view));
   const [t, s] = titles[b.dataset.view] || ['', ''];
-  $('title').textContent = t;
-  const sub = $('subtitle'); if (sub) sub.textContent = s;
+  $('title').textContent = t; $('subtitle').textContent = s;
   $('newKey').hidden = $('export').hidden = b.dataset.view !== 'keys';
   if (b.dataset.view === 'accounts') loadAccounts();
   if (b.dataset.view === 'hwid') loadHwids();
   if (b.dataset.view === 'logs') loadLogs();
-  if (b.dataset.view === 'config') loadConfig();
+  if (b.dataset.view === 'cfg-login') loadLoginCfg();
+  if (b.dataset.view === 'cfg-loader') loadLoaderCfg();
+  if (b.dataset.view === 'cfg-ingame') loadIngameCfg();
   if (b.dataset.view === 'notice') loadNotice();
   if (b.dataset.view === 'kill') loadKill();
 });
 
-/* ---------- Licences ---------- */
-const prevStat = {};
-function countUp(){
-  document.querySelectorAll('#stats b').forEach((el, i) => {
-    const to = +el.dataset.n, from = prevStat[i] || 0; prevStat[i] = to;
-    el.textContent = from;
-    if (from === to) return;
-    const t0 = performance.now();
-    (function f(t){
-      const p = Math.min(1, (t - t0) / 800);
-      el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3)));
-      if (p < 1) requestAnimationFrame(f);
-    })(t0);
-  });
-}
-
-const STAT_ICONS = {
-  total:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3"/></svg>',
-  active:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
-  expired:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-  banned:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>'
-};
-
+/* ═══════════════ LICENCES ═══════════════ */
 let allKeys = [];
-
-async function loadKeys(anim = true){
-  if (Date.now() < syncLocked) return;
-
-  if (!allKeys.length){
-    const cached = loadKeysCache();
-    if (cached && cached.length){
-      renderKeys(cached, false);
-    } else {
-      $('keysEmpty').hidden = true;
-      $('keysBody').innerHTML = skeletonRows(6, 7);
-    }
-  }
+async function loadKeys(){
   try {
     const r = await api('/admin/keys');
-    if (!r.ok) throw new Error(r.error);
-    if (Date.now() < syncLocked) return;
-    renderKeys(r.keys || [], anim, false);
-  } catch(e){
-    toast('Erreur : ' + e.message, 'error');
-    if (!allKeys.length){
-      $('keysBody').innerHTML = '';
-      $('keysEmpty').hidden = false;
-      $('keysEmpty').textContent = 'Impossible de charger les clés.';
-    }
-  }
+    if (r.ok) renderKeys(r.keys || []);
+  } catch { toast('Erreur réseau', 'error'); }
 }
-
-function renderStats(list){
-  const c = {active:0, expired:0, banned:0}; list.forEach(k => c[status(k)]++);
-  const stats = [
-    ['Total', list.length, 'total', 'total'],
-    ['Actives', c.active, 'ok', 'active'],
-    ['Expirées', c.expired, 'warn', 'expired'],
-    ['Bannies', c.banned, 'bad', 'banned']
-  ];
-  $('stats').innerHTML = stats.map(([a,b,tone,ico]) =>
-    `<div class="stat" data-tone="${tone}">
-      <div class="ico">${STAT_ICONS[ico]}</div>
-      <span>${a}</span>
-      <b data-n="${b}">${b}</b>
-    </div>`).join('');
-  countUp();
-}
-
-function renderRows(list, anim){
-  $('nKeys').textContent = list.length;
-
+function renderKeys(list){
+  allKeys = list; $('nKeys').textContent = list.length;
   const q = $('q').value.trim().toUpperCase(), fs = $('st').value;
   const rows = (!q && !fs) ? list : list.filter(k =>
-    (!fs || status(k) === fs) && (!q || k.key.includes(q) || (k.hwid || '').includes(q))
-  );
+    (!fs || status(k) === fs) && (!q || k.key.includes(q) || (k.hwid||'').includes(q)));
 
   $('keysEmpty').hidden = rows.length > 0;
-  $('keysEmpty').textContent = list.length
-    ? 'Aucune clé ne correspond à ta recherche.'
-    : 'Aucune clé pour le moment. Crée-en une avec « Nouvelle clé ».';
+  $('keysEmpty').textContent = list.length ? 'Aucune clé trouvée.' : 'Aucune clé.';
 
-  const frag = document.createDocumentFragment();
-  rows.forEach(k => {
+  $('keysBody').innerHTML = rows.map(k => {
     const s = status(k);
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td data-l="Clé"><span class="key" title="Cliquer pour copier" data-copy="${esc(k.key)}">${esc(k.key)}</span></td>
-      <td data-l="Statut"><span class="badge ${s}">${names[s]}</span></td>
-      <td data-l="Durée" class="mut">${esc(k.days || '?')} j</td>
-      <td data-l="HWID">${k.hwid ? `<span class="hw">${esc(k.hwid)}</span>` : '<span class="mut"><i>libre</i></span>'}</td>
-      <td data-l="Expire le" class="mut">${fmtDate(k.expiresAt)}</td>
-      <td data-l="Restant" class="mut">${s === 'active' ? fmtLeft(k.expiresAt - Date.now()) : '—'}</td>
-      <td data-l=""><div class="row">
-        <button class="btn ghost sm" data-act="${k.banned ? 'unban' : 'ban'}" data-key="${esc(k.key)}">${k.banned ? 'Débannir' : 'Bannir'}</button>
-        <button class="btn ghost sm danger" data-act="del" data-key="${esc(k.key)}">Supprimer</button>
-      </div></td>`;
-    frag.appendChild(tr);
-  });
-
-  const tbody = $('keysBody');
-  tbody.classList.remove('fresh');
-  tbody.replaceChildren(frag);
-  if (anim){ void tbody.offsetWidth; tbody.classList.add('fresh'); }
+    return `<tr>
+      <td><span class="key" data-copy="${esc(k.key)}">${esc(k.key)}</span></td>
+      <td><span class="badge ${s}">${names[s]}</span></td>
+      <td class="mut">${esc(k.days||'?')} j</td>
+      <td>${k.hwid ? `<span class="hw">${esc(k.hwid)}</span>` : '<span class="mut">libre</span>'}</td>
+      <td class="mut">${fmtDate(k.expiresAt)}</td>
+      <td>
+        <button class="btn sm ghost" data-act="${k.banned?'unban':'ban'}" data-key="${esc(k.key)}">${k.banned?'Débannir':'Bannir'}</button>
+        <button class="btn sm ghost" data-act="del" data-key="${esc(k.key)}">Supprimer</button>
+      </td>
+    </tr>`;
+  }).join('');
 }
-
-function renderKeys(list, anim, skipStats){
-  allKeys = list;
-  saveKeysCache(list);
-  if (!skipStats) renderStats(list);
-  renderRows(list, anim);
-}
-
-function insertKeysOptimistic(created, days, hwid){
-  if (!created || !created.length) return;
-  const now = Date.now();
-  const fallbackExp = now + days * 864e5;
-  const newKeys = created.map(x => {
-    const obj = (typeof x === 'string') ? { key: x } : x;
-    const k = obj.key || obj.Key || obj.token || obj.license;
-    if (!k) return null;
-    return {
-      key: k,
-      days: obj.days || days,
-      hwid: obj.hwid || hwid || null,
-      level: obj.level || 'basic',
-      expiresAt: obj.expiresAt || fallbackExp,
-      banned: false,
-      createdAt: obj.createdAt || now
-    };
-  }).filter(Boolean);
-
-  if (!newKeys.length){ console.warn('Rien à insérer — format inattendu :', created); return; }
-
-  allKeys = [...newKeys, ...allKeys];
-  saveKeysCache(allKeys);
-  renderStats(allKeys);
-  renderRows(allKeys, true);
-}
-
 $('keysBody').addEventListener('click', async e => {
   const cp = e.target.closest('[data-copy]');
-  if (cp) return navigator.clipboard.writeText(cp.dataset.copy).then(() => toast('Clé copiée', 'success'), () => toast('Copie impossible', 'error'));
-
+  if (cp) return navigator.clipboard.writeText(cp.dataset.copy).then(()=>toast('Copié','success'));
   const b = e.target.closest('[data-act]'); if (!b) return;
-  const key = b.dataset.key, a = b.dataset.act;
-  if (a === 'ban' && !confirm('Bannir ' + key + ' ?')) return;
-  if (a === 'del' && !confirm('Supprimer ' + key + ' ?')) return;
-
-  const prevKeys = allKeys.slice();
-
-  if (a === 'del'){
-    allKeys = allKeys.filter(k => k.key !== key);
-  } else if (a === 'ban'){
-    allKeys = allKeys.map(k => k.key === key ? {...k, banned: true} : k);
-  } else if (a === 'unban'){
-    allKeys = allKeys.map(k => k.key === key ? {...k, banned: false} : k);
-  }
-  saveKeysCache(allKeys);
-  renderStats(allKeys);
-  renderRows(allKeys, false);
-  lockSync(2500);
-
-  const endpoint = {ban:'/admin/ban', unban:'/admin/unban', del:'/admin/delete'}[a];
-  try {
-    const r = await api(endpoint, 'POST', {key});
-    if (r.ok){
-      toast({ban:'Clé bannie', unban:'Clé réactivée', del:'Clé supprimée'}[a], 'success');
-      loadLogs();
-    } else {
-      allKeys = prevKeys;
-      saveKeysCache(allKeys);
-      renderStats(allKeys);
-      renderRows(allKeys, false);
-      toast(r.error || 'Erreur', 'error');
-    }
-  } catch(err){
-    allKeys = prevKeys;
-    saveKeysCache(allKeys);
-    renderStats(allKeys);
-    renderRows(allKeys, false);
-    toast('Erreur réseau', 'error');
-  }
+  const {act, key} = b.dataset;
+  if (act==='del' && !confirm('Supprimer '+key+' ?')) return;
+  const ep = {ban:'/admin/ban', unban:'/admin/unban', del:'/admin/delete'}[act];
+  const r = await api(ep, 'POST', {key});
+  if (r.ok) { toast('OK','success'); loadKeys(); }
+  else toast(r.error || 'Erreur','error');
 });
+$('q').oninput = () => renderKeys(allKeys);
+$('st').onchange = () => renderKeys(allKeys);
 
-let searchTimer;
-$('q').oninput = () => {
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => renderRows(allKeys, false), 120);
-};
-$('st').onchange = () => renderRows(allKeys, false);
-$('refresh').onclick = () => {
-  syncLocked = 0;
-  loadKeys(false); loadHwids(); loadAccounts(); loadLogs();
-};
-
-/* ---------- GÉNÉRATION RAPIDE ---------- */
-document.querySelectorAll('[data-quick]').forEach(btn => {
-  btn.onclick = async () => {
-    const days = parseInt(btn.dataset.quick, 10);
-    const {m, close} = modal(`
-      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Nouvelle clé — ${days} jour${days > 1 ? 's' : ''}</h2>
-      <div class="fld"><label for="nq">Quantité</label><input id="nq" type="number" min="1" max="100" value="1"></div>
-      <div class="fld"><label for="nh">HWID (facultatif)</label><input id="nh" placeholder="Laisser vide pour une clé libre"></div>
-      <div class="foot"><button class="btn ghost" id="c1">Annuler</button><button class="btn red" id="c2">Créer</button></div>`);
-    m.querySelector('#c1').onclick = close;
-    m.querySelector('#nq').focus();
-    m.querySelector('#nq').select();
-    m.querySelector('#c2').onclick = async () => {
-      const quantity = Math.max(1, Math.min(100, parseInt(m.querySelector('#nq').value, 10) || 1));
-      const hwid = m.querySelector('#nh').value.trim().toUpperCase() || null;
-      const r = await api('/admin/keys', 'POST', {days, quantity, hwid, level:'basic'});
-      if (!r.ok) return toast(r.error || 'Erreur', 'error');
-      close();
-      insertKeysOptimistic(r.created, days, hwid);
-      lockSync(2500);
-      const made = (r.created || []).map(x => typeof x === 'string' ? x : (x.key || x.Key || x.token || x.license)).filter(Boolean);
-      loadLogs();
-      if (!made.length) return toast(quantity + ' clé(s) ' + days + 'j créée(s)', 'success');
-      toast(made.length + ' clé(s) ' + days + 'j créée(s)', 'success');
-      const res = modal(`<h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>${made.length} clé(s) créée(s)</h2>
-        <div class="out"></div>
-        <div class="foot"><button class="btn ghost" id="r1">Fermer</button><button class="btn red" id="r2">Copier tout</button></div>`);
-      res.m.querySelector('.out').textContent = made.join('\n');
-      res.m.querySelector('#r1').onclick = res.close;
-      res.m.querySelector('#r2').onclick = () => navigator.clipboard.writeText(made.join('\n')).then(() => toast('Copié', 'success'));
-    };
-  };
-});
-
-/* ---------- MODAL ---------- */
-function modal(html){
-  const m = document.createElement('div'); m.className = 'modal';
-  m.innerHTML = `<div class="box" role="dialog" aria-modal="true">${html}</div>`;
-  const close = () => { m.remove(); document.removeEventListener('keydown', esc_); };
-  const esc_ = e => e.key === 'Escape' && close();
-  document.addEventListener('keydown', esc_);
-  m.addEventListener('mousedown', e => e.target === m && close());
-  document.body.appendChild(m); return {m, close};
-}
-$('newKey').onclick = () => {
-  const {m, close} = modal(`
-    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0 3 3L22 7l-3-3"/></svg>Nouvelle clé</h2>
-    <div class="two">
-      <div class="fld"><label for="nd">Durée</label><select id="nd">
-        <option value="1">1 jour</option>
-        <option value="3">3 jours</option><option value="7">7 jours</option>
-        <option value="30" selected>30 jours</option><option value="90">90 jours</option>
-        <option value="365">1 an</option></select></div>
-      <div class="fld"><label for="nq">Quantité</label><input id="nq" type="number" min="1" max="100" value="1"></div>
-    </div>
-    <div class="fld"><label for="nh">HWID (facultatif)</label><input id="nh" placeholder="Laisser vide pour une clé libre"></div>
-    <div class="foot"><button class="btn ghost" id="c1">Annuler</button><button class="btn red" id="c2">Créer</button></div>`);
-  m.querySelector('#c1').onclick = close;
-  m.querySelector('#c2').onclick = async () => {
-    const days = +m.querySelector('#nd').value;
-    const quantity = Math.max(1, Math.min(100, parseInt(m.querySelector('#nq').value, 10) || 1));
-    const hwid = m.querySelector('#nh').value.trim().toUpperCase() || null;
-    const r = await api('/admin/keys', 'POST', {days, quantity, hwid, level:'basic'});
-    if (!r.ok) return toast(r.error || 'Erreur', 'error');
-    close();
-    insertKeysOptimistic(r.created, days, hwid);
-    lockSync(2500);
-    const made = (r.created || []).map(x => typeof x === 'string' ? x : (x.key || x.Key || x.token || x.license)).filter(Boolean);
-    loadLogs();
-    if (!made.length) return toast(quantity + ' clé(s) créée(s)', 'success');
-    const res = modal(`<h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>${made.length} clé(s) créée(s)</h2>
-      <div class="out"></div>
-      <div class="foot"><button class="btn ghost" id="r1">Fermer</button><button class="btn red" id="r2">Copier tout</button></div>`);
-    res.m.querySelector('.out').textContent = made.join('\n');
-    res.m.querySelector('#r1').onclick = res.close;
-    res.m.querySelector('#r2').onclick = () => navigator.clipboard.writeText(made.join('\n')).then(() => toast('Copié', 'success'));
-  };
-  m.querySelector('#nq').focus();
+$('newKey').onclick = async () => {
+  const days = parseInt(prompt('Durée en jours (ex: 30):', '30'));
+  if (!days) return;
+  const quantity = parseInt(prompt('Quantité:', '1')) || 1;
+  const r = await api('/admin/keys', 'POST', {days, quantity});
+  if (r.ok) { toast(`${r.created.length} clé(s) créée(s)`, 'success'); loadKeys(); }
 };
 
-/* ---------- HWID ---------- */
+$('export').onclick = () => {
+  if (!allKeys.length) return toast('Aucune clé','error');
+  const lines = allKeys.map(k => [k.key, status(k), (k.days||'?')+'j', k.hwid||'-'].join('|'));
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['key|status|days|hwid\n'+lines.join('\n')], {type:'text/plain'}));
+  a.download = 'keys.txt'; a.click();
+};
+
+/* ═══════════════ HWID ═══════════════ */
 let allHwids = [];
-
-function renderHwids(list){
-  allHwids = list;
-  $('nHwid').textContent = list.length;
-  $('hwidEmpty').hidden = list.length > 0;
-  $('hwidEmpty').textContent = 'Aucun HWID banni.';
-  const frag = document.createDocumentFragment();
-  list.forEach(h => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td data-l="HWID"><span class="hw" style="color:#ff8b95">${esc(h.hwid)}</span></td>
-      <td data-l="Ajouté le" class="mut">${fmtDate(h.ts || Date.now())}</td>
-      <td data-l=""><button class="btn ghost sm" data-h="${esc(h.hwid)}">Retirer</button></td>`;
-    frag.appendChild(tr);
-  });
-  const tbody = $('hwidBody');
-  tbody.classList.remove('fresh');
-  tbody.replaceChildren(frag);
-  void tbody.offsetWidth; tbody.classList.add('fresh');
-}
-
 async function loadHwids(){
-  const cached = loadCache(HWIDS_CACHE);
-  if (cached && cached.length){
-    renderHwids(cached);
-  } else if (!allHwids.length){
-    $('hwidEmpty').hidden = true;
-    $('hwidBody').innerHTML = skeletonRows(4, 3);
-  }
-  try {
-    const r = await api('/admin/hwids');
-    if (!r.ok) throw new Error();
-    const list = (r.hwids || []).sort((a, b) => (b.ts || 0) - (a.ts || 0));
-    saveCache(HWIDS_CACHE, list);
-    renderHwids(list);
-  } catch {
-    if (!cached || !cached.length){
-      $('hwidEmpty').hidden = false;
-      $('hwidEmpty').textContent = 'Impossible de charger les HWID.';
-    }
+  const r = await api('/admin/hwids');
+  if (r.ok) {
+    allHwids = r.hwids || [];
+    $('nHwid').textContent = allHwids.length;
+    $('hwidEmpty').hidden = allHwids.length > 0;
+    $('hwidBody').innerHTML = allHwids.map(h => `<tr>
+      <td><span class="hw" style="color:#ff8b95">${esc(h.hwid)}</span></td>
+      <td class="mut">${fmtDate(h.ts)}</td>
+      <td><button class="btn sm ghost" data-h="${esc(h.hwid)}">Retirer</button></td>
+    </tr>`).join('');
   }
 }
-
-function insertHwidOptimistic(hwid){
-  if (!hwid) return;
-  const now = Date.now();
-  if (allHwids.some(h => h.hwid === hwid)) return;
-  allHwids = [{hwid, ts: now}, ...allHwids];
-  saveCache(HWIDS_CACHE, allHwids);
-  renderHwids(allHwids);
-}
-
-function removeHwidOptimistic(hwid){
-  allHwids = allHwids.filter(h => h.hwid !== hwid);
-  saveCache(HWIDS_CACHE, allHwids);
-  renderHwids(allHwids);
-}
-
 $('hwidBody').addEventListener('click', async e => {
   const b = e.target.closest('[data-h]'); if (!b) return;
-  const hwid = b.dataset.h;
-  if (!confirm('Retirer ce HWID ?\n' + hwid)) return;
-
-  const prev = allHwids.slice();
-  removeHwidOptimistic(hwid);
-
-  try {
-    const r = await api('/admin/hwid/unban', 'POST', {hwid});
-    if (r.ok){
-      toast('HWID retiré', 'success');
-      loadLogs();
-    } else {
-      allHwids = prev;
-      saveCache(HWIDS_CACHE, allHwids);
-      renderHwids(allHwids);
-      toast(r.error || 'Erreur', 'error');
-    }
-  } catch {
-    allHwids = prev;
-    saveCache(HWIDS_CACHE, allHwids);
-    renderHwids(allHwids);
-    toast('Erreur réseau', 'error');
-  }
+  const r = await api('/admin/hwid/unban', 'POST', {hwid: b.dataset.h});
+  if (r.ok) { toast('Retiré','success'); loadHwids(); }
 });
-
-async function banHwid(){
+$('banHwid').onclick = async () => {
   const v = $('newHwid').value.trim().toUpperCase();
-  if (!v) return toast('Entre un HWID', 'error');
+  if (!v) return toast('Entre un HWID','error');
+  const r = await api('/admin/hwid/ban', 'POST', {hwid: v});
+  if (r.ok) { toast('Banni','success'); $('newHwid').value=''; loadHwids(); }
+};
 
-  insertHwidOptimistic(v);
-  $('newHwid').value = '';
-
-  try {
-    const r = await api('/admin/hwid/ban', 'POST', {hwid: v});
-    if (r.ok){
-      toast('HWID banni', 'success');
-      loadLogs();
-    } else {
-      removeHwidOptimistic(v);
-      toast(r.error || 'Erreur', 'error');
-    }
-  } catch {
-    removeHwidOptimistic(v);
-    toast('Erreur réseau', 'error');
-  }
-}
-$('banHwid').onclick = banHwid;
-$('newHwid').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); banHwid(); } });
-
-/* ---------- COMPTES ---------- */
+/* ═══════════════ ACCOUNTS ═══════════════ */
 let allAccounts = [];
 async function loadAccounts(){
-  const cached = loadCache(ACCS_CACHE);
-  if (cached && cached.length){
-    allAccounts = cached;
-    renderAccounts();
-  } else if (!allAccounts.length){
-    $('accEmpty').hidden = true;
-    $('accBody').innerHTML = skeletonRows(4, 6);
-  }
-  try {
-    const r = await api('/admin/accounts');
-    if (!r.ok) throw new Error();
+  const r = await api('/admin/accounts');
+  if (r.ok) {
     allAccounts = r.accounts || [];
-    saveCache(ACCS_CACHE, allAccounts);
-    renderAccounts();
-  } catch {
-    if (!cached || !cached.length){
-      $('accEmpty').hidden = false;
-      $('accEmpty').textContent = 'Impossible de charger les comptes.';
-    }
+    $('nAcc').textContent = allAccounts.length;
+    $('accEmpty').hidden = allAccounts.length > 0;
+    $('accBody').innerHTML = allAccounts.map(a => `<tr>
+      <td><span class="hw" style="color:#8ab4f8">${esc(a.email)}</span></td>
+      <td><span class="hw" style="color:#ff8b95">${esc(a.password)}</span></td>
+      <td><span class="badge ${a.used?'banned':'active'}">${a.used?'Utilisé':'Disponible'}</span></td>
+      <td class="mut">${a.usedAt ? fmtDate(a.usedAt) : '—'}</td>
+      <td class="mut">${esc(a.usedBy||'—')}</td>
+      <td>
+        ${a.used ? `<button class="btn sm ghost" data-act="reset" data-id="${a.id}">Libérer</button>` : ''}
+        <button class="btn sm ghost" data-act="del" data-id="${a.id}">Supprimer</button>
+      </td>
+    </tr>`).join('');
   }
-}
-function renderAccounts(){
-  $('nAcc').textContent = allAccounts.length;
-  const tbody = $('accBody');
-  if (!allAccounts.length) {
-    tbody.innerHTML = '';
-    $('accEmpty').hidden = false;
-    $('accEmpty').textContent = 'Aucun compte pour le moment.';
-    return;
-  }
-  $('accEmpty').hidden = true;
-  const frag = document.createDocumentFragment();
-  allAccounts.forEach(a => {
-    const stat = a.used
-      ? '<span class="badge banned">Utilisé</span>'
-      : '<span class="badge active">Disponible</span>';
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td data-l="Email"><span class="hw" style="color:#8ab4f8">${esc(a.email)}</span></td>
-      <td data-l="Mot de passe"><span class="hw" style="color:#ff8b95">${esc(a.password)}</span></td>
-      <td data-l="Statut">${stat}</td>
-      <td data-l="Utilisé le" class="mut">${a.usedAt ? fmtDate(a.usedAt) : '—'}</td>
-      <td data-l="Utilisé par" class="mut">${esc(a.usedBy || '—')}</td>
-      <td data-l=""><div class="row">
-        ${a.used ? `<button class="btn ghost sm" data-act="reset" data-id="${a.id}">Libérer</button>` : ''}
-        <button class="btn ghost sm danger" data-act="del" data-id="${a.id}">Supprimer</button>
-      </div></td>`;
-    frag.appendChild(tr);
-  });
-  tbody.classList.remove('fresh');
-  tbody.replaceChildren(frag);
-  void tbody.offsetWidth; tbody.classList.add('fresh');
 }
 $('accBody').addEventListener('click', async e => {
   const b = e.target.closest('[data-act]'); if (!b) return;
-  const id = b.dataset.id, a = b.dataset.act;
-  if (a === 'del' && !confirm('Supprimer ce compte ?')) return;
-
-  const prev = allAccounts.slice();
-
-  if (a === 'del'){
-    allAccounts = allAccounts.filter(x => x.id !== id);
-  } else if (a === 'reset'){
-    allAccounts = allAccounts.map(x => x.id === id ? {...x, used:false, usedAt:null, usedBy:null} : x);
-  }
-  saveCache(ACCS_CACHE, allAccounts);
-  renderAccounts();
-
-  try {
-    const r = await api({del:'/admin/accounts/delete', reset:'/admin/accounts/reset'}[a], 'POST', {id});
-    if (r.ok){
-      toast(a === 'del' ? 'Compte supprimé' : 'Compte libéré', 'success');
-      loadLogs();
-    } else {
-      allAccounts = prev;
-      saveCache(ACCS_CACHE, allAccounts);
-      renderAccounts();
-      toast(r.error || 'Erreur', 'error');
-    }
-  } catch {
-    allAccounts = prev;
-    saveCache(ACCS_CACHE, allAccounts);
-    renderAccounts();
-    toast('Erreur réseau', 'error');
-  }
+  const {act, id} = b.dataset;
+  const ep = act==='del' ? '/admin/accounts/delete' : '/admin/accounts/reset';
+  const r = await api(ep, 'POST', {id});
+  if (r.ok) { toast('OK','success'); loadAccounts(); }
 });
 $('addAcc').onclick = async () => {
   const email = $('newAccEmail').value.trim();
   const password = $('newAccPass').value.trim();
-  if (!email || !password) return toast('Email et mot de passe requis', 'error');
-
-  const tempId = 'tmp_' + Date.now();
-  const newAcc = { id: tempId, email, password, used: false };
-
-  allAccounts = [newAcc, ...allAccounts];
-  saveCache(ACCS_CACHE, allAccounts);
-  renderAccounts();
-  $('newAccEmail').value = ''; $('newAccPass').value = '';
-
-  try {
-    const r = await api('/admin/accounts', 'POST', {email, password});
-    if (r.ok){
-      toast('Compte ajouté', 'success');
-      if (r.account){
-        allAccounts = allAccounts.map(x => x.id === tempId ? r.account : x);
-      } else {
-        allAccounts = allAccounts.map(x => x.id === tempId ? {...x, id: 'srv_' + Date.now()} : x);
-      }
-      saveCache(ACCS_CACHE, allAccounts);
-      renderAccounts();
-      loadLogs();
-    } else {
-      allAccounts = allAccounts.filter(x => x.id !== tempId);
-      saveCache(ACCS_CACHE, allAccounts);
-      renderAccounts();
-      toast(r.error || 'Erreur', 'error');
-    }
-  } catch {
-    allAccounts = allAccounts.filter(x => x.id !== tempId);
-    saveCache(ACCS_CACHE, allAccounts);
-    renderAccounts();
-    toast('Erreur réseau', 'error');
-  }
-};
-$('newAccPass').addEventListener('keydown', e => {
-  if (e.key === 'Enter'){ e.preventDefault(); $('addAcc').click(); }
-});
-
-/* ---------- LOGS ---------- */
-const L = {
-  create:['Création','active'], ban:['Ban','banned'], unban:['Déban','active'], delete:['Suppression','expired'],
-  'hwid-ban':['HWID banni','banned'], 'hwid-unban':['HWID retiré','active'], export:['Export','active'],
-  'auth-ok':['Connexion','active'], 'auth-banned':['Clé bannie','banned'], 'auth-expired':['Clé expirée','expired'],
-  'auth-hwid-banned':['HWID banni','banned'], 'auth-hwid-mismatch':['HWID différent','expired'], redeem:['Activation','active'],
-  'account-add':['Compte ajouté','active'], 'account-del':['Compte supprimé','expired'],
-  'account-used':['Compte utilisé','warn'], 'account-reset':['Compte libéré','active'],
-  'config-update':['Config MAJ','active'], 'notice-update':['Notice MAJ','warn'], 'kill-switch':['Kill switch','banned']
+  if (!email || !password) return toast('Email + mdp requis','error');
+  const r = await api('/admin/accounts', 'POST', {email, password});
+  if (r.ok) { toast('Ajouté','success'); $('newAccEmail').value=''; $('newAccPass').value=''; loadAccounts(); }
 };
 
-function renderLogs(list){
-  $('logsEmpty').hidden = list.length > 0;
-  $('logsEmpty').textContent = 'Aucun log.';
-  const frag = document.createDocumentFragment();
-  list.forEach(l => {
-    const [lab, cls] = L[l.type] || [l.type, 'active'];
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td data-l="Date" class="mut">${fmtDate(l.ts)}</td>
-      <td data-l="Type"><span class="badge ${cls}">${esc(lab)}</span></td>
-      <td data-l="Détail">${esc(l.detail)}</td>`;
-    frag.appendChild(tr);
-  });
-  const tbody = $('logsBody');
-  tbody.classList.remove('fresh');
-  tbody.replaceChildren(frag);
-  void tbody.offsetWidth; tbody.classList.add('fresh');
-}
-
+/* ═══════════════ LOGS ═══════════════ */
 async function loadLogs(){
-  const cached = loadCache(LOGS_CACHE);
-  if (cached && cached.length){
-    renderLogs(cached);
-  } else {
-    $('logsEmpty').hidden = true;
-    $('logsBody').innerHTML = skeletonRows(5, 3);
-  }
-  try {
-    const r = await api('/admin/logs');
-    if (!r.ok) throw new Error();
+  const r = await api('/admin/logs');
+  if (r.ok) {
     const list = r.logs || [];
-    saveCache(LOGS_CACHE, list);
-    renderLogs(list);
-  } catch {
-    if (!cached || !cached.length){
-      $('logsEmpty').hidden = false;
-      $('logsEmpty').textContent = 'Impossible de charger les logs.';
-    }
+    $('logsEmpty').hidden = list.length > 0;
+    $('logsBody').innerHTML = list.map(l => `<tr>
+      <td class="mut">${fmtDate(l.ts)}</td>
+      <td><span class="badge active">${esc(l.type)}</span></td>
+      <td>${esc(l.detail)}</td>
+    </tr>`).join('');
   }
 }
 
-/* ---------- CONFIG DYNAMIQUE ---------- */
-async function loadConfig(){
-  try {
-    const r = await api('/admin/get-config');
-    if (!r.ok) throw new Error(r.error);
-    const c = r.config || {};
-    $('cfgAccent').value = c.accentColor || '#64AAFF';
-    $('cfgText').value = c.textColor || '#F0F0F0';
-    $('cfgLoginTitle').value = c.loginTitle || 'Authentication Portal';
-    $('cfgP1Name').value = c.product1Name || 'Vyse X Menu';
-    $('cfgP1Status').value = c.product1Status || 'Working / Undetected';
-    $('cfgP2Name').value = c.product2Name || 'Vyse X Spoofer';
-    $('cfgP2Status').value = c.product2Status || 'USE AT OWN RISK';
-  } catch(e){
-    toast('Impossible de charger la config : ' + (e.message || ''), 'error');
-  }
+/* ═══════════════ CONFIG LOGIN ═══════════════ */
+async function loadLoginCfg(){
+  const r = await api('/admin/get-config');
+  if (!r.ok) return;
+  const c = r.login || {};
+  $('lgTitle').value = c.title || 'Authentication Portal';
+  $('lgSubtitle').value = c.subtitle || 'Please sign in to continue';
+  $('lgUserLabel').value = c.usernameLabel || 'Username';
+  $('lgUserPH').value = c.usernamePlaceholder || 'user123';
+  $('lgPassLabel').value = c.passwordLabel || 'License Key';
+  $('lgPassPH').value = c.passwordPlaceholder || 'XXXX-XXXX-XXXX-XXXX';
+  $('lgBtn').value = c.buttonText || 'Sign In';
+  $('lgAccent').value = c.accentColor || '#64AAFF';
+  $('lgText').value = c.textColor || '#F0F0F0';
+  $('lgBg').value = c.backgroundColor || '#000000';
 }
-$('cfgReload').onclick = loadConfig;
-$('cfgSave').onclick = async () => {
+$('lgSave').onclick = async () => {
   const config = {
-    accentColor: $('cfgAccent').value.trim() || '#64AAFF',
-    textColor: $('cfgText').value.trim() || '#F0F0F0',
-    backgroundColor: '#000000',
-    loginTitle: $('cfgLoginTitle').value.trim() || 'Authentication Portal',
-    product1Name: $('cfgP1Name').value.trim() || 'Vyse X Menu',
-    product1Status: $('cfgP1Status').value.trim() || 'Working / Undetected',
-    product2Name: $('cfgP2Name').value.trim() || 'Vyse X Spoofer',
-    product2Status: $('cfgP2Status').value.trim() || 'USE AT OWN RISK',
-    showProducts: true,
-    showUpdates: true
+    title: $('lgTitle').value.trim() || 'Authentication Portal',
+    subtitle: $('lgSubtitle').value.trim() || 'Please sign in to continue',
+    usernameLabel: $('lgUserLabel').value.trim() || 'Username',
+    usernamePlaceholder: $('lgUserPH').value.trim() || 'user123',
+    passwordLabel: $('lgPassLabel').value.trim() || 'License Key',
+    passwordPlaceholder: $('lgPassPH').value.trim() || 'XXXX-XXXX-XXXX-XXXX',
+    buttonText: $('lgBtn').value.trim() || 'Sign In',
+    accentColor: $('lgAccent').value,
+    textColor: $('lgText').value,
+    backgroundColor: $('lgBg').value,
+    logoUrl: '',
   };
-  try {
-    const r = await api('/admin/set-config', 'POST', {config});
-    if (r.ok) { toast('Config sauvegardée', 'success'); loadLogs(); }
-    else toast(r.error || 'Erreur', 'error');
-  } catch { toast('Erreur réseau', 'error'); }
+  const r = await api('/admin/set-config/login', 'POST', {config});
+  if (r.ok) toast('Config login sauvegardée','success');
+  else toast(r.error||'Erreur','error');
 };
+$('lgReload').onclick = loadLoginCfg;
 
-/* ---------- NOTICE ---------- */
+/* ═══════════════ CONFIG LOADER ═══════════════ */
+async function loadLoaderCfg(){
+  const r = await api('/admin/get-config');
+  if (!r.ok) return;
+  const c = r.loader || {};
+  $('ldTitle').value = c.menuTitle || 'Vyse X';
+  $('ldSide1').value = c.sidebarProducts || 'Products';
+  $('ldSide2').value = c.sidebarUpdates || 'Updates';
+  $('ldP1Name').value = c.product1Name || 'Vyse X Menu';
+  $('ldP1Status').value = c.product1Status || 'Working / Undetected';
+  $('ldP2Name').value = c.product2Name || 'Vyse X Spoofer';
+  $('ldP2Status').value = c.product2Status || 'USE AT OWN RISK';
+  $('ldAccent').value = c.accentColor || '#64AAFF';
+  $('ldText').value = c.textColor || '#F0F0F0';
+  $('ldBg').value = c.backgroundColor || '#000000';
+}
+$('ldSave').onclick = async () => {
+  const config = {
+    menuTitle: $('ldTitle').value.trim() || 'Vyse X',
+    sidebarProducts: $('ldSide1').value.trim() || 'Products',
+    sidebarUpdates: $('ldSide2').value.trim() || 'Updates',
+    product1Name: $('ldP1Name').value.trim() || 'Vyse X Menu',
+    product1Status: $('ldP1Status').value.trim() || 'Working / Undetected',
+    product2Name: $('ldP2Name').value.trim() || 'Vyse X Spoofer',
+    product2Status: $('ldP2Status').value.trim() || 'USE AT OWN RISK',
+    accentColor: $('ldAccent').value,
+    textColor: $('ldText').value,
+    backgroundColor: $('ldBg').value,
+  };
+  const r = await api('/admin/set-config/loader', 'POST', {config});
+  if (r.ok) toast('Config loader sauvegardée','success');
+  else toast(r.error||'Erreur','error');
+};
+$('ldReload').onclick = loadLoaderCfg;
+
+/* ═══════════════ CONFIG IN-GAME ═══════════════ */
+async function loadIngameCfg(){
+  const r = await api('/admin/get-config');
+  if (!r.ok) return;
+  const c = r.ingame || {};
+  $('igTitle').value = c.windowTitle || 'Vyse X';
+  $('igAccent').value = c.accentColor || '#DCDCE1';
+  $('igText').value = c.textColor || '#C6C6CA';
+  $('igTextDim').value = c.textDimColor || '#7B7B80';
+  $('igBorder').value = c.borderColor || '#2A2A2E';
+  $('igBgMain').value = c.bgMainColor || '#121214';
+  $('igBgSide').value = c.bgSidebarColor || '#161618';
+  $('igBgHead').value = c.bgHeaderColor || '#0F0F11';
+  $('igBgCard').value = c.bgCardColor || '#1C1C1E';
+  $('igW').value = c.menuWidth || 800;
+  $('igH').value = c.menuHeight || 520;
+  $('igTop').value = c.topBarHeight || 30;
+  $('igSide').value = c.sidebarWidth || 150;
+}
+$('igSave').onclick = async () => {
+  const config = {
+    windowTitle: $('igTitle').value.trim() || 'Vyse X',
+    accentColor: $('igAccent').value,
+    textColor: $('igText').value,
+    textDimColor: $('igTextDim').value,
+    borderColor: $('igBorder').value,
+    bgMainColor: $('igBgMain').value,
+    bgSidebarColor: $('igBgSide').value,
+    bgHeaderColor: $('igBgHead').value,
+    bgCardColor: $('igBgCard').value,
+    menuWidth: parseInt($('igW').value) || 800,
+    menuHeight: parseInt($('igH').value) || 520,
+    topBarHeight: parseInt($('igTop').value) || 30,
+    sidebarWidth: parseInt($('igSide').value) || 150,
+    showWatermark: true,
+    showSpectatorList: true,
+    showKeybindList: true,
+  };
+  const r = await api('/admin/set-config/ingame', 'POST', {config});
+  if (r.ok) toast('Config in-game sauvegardée','success');
+  else toast(r.error||'Erreur','error');
+};
+$('igReload').onclick = loadIngameCfg;
+
+/* ═══════════════ NOTICE ═══════════════ */
 async function loadNotice(){
-  try {
-    const r = await api('/admin/get-config');
-    if (!r.ok) throw new Error(r.error);
-    $('noticeMsg').value = r.notice || '';
-    $('noticeEnabled').checked = !!r.noticeEnabled;
-  } catch(e){
-    toast('Impossible de charger la notice : ' + (e.message || ''), 'error');
-  }
+  const r = await api('/admin/get-config');
+  if (!r.ok) return;
+  $('noticeMsg').value = r.notice || '';
+  $('noticeEnabled').checked = !!r.noticeEnabled;
 }
 $('noticeSave').onclick = async () => {
-  const message = $('noticeMsg').value.trim();
-  const enabled = $('noticeEnabled').checked;
-  try {
-    const r = await api('/admin/set-notice', 'POST', {message, enabled});
-    if (r.ok) { toast('Notice envoyée', 'success'); loadLogs(); }
-    else toast(r.error || 'Erreur', 'error');
-  } catch { toast('Erreur réseau', 'error'); }
+  const r = await api('/admin/set-notice', 'POST', {
+    message: $('noticeMsg').value.trim(),
+    enabled: $('noticeEnabled').checked
+  });
+  if (r.ok) toast('Notice envoyée','success');
 };
 
-/* ---------- KILL SWITCH ---------- */
+/* ═══════════════ KILL ═══════════════ */
 async function loadKill(){
-  try {
-    const r = await api('/admin/get-config');
-    if (!r.ok) throw new Error(r.error);
-    const el = $('killStatus');
-    if (r.kill){
-      el.className = 'badge banned';
-      el.textContent = '☠️ Tous les loaders sont désactivés';
-    } else {
-      el.className = 'badge active';
-      el.textContent = '✓ Loaders opérationnels';
-    }
-  } catch(e){
-    toast('Impossible de charger le kill switch : ' + (e.message || ''), 'error');
-  }
+  const r = await api('/admin/get-config');
+  if (!r.ok) return;
+  const el = $('killStatus');
+  if (r.kill) { el.className='badge banned'; el.textContent='☠️ Loaders désactivés'; }
+  else { el.className='badge active'; el.textContent='✓ Loaders opérationnels'; }
 }
 $('killOn').onclick = async () => {
-  if (!confirm('Désactiver TOUS les loaders ? Les utilisateurs verront un message d\'erreur au démarrage.')) return;
-  try {
-    const r = await api('/admin/kill', 'POST', {kill: true});
-    if (r.ok) { toast('Kill switch activé', 'success'); loadKill(); loadLogs(); }
-    else toast(r.error || 'Erreur', 'error');
-  } catch { toast('Erreur réseau', 'error'); }
+  if (!confirm('Désactiver TOUS les loaders ?')) return;
+  const r = await api('/admin/kill','POST',{kill:true});
+  if (r.ok) { toast('Kill activé','success'); loadKill(); }
 };
 $('killOff').onclick = async () => {
-  try {
-    const r = await api('/admin/kill', 'POST', {kill: false});
-    if (r.ok) { toast('Kill switch désactivé', 'success'); loadKill(); loadLogs(); }
-    else toast(r.error || 'Erreur', 'error');
-  } catch { toast('Erreur réseau', 'error'); }
+  const r = await api('/admin/kill','POST',{kill:false});
+  if (r.ok) { toast('Loaders réactivés','success'); loadKill(); }
 };
 
-/* ---------- EXPORT ---------- */
-$('export').onclick = () => {
-  if (!allKeys.length) return toast('Aucune clé à exporter', 'error');
-  const lines = allKeys.map(k => [k.key, status(k), (k.days || '?') + 'j', k.hwid || '-', new Date(k.expiresAt).toISOString()].join('|'));
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob(['key|status|days|hwid|expires\n' + lines.join('\n')], {type:'text/plain'}));
-  a.download = 'keys_' + Date.now() + '.txt'; a.click(); toast('Export terminé', 'success');
-};
+$('refresh').onclick = () => { loadKeys(); loadHwids(); loadAccounts(); loadLogs(); };
 </script>
 </body>
 </html>
