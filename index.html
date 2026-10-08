@@ -161,9 +161,9 @@ aside::-webkit-scrollbar-thumb{background:rgba(255,255,255,.10);border:0;backgro
 
 .brand{display:flex;align-items:center;gap:14px;font-weight:800;font-size:17px;letter-spacing:-.03em;padding:8px 12px 26px;position:relative}
 .brand::after{content:"";position:absolute;bottom:12px;left:12px;right:12px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent)}
-.brand .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,rgba(230,232,236,.14),rgba(230,232,236,.03));border:1px solid rgba(230,232,236,.25);display:grid;place-items:center;flex:0 0 auto;box-shadow:0 8px 24px -6px var(--red-glow),0 0 0 1px rgba(255,255,255,.08) inset;transition:all .3s cubic-bezier(.2,.8,.2,1)}
+.brand .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,rgba(230,232,236,.14),rgba(230,232,236,.03));border:1px solid rgba(230,232,236,.25);display:grid;place-items:center;flex:0 0 auto;box-shadow:0 8px 24px -6px var(--red-glow),0 0 0 1px rgba(255,255,255,.08) inset;transition:all .3s cubic-bezier(.2,.8,.2,1);overflow:hidden}
 .brand .logo:hover{transform:scale(1.08) rotate(-3deg);box-shadow:0 12px 32px -6px var(--red-glow)}
-.brand .logo img{width:28px;height:28px;object-fit:contain}
+.brand .logo img{width:100%;height:100%;object-fit:cover;border-radius:11px}
 .brand .logo .fallback{font-size:22px;font-weight:900;color:#e6e8ec;letter-spacing:-.05em;text-shadow:0 0 16px var(--red-glow)}
 .brand .name b{color:var(--text);display:block;font-weight:800;letter-spacing:-.03em}
 .brand .name small{display:block;font-size:10.5px;font-weight:700;color:var(--mute);letter-spacing:1.2px;text-transform:uppercase;margin-top:2px}
@@ -252,7 +252,6 @@ h1.t{font-size:34px;font-weight:800;letter-spacing:-.04em;line-height:1.15;backg
 }
 .dropdown.open .dropdown-trigger svg{transform:rotate(180deg);color:#e6e8ec}
 
-/* ⬇️ Menu — ouvre vers le bas par défaut */
 .dropdown-menu{
   position:absolute;top:calc(100% + 6px);left:0;right:0;
   background:linear-gradient(180deg,rgba(38,40,47,.99),rgba(24,26,31,.99));
@@ -269,8 +268,6 @@ h1.t{font-size:34px;font-weight:800;letter-spacing:-.04em;line-height:1.15;backg
   max-height:420px;
   overflow-y:auto;
 }
-
-/* ⬆️ Version qui ouvre vers le HAUT (ajoutée automatiquement par JS si pas de place en bas) */
 .dropdown-menu.drop-up{
   top:auto;
   bottom:calc(100% + 6px);
@@ -374,9 +371,9 @@ tr.skeleton td{padding:18px 20px}
   border:1px solid rgba(230,232,236,.25);
   display:grid;place-items:center;flex:0 0 auto;
   box-shadow:0 8px 22px -8px var(--red-glow),0 0 0 1px rgba(255,255,255,.08) inset;
-  animation:logoGlow 3s ease-in-out infinite;
+  animation:logoGlow 3s ease-in-out infinite;overflow:hidden;
 }
-.modal-header .modal-logo img{width:32px;height:32px;object-fit:contain}
+.modal-header .modal-logo img{width:100%;height:100%;object-fit:cover;border-radius:11px}
 .modal-header .modal-logo .fallback{font-size:24px;font-weight:900;color:#e6e8ec;letter-spacing:-.05em;text-shadow:0 0 18px var(--red-glow)}
 .modal-header .modal-title{display:flex;flex-direction:column;gap:2px;min-width:0}
 .modal-header .modal-title b{font-size:18px;font-weight:800;letter-spacing:-.03em;color:#fff;line-height:1.2}
@@ -572,6 +569,10 @@ tr.skeleton td{padding:18px 20px}
     <button class="nav" data-view="kill">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
       Kill switch
+    </button>
+    <button class="nav" data-view="website">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      Site Web
     </button>
 
     <div class="bottom">
@@ -792,6 +793,65 @@ tr.skeleton td{padding:18px 20px}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             Réactiver tous les loaders
           </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="v-website">
+      <div class="card" style="padding:32px">
+        <h2 style="font-size:20px;font-weight:800;letter-spacing:-.03em;margin-bottom:8px;color:#fff">🌐 Site Web — Configuration du loader</h2>
+        <p style="color:#7a7f8a;font-size:13.5px;margin-bottom:26px;font-weight:500">Configure l'URL du loader téléchargeable et l'adresse de ton site customer. Ces valeurs sont utilisées par le site.</p>
+
+        <div class="fld">
+          <label for="cfgLoaderUrl">URL directe du loader (.exe ou .zip)</label>
+          <input id="cfgLoaderUrl" type="text" placeholder="https://pub-xxxxx.r2.dev/Loader.zip">
+          <span style="font-size:11.5px;color:var(--mute);margin-top:4px">Lien public Cloudflare R2, ou n'importe quelle URL directe</span>
+        </div>
+
+        <div class="fld">
+          <label for="cfgCustomerUrl">URL du site customer</label>
+          <input id="cfgCustomerUrl" type="text" placeholder="https://vysex-customer.pages.dev">
+          <span style="font-size:11.5px;color:var(--mute);margin-top:4px">L'adresse de ton portail client Cloudflare Pages</span>
+        </div>
+
+        <div class="two">
+          <div class="fld">
+            <label for="cfgZipPassword">Mot de passe du ZIP</label>
+            <input id="cfgZipPassword" type="text" placeholder="spoofer">
+          </div>
+          <div class="fld">
+            <label for="cfgLoaderVersion">Version du loader</label>
+            <input id="cfgLoaderVersion" type="text" placeholder="v1.0.0">
+          </div>
+        </div>
+
+        <div class="foot" style="justify-content:flex-start;gap:12px;margin-top:24px">
+          <button class="btn red" id="cfgWebSave">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Sauvegarder
+          </button>
+          <button class="btn ghost" id="cfgWebReload">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/></svg>
+            Recharger
+          </button>
+        </div>
+
+        <div style="margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,.06)">
+          <h3 style="font-size:15px;font-weight:700;margin-bottom:12px;color:#fff">📋 Liens utiles</h3>
+          <p style="color:var(--mute);font-size:13px;margin-bottom:16px">Ces URLs à copier où tu veux :</p>
+
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.35);padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.06)">
+              <span style="font-size:11px;color:var(--mute);font-weight:800;text-transform:uppercase;letter-spacing:1px;min-width:80px">Loader</span>
+              <span class="hw" id="copyLoaderUrl" style="flex:1;font-family:var(--mono);font-size:12.5px;color:#e6e8ec;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</span>
+              <button class="btn ghost sm" data-copy-target="copyLoaderUrl">Copier</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.35);padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.06)">
+              <span style="font-size:11px;color:var(--mute);font-weight:800;text-transform:uppercase;letter-spacing:1px;min-width:80px">Site</span>
+              <span class="hw" id="copyCustomerUrl" style="flex:1;font-family:var(--mono);font-size:12.5px;color:#e6e8ec;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">—</span>
+              <button class="btn ghost sm" data-copy-target="copyCustomerUrl">Copier</button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1033,7 +1093,8 @@ const titles = {
   logs:['Journal d\'activité','Historique des événements du panel'],
   config:['Configuration','Modifie les couleurs et les textes du loader à distance'],
   notice:['Notice','Envoie un message Windows au démarrage du loader'],
-  kill:['Kill Switch','Désactive tous les loaders d\'un seul clic']
+  kill:['Kill Switch','Désactive tous les loaders d\'un seul clic'],
+  website:['Site Web','Configure l\'URL du loader et du portail client']
 };
 document.querySelectorAll('.nav').forEach(b => b.onclick = () => {
   document.querySelectorAll('.nav').forEach(n => n.classList.toggle('on', n === b));
@@ -1049,6 +1110,7 @@ document.querySelectorAll('.nav').forEach(b => b.onclick = () => {
   if (b.dataset.view === 'config') loadConfig();
   if (b.dataset.view === 'notice') loadNotice();
   if (b.dataset.view === 'kill') loadKill();
+  if (b.dataset.view === 'website') loadWebsiteConfig();
 });
 
 const prevStat = {};
@@ -1500,9 +1562,8 @@ $('addAcc').onclick = async () => {
 $('newAccPass').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); $('addAcc').click(); } });
 
 /* ═══════════════════════════════════════════════════════════
-   👤 COMPTES CLIENTS (utilisateurs créés via le site customer)
+   👤 COMPTES CLIENTS
    ═══════════════════════════════════════════════════════════ */
-
 let allUsers = [];
 
 async function loadUsers(){
@@ -1640,6 +1701,58 @@ $('usersBody').addEventListener('click', async e => {
   }
 });
 
+/* ═══════════════════════════════════════════════════════════
+   🌐 SITE WEB — Config URL loader + portail client
+   ═══════════════════════════════════════════════════════════ */
+
+async function loadWebsiteConfig(){
+  try {
+    const r = await api('/admin/get-website-config');
+    if (!r.ok) throw new Error(r.error);
+    const c = r.config || {};
+    $('cfgLoaderUrl').value = c.loaderUrl || '';
+    $('cfgCustomerUrl').value = c.customerUrl || '';
+    $('cfgZipPassword').value = c.zipPassword || 'spoofer';
+    $('cfgLoaderVersion').value = c.loaderVersion || 'v1.0.0';
+
+    $('copyLoaderUrl').textContent = c.loaderUrl || '— non défini —';
+    $('copyCustomerUrl').textContent = c.customerUrl || '— non défini —';
+  } catch(e){ toast('Impossible de charger la config web : ' + (e.message || ''), 'error'); }
+}
+
+$('cfgWebReload').onclick = loadWebsiteConfig;
+
+$('cfgWebSave').onclick = async () => {
+  const config = {
+    loaderUrl: $('cfgLoaderUrl').value.trim(),
+    customerUrl: $('cfgCustomerUrl').value.trim(),
+    zipPassword: $('cfgZipPassword').value.trim() || 'spoofer',
+    loaderVersion: $('cfgLoaderVersion').value.trim() || 'v1.0.0'
+  };
+  try {
+    const r = await api('/admin/set-website-config', 'POST', {config});
+    if (r.ok){
+      toast('Config web sauvegardée', 'success');
+      $('copyLoaderUrl').textContent = config.loaderUrl || '— non défini —';
+      $('copyCustomerUrl').textContent = config.customerUrl || '— non défini —';
+      loadLogs();
+    }
+    else toast(r.error || 'Erreur', 'error');
+  } catch { toast('Erreur réseau', 'error'); }
+};
+
+document.querySelectorAll('[data-copy-target]').forEach(btn => {
+  btn.onclick = () => {
+    const target = $(btn.dataset.copyTarget);
+    const text = target.textContent;
+    if (!text || text.startsWith('—')) return toast('Rien à copier', 'error');
+    navigator.clipboard.writeText(text).then(
+      () => toast('Copié', 'success'),
+      () => toast('Copie impossible', 'error')
+    );
+  };
+});
+
 const L = {
   create:['Création','active'], ban:['Ban','banned'], unban:['Déban','active'], delete:['Suppression','expired'],
   'hwid-ban':['HWID banni','banned'], 'hwid-unban':['HWID retiré','active'], export:['Export','active'],
@@ -1651,7 +1764,8 @@ const L = {
   'register':['Inscription client','active'], 'login-ok':['Connexion client','active'],
   'login-hwid-mismatch':['HWID différent','expired'],
   'admin-ban-user':['Ban utilisateur','banned'], 'admin-unban-user':['Déban utilisateur','active'],
-  'admin-delete-user':['Suppr. utilisateur','expired'], 'admin-reset-hwid':['Reset HWID','warn']
+  'admin-delete-user':['Suppr. utilisateur','expired'], 'admin-reset-hwid':['Reset HWID','warn'],
+  'website-config-update':['Config web MAJ','active']
 };
 
 function renderLogs(list){
