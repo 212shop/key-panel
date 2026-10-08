@@ -351,7 +351,7 @@ tr.skeleton td{padding:18px 20px}
   box-shadow:0 60px 140px -30px #000,0 0 0 1px rgba(255,255,255,.03) inset,0 1px 0 rgba(255,255,255,.10) inset,0 0 80px -20px var(--red-glow);
   animation:popIn .45s cubic-bezier(.2,.9,.3,1.15) both;
   position:relative;
-  overflow:visible;   /* ⬅️ CHANGÉ : était hidden — pour laisser le dropdown dépasser */
+  overflow:visible;
 }
 .box::before{
   content:"";position:absolute;top:0;left:0;right:0;height:2px;
@@ -359,7 +359,7 @@ tr.skeleton td{padding:18px 20px}
   background-size:200% 100%;
   animation:borderFlow 3s linear infinite;
   border-radius:var(--r-xl) var(--r-xl) 0 0;
-  clip-path:inset(0 round var(--r-xl) var(--r-xl) 0 0);   /* ⬅️ garde les coins arrondis propres */
+  clip-path:inset(0 round var(--r-xl) var(--r-xl) 0 0);
 }
 
 .modal-header{
@@ -553,6 +553,10 @@ tr.skeleton td{padding:18px 20px}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       Comptes Rockstar <small id="nAcc">0</small>
     </button>
+    <button class="nav" data-view="users">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Comptes clients <small id="nUsers">0</small>
+    </button>
     <button class="nav" data-view="logs">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       Logs
@@ -690,6 +694,25 @@ tr.skeleton td{padding:18px 20px}
       </div>
     </section>
 
+    <section class="view" id="v-users">
+      <div class="card">
+        <div class="tb">
+          <div class="search-wrap">
+            <input id="qUsers" type="search" placeholder="Rechercher un pseudo, une licence ou un HWID…" aria-label="Rechercher">
+          </div>
+          <button class="btn ghost" id="refreshUsers">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Rafraîchir
+          </button>
+        </div>
+        <div class="scroll"><table>
+          <thead><tr><th>Pseudo</th><th>Licence</th><th>HWID</th><th>Expire le</th><th>Restant</th><th>Statut</th><th></th></tr></thead>
+          <tbody id="usersBody"></tbody>
+        </table></div>
+        <div class="empty" id="usersEmpty">Chargement…</div>
+      </div>
+    </section>
+
     <section class="view" id="v-logs">
       <div class="card">
         <div class="scroll"><table>
@@ -819,7 +842,7 @@ function modalHeader(subtitle){
     </div>`;
 }
 
-/* ═══ DROPDOWN CUSTOM (avec détection ouverture vers le haut) ═══ */
+/* ═══ DROPDOWN CUSTOM ═══ */
 function initDropdown(el){
   const trigger = el.querySelector('[data-dropdown-trigger]');
   const menu = el.querySelector('[data-dropdown-menu]');
@@ -830,7 +853,6 @@ function initDropdown(el){
 
   trigger.onclick = (e) => {
     e.stopPropagation();
-    // Ferme les autres dropdowns ouverts
     document.querySelectorAll('.dropdown.open').forEach(d => {
       if (d !== el) { d.classList.remove('open'); d.querySelector('[data-dropdown-menu]').hidden = true; }
     });
@@ -839,25 +861,18 @@ function initDropdown(el){
     menu.hidden = !isOpen;
 
     if (isOpen) {
-      // Reset orientation
       menu.classList.remove('drop-up');
-
-      // Calcule l'espace disponible
       const rect = trigger.getBoundingClientRect();
       const spaceBelow = window.innerHeight - rect.bottom;
       const spaceAbove = rect.top;
       const menuHeight = Math.min(menu.scrollHeight || 300, 420);
 
-      // Si pas assez de place en dessous et plus de place au dessus → ouvre vers le haut
       if (spaceBelow < menuHeight + 30 && spaceAbove > spaceBelow) {
         menu.classList.add('drop-up');
       }
 
-      // Auto-scroll vers l'option active
       const active = menu.querySelector('.dropdown-item.active');
-      if (active) {
-        setTimeout(() => active.scrollIntoView({ block: 'nearest' }), 30);
-      }
+      if (active) setTimeout(() => active.scrollIntoView({ block: 'nearest' }), 30);
     }
   };
 
@@ -971,6 +986,7 @@ $('logout').onclick = () => {
   sessionStorage.removeItem('ka_keys_cache');
   sessionStorage.removeItem('ka_hwids_cache');
   sessionStorage.removeItem('ka_accs_cache');
+  sessionStorage.removeItem('ka_users_cache');
   sessionStorage.removeItem('ka_logs_cache');
   location.reload();
 };
@@ -978,6 +994,7 @@ $('logout').onclick = () => {
 const KEYS_CACHE  = 'ka_keys_cache';
 const HWIDS_CACHE = 'ka_hwids_cache';
 const ACCS_CACHE  = 'ka_accs_cache';
+const USERS_CACHE = 'ka_users_cache';
 const LOGS_CACHE  = 'ka_logs_cache';
 
 function saveCache(key, data){ try{ sessionStorage.setItem(key, JSON.stringify({ts:Date.now(), data})); }catch{} }
@@ -1012,6 +1029,7 @@ const titles = {
   keys:['Licences','Gère les clés d\'accès de ton application'],
   hwid:['HWID bannis','Liste noire des identifiants matériels'],
   accounts:['Comptes Rockstar','Gère le stock de comptes à distribuer'],
+  users:['Comptes clients','Utilisateurs créés via le site customer'],
   logs:['Journal d\'activité','Historique des événements du panel'],
   config:['Configuration','Modifie les couleurs et les textes du loader à distance'],
   notice:['Notice','Envoie un message Windows au démarrage du loader'],
@@ -1025,6 +1043,7 @@ document.querySelectorAll('.nav').forEach(b => b.onclick = () => {
   const sub = $('subtitle'); if (sub) sub.textContent = s;
   $('newKey').hidden = $('export').hidden = b.dataset.view !== 'keys';
   if (b.dataset.view === 'accounts') loadAccounts();
+  if (b.dataset.view === 'users') loadUsers();
   if (b.dataset.view === 'hwid') loadHwids();
   if (b.dataset.view === 'logs') loadLogs();
   if (b.dataset.view === 'config') loadConfig();
@@ -1208,7 +1227,7 @@ $('keysBody').addEventListener('click', async e => {
 let searchTimer;
 $('q').oninput = () => { clearTimeout(searchTimer); searchTimer = setTimeout(() => renderRows(allKeys, false), 120); };
 document.getElementById('ddStatus').addEventListener('change', () => renderRows(allKeys, false));
-$('refresh').onclick = () => { syncLocked = 0; loadKeys(false); loadHwids(); loadAccounts(); loadLogs(); };
+$('refresh').onclick = () => { syncLocked = 0; loadKeys(false); loadHwids(); loadAccounts(); loadUsers(); loadLogs(); };
 
 /* ═══ MODAL NOUVELLE CLÉ ═══ */
 function openNewKeyModal(days){
@@ -1480,6 +1499,147 @@ $('addAcc').onclick = async () => {
 };
 $('newAccPass').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); $('addAcc').click(); } });
 
+/* ═══════════════════════════════════════════════════════════
+   👤 COMPTES CLIENTS (utilisateurs créés via le site customer)
+   ═══════════════════════════════════════════════════════════ */
+
+let allUsers = [];
+
+async function loadUsers(){
+  const cached = loadCache(USERS_CACHE);
+  if (cached && cached.length){ allUsers = cached; renderUsers(); }
+  else if (!allUsers.length){
+    $('usersEmpty').hidden = true;
+    $('usersBody').innerHTML = skeletonRows(5, 7);
+  }
+  try {
+    const r = await api('/admin/users');
+    if (!r.ok) throw new Error(r.error || 'Erreur');
+    allUsers = r.users || [];
+    saveCache(USERS_CACHE, allUsers);
+    renderUsers();
+  } catch {
+    if (!cached || !cached.length){
+      $('usersEmpty').hidden = false;
+      $('usersEmpty').textContent = 'Impossible de charger les comptes clients.';
+    }
+  }
+}
+
+function renderUsers(){
+  $('nUsers').textContent = allUsers.length;
+  const tbody = $('usersBody');
+  if (!allUsers.length){
+    tbody.innerHTML = '';
+    $('usersEmpty').hidden = false;
+    $('usersEmpty').textContent = 'Aucun compte client pour le moment.';
+    return;
+  }
+  $('usersEmpty').hidden = true;
+
+  const q = ($('qUsers').value || '').trim().toLowerCase();
+  const filtered = !q ? allUsers : allUsers.filter(u =>
+    (u.username || '').toLowerCase().includes(q) ||
+    (u.license || '').toLowerCase().includes(q) ||
+    (u.hwid || '').toLowerCase().includes(q)
+  );
+
+  const frag = document.createDocumentFragment();
+  filtered.forEach(u => {
+    let badge, badgeText;
+    if (u.banned) { badge = 'banned'; badgeText = 'Banni'; }
+    else if (u.daysLeft <= 0) { badge = 'expired'; badgeText = 'Expirée'; }
+    else if (u.daysLeft <= 3) { badge = 'warn'; badgeText = 'Expire bientôt'; }
+    else { badge = 'active'; badgeText = 'Actif'; }
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td data-l="Pseudo"><b style="color:#f6f7f9">${esc(u.username)}</b></td>
+      <td data-l="Licence"><span class="key" data-copy="${esc(u.license)}" title="Cliquer pour copier">${esc(u.license)}</span></td>
+      <td data-l="HWID">${u.hwid ? `<span class="hw">${esc(u.hwid)}</span>` : '<span class="mut"><i>libre</i></span>'}</td>
+      <td data-l="Expire le" class="mut">${u.expiresAt ? fmtDate(u.expiresAt) : '—'}</td>
+      <td data-l="Restant" class="mut">${u.expiresAt ? fmtLeft(Math.max(0, u.expiresAt - Date.now())) : '—'}</td>
+      <td data-l="Statut"><span class="badge ${badge}">${badgeText}</span></td>
+      <td data-l=""><div class="row">
+        <button class="btn ghost sm" data-uact="${u.banned ? 'unban' : 'ban'}" data-uid="${esc(u.id)}">${u.banned ? 'Débannir' : 'Bannir'}</button>
+        <button class="btn ghost sm" data-uact="reset-hwid" data-uid="${esc(u.id)}">Reset HWID</button>
+        <button class="btn ghost sm danger" data-uact="del" data-uid="${esc(u.id)}">Supprimer</button>
+      </div></td>`;
+    frag.appendChild(tr);
+  });
+
+  tbody.classList.remove('fresh');
+  tbody.replaceChildren(frag);
+  void tbody.offsetWidth; tbody.classList.add('fresh');
+}
+
+$('qUsers').addEventListener('input', () => renderUsers());
+$('refreshUsers').onclick = () => loadUsers();
+
+$('usersBody').addEventListener('click', async e => {
+  const cp = e.target.closest('[data-copy]');
+  if (cp) return navigator.clipboard.writeText(cp.dataset.copy).then(() => toast('Licence copiée', 'success'), () => toast('Copie impossible', 'error'));
+
+  const b = e.target.closest('[data-uact]'); if (!b) return;
+  const uid = b.dataset.uid, a = b.dataset.uact;
+  const user = allUsers.find(x => x.id === uid);
+  if (!user) return;
+
+  if (a === 'ban') {
+    const ok = await confirmDialog({
+      title: 'Bannir ce compte ?',
+      message: `Le compte <b>${esc(user.username)}</b> ne pourra plus se connecter au loader.`,
+      okText: 'Bannir', cancelText: 'Annuler', danger: true
+    });
+    if (!ok) return;
+  }
+  if (a === 'del') {
+    const ok = await confirmDialog({
+      title: 'Supprimer ce compte ?',
+      message: `Le compte <b>${esc(user.username)}</b> sera définitivement supprimé. La clé de licence sera également libérée. Cette action est irréversible.`,
+      okText: 'Supprimer', cancelText: 'Annuler', danger: true
+    });
+    if (!ok) return;
+  }
+  if (a === 'reset-hwid') {
+    const ok = await confirmDialog({
+      title: 'Réinitialiser le HWID ?',
+      message: `Le compte <b>${esc(user.username)}</b> pourra se connecter depuis n'importe quel autre PC.`,
+      okText: 'Réinitialiser', cancelText: 'Annuler', danger: false
+    });
+    if (!ok) return;
+  }
+
+  const prev = allUsers.slice();
+  if (a === 'ban') allUsers = allUsers.map(x => x.id === uid ? {...x, banned: true} : x);
+  else if (a === 'unban') allUsers = allUsers.map(x => x.id === uid ? {...x, banned: false} : x);
+  else if (a === 'reset-hwid') allUsers = allUsers.map(x => x.id === uid ? {...x, hwid: null} : x);
+  else if (a === 'del') allUsers = allUsers.filter(x => x.id !== uid);
+  saveCache(USERS_CACHE, allUsers);
+  renderUsers();
+
+  const endpoint = {
+    ban: '/admin/users/ban',
+    unban: '/admin/users/unban',
+    'reset-hwid': '/admin/users/reset-hwid',
+    del: '/admin/users/delete'
+  }[a];
+
+  try {
+    const r = await api(endpoint, 'POST', {userId: uid});
+    if (r.ok) {
+      toast({ban:'Compte banni', unban:'Compte débanni', 'reset-hwid':'HWID réinitialisé', del:'Compte supprimé'}[a], 'success');
+      loadLogs();
+    } else {
+      allUsers = prev; saveCache(USERS_CACHE, allUsers); renderUsers();
+      toast(r.error || 'Erreur', 'error');
+    }
+  } catch {
+    allUsers = prev; saveCache(USERS_CACHE, allUsers); renderUsers();
+    toast('Erreur réseau', 'error');
+  }
+});
+
 const L = {
   create:['Création','active'], ban:['Ban','banned'], unban:['Déban','active'], delete:['Suppression','expired'],
   'hwid-ban':['HWID banni','banned'], 'hwid-unban':['HWID retiré','active'], export:['Export','active'],
@@ -1487,7 +1647,11 @@ const L = {
   'auth-hwid-banned':['HWID banni','banned'], 'auth-hwid-mismatch':['HWID différent','expired'], redeem:['Activation','active'],
   'account-add':['Compte ajouté','active'], 'account-del':['Compte supprimé','expired'],
   'account-used':['Compte utilisé','warn'], 'account-reset':['Compte libéré','active'],
-  'config-update':['Config MAJ','active'], 'notice-update':['Notice MAJ','warn'], 'kill-switch':['Kill switch','banned']
+  'config-update':['Config MAJ','active'], 'notice-update':['Notice MAJ','warn'], 'kill-switch':['Kill switch','banned'],
+  'register':['Inscription client','active'], 'login-ok':['Connexion client','active'],
+  'login-hwid-mismatch':['HWID différent','expired'],
+  'admin-ban-user':['Ban utilisateur','banned'], 'admin-unban-user':['Déban utilisateur','active'],
+  'admin-delete-user':['Suppr. utilisateur','expired'], 'admin-reset-hwid':['Reset HWID','warn']
 };
 
 function renderLogs(list){
